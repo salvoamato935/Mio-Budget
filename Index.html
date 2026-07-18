@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Budget 640 - Conto Bancario</title>
+    <style>
+        :root {
+            --bg-main: #090d16;
+            --bg-card: #151f32;
+            --bg-input: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-purple: #c084fc;
+            --accent-orange: #fb923c;
+            --border: #22314d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 16px;
+            padding-bottom: 60px;
+        }
+
+        header {
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(to right, #38bdf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #151f32, #0f172a);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .main-balance {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .sub-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+            font-size: 13px;
+        }
+
+        .row-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #e2e8f0;
+        }
+
+        .row-item span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-mini {
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 6px;
+            background-color: #1e293b;
+            color: white;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button.btn-main-action {
+            background-color: var(--accent-blue);
+            color: #020617;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        button.btn-reset {
+            background-color: transparent;
+            border: 1px dashed var(--accent-red);
+            color: var(--accent-red);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        button:active { opacity: 0.8; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(4, 6, 11, 0.95);
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .modal h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .modal-actions button.btn-cancel {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .modal-actions button.btn-save {
+            background-color: var(--accent-blue);
+            color: #020617;
+        }
+
+        .c-fissi { border-left: 4px solid var(--accent-green); }
+        .c-spese { border-left: 4px solid var(--accent-purple); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>CONTO BANCARIO 💳</h1>
+        <p>Budget Mensile Digitale • 640,00 €</p>
+    </header>
+
+    <!-- ACCANTONAMENTI E FISSI -->
+    <div class="card c-fissi">
+        <div class="card-title">🔒 Risparmi & Addebiti Fissi</div>
+        <div class="main-balance" id="total-fissi">0,00 €</div>
+        <div class="sub-rows">
+            <div class="row-item"><span>🚗 Fondo Auto:</span> <b id="val-auto">0,00 €</b></div>
+            <div class="row-item"><span>📈 Investimento ETF:</span> <b id="val-etf">0,00 €</b></div>
+            <div class="row-item"><span>🏠 Utenze / Bollette:</span> <b id="val-utenze">0,00 €</b></div>
+            <div class="row-item"><span>🎬 Streaming (Netflix+Prime):</span> <b id="val-stream">0,00 €</b></div>
+            <div class="row-item"><span>📱 Telefonia SIM:</span> <b id="val-tel">0,00 €</b></div>
+            <div class="row-item"><span>📦 Rate Fisse (Klarna/PP):</span> <b id="val-rate">0,00 €</b></div>
+            <div class="row-item"><span>🚰 Rata Depuratore:</span> <b id="val-depuratore">0,00 €</b></div>
+        </div>
+    </div>
+
+    <!-- SPESE VIVE CON CARTA -->
+    <div class="card c-spese">
+        <div class="card-title">🛒 Spese Vive (Uscite con Carta)</div>
+        <div class="main-balance" id="total-vive">0,00 €</div>
+        <div class="sub-rows">
+            <div class="row-item">
+                <span>⛽ Benzina Mensile: <b id="val-benzina">0,00 €</b></span>
+                <div class="quick-actions">
+                    <button class="btn-mini" onclick="quickSub('benzina', 20)">−20€</button>
+                </div>
+            </div>
+            <div class="row-item">
+                <span>🎉 Spese Extra / Svago: <b id="val-extra">0,00 €</b></span>
+                <div class="quick-actions">
+                    <button class="btn-mini" onclick="openQuickEdit('extra')">Modifica</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-buttons">
+        <button class="btn-main-action" onclick="openModal()">💸 Registra Addebito / Spesa</button>
+        <button class="btn-reset" onclick="resetBudget()">🔄 Carica Nuovo Mese (Reset a 640€)</button>
+    </div>
+
+    <!-- MODAL REGISTRA SPESA -->
+    <div class="modal" id="expenseModal">
+        <div class="modal-content">
+            <h2>Registra Movimento</h2>
+            <div class="form-group">
+                <label>Importo Speso (€)</label>
+                <input type="number" id="expAmount" step="0.01" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label>Da quale voce scalare?</label>
+                <select id="expCategory">
+                    <option value="extra">Spese Extra / Svago</option>
+                    <option value="benzina">Benzina Mensile</option>
+                    <option value="utenze">Utenze / Bollette</option>
+                    <option value="rate">Rate Fisse (Klarna/PP)</option>
+                    <option value="depuratore">Rata Depuratore</option>
+                    <option value="auto">Fondo Auto</option>
+                    <option value="etf">Investimento ETF</option>
+                    <option value="stream">Streaming</option>
+                    <option value="tel">Telefonia SIM</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Annulla</button>
+                <button class="btn-save" onclick="saveExpense()">Conferma Spesa</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stateKey = 'budget640_Banca_State';
+
+        // Configurazione Budget Mensile iniziale fisso (Totale 640,00 €)
+        const initialBudget = {
+            auto: 100.0,
+            etf: 20.0,
+            utenze: 180.0,
+            stream: 13.0,
+            tel: 16.0,
+            rate: 100.0,
+            depuratore: 40.0,
+            benzina: 80.0,
+            extra: 91.0
+        };
+
+        let state = JSON.parse(localStorage.getItem(stateKey)) || {...initialBudget};
+
+        function updateUI() {
+            localStorage.setItem(stateKey, JSON.stringify(state));
+
+            // Singole voci
+            document.getElementById('val-auto').innerText = state.auto.toFixed(2) + " €";
+            document.getElementById('val-etf').innerText = state.etf.toFixed(2) + " €";
+            document.getElementById('val-utenze').innerText = state.utenze.toFixed(2) + " €";
+            document.getElementById('val-stream').innerText = state.stream.toFixed(2) + " €";
+            document.getElementById('val-tel').innerText = state.tel.toFixed(2) + " €";
+            document.getElementById('val-rate').innerText = state.rate.toFixed(2) + " €";
+            document.getElementById('val-depuratore').innerText = state.depuratore.toFixed(2) + " €";
+            document.getElementById('val-benzina').innerText = state.benzina.toFixed(2) + " €";
+            document.getElementById('val-extra').innerText = state.extra.toFixed(2) + " €";
+
+            // Calcolo Totali Box
+            let totalFissi = state.auto + state.etf + state.utenze + state.stream + state.tel + state.rate + state.depuratore;
+            let totalVive = state.benzina + state.extra;
+
+            document.getElementById('total-fissi').innerText = totalFissi.toFixed(2) + " €";
+            document.getElementById('total-vive').innerText = totalVive.toFixed(2) + " €";
+
+            toggleColor('total-fissi', totalFissi);
+            toggleColor('total-vive', totalVive);
+        }
+
+        function toggleColor(id, val) {
+            let el = document.getElementById(id);
+            if(val < 0) el.style.color = "var(--accent-red)";
+            else el.style.color = "var(--text-main)";
+        }
+
+        function openModal() { document.getElementById('expenseModal').style.display = 'flex'; }
+        function closeModal() { 
+            document.getElementById('expenseModal').style.display = 'none'; 
+            document.getElementById('expAmount').value = '';
+        }
+
+        function saveExpense() {
+            let val = parseFloat(document.getElementById('expAmount').value);
+            let cat = document.getElementById('expCategory').value;
+            if (isNaN(val) || val <= 0) return;
+
+            state[cat] -= val;
+            updateUI();
+            closeModal();
+        }
+
+        function quickSub(key, val) {
+            if(confirm("Vuoi scalare velocemente " + val + "€ da questa voce?")) {
+                state[key] -= val;
+                updateUI();
+            }
+        }
+
+        function openQuickEdit(key) {
+            let val = prompt("Inserisci la nuova cifra esatta rimanente per questa voce (€):", state[key].toFixed(2));
+            if (val !== null) {
+                let parsed = parseFloat(val);
+                if(!isNaN(parsed)) {
+                    state[key] = parsed;
+                    updateUI();
+                }
+            }
+        }
+
+        function resetBudget() {
+            if(confirm("È arrivato il nuovo mese? Cliccando su OK riporterai tutti i comparti del conto ai 640€ di partenza.")) {
+                state = {...initialBudget};
+                updateUI();
+            }
+        }
+
+        window.onclick = function(e) { if(e.target.className === 'modal') closeModal(); }
+
+        updateUI();
+    </script>
+</body>
+</html>
