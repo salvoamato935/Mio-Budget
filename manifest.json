@@ -1,6 +1,6 @@
 {
-  "name": "Budget Mensile 640",
-  "short_name": "Budget 640",
+  "name": "Budget 640",
+  "short_name": "Budget app",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#090d16",
