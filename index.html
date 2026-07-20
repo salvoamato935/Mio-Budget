@@ -65,6 +65,17 @@
         .view { display: none; }
         .view.active { display: block; }
 
+        /* SCHERMATA DI LOG IN / REGISTRAZIONE */
+        #auth-screen {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-top: 40px;
+            text-align: center;
+        }
+        #auth-screen h2 { margin-bottom: 20px; font-size: 20px; font-weight: 700; }
+
         .main-card {
             background: var(--accent-gradient);
             color: white;
@@ -181,6 +192,8 @@
         
         .filter-select { background: transparent; border: 1px solid var(--card-border); border-radius: 8px; padding: 4px 8px; font-size: 12px; color: var(--text-main); }
         .info-piano { font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 6px 10px; border-radius: 8px; margin-top: 6px; font-weight: 600;}
+        .hidden { display: none !important; }
+        .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -188,16 +201,32 @@
     <header>
         <h1 id="header-title">Mio Budget 📊</h1>
         <div id="status-label" class="status-banner status-ok">🟢 Tutto sotto controllo</div>
+        <div id="user-header-info" style="font-size:11px; color:var(--text-muted); margin-top:4px;" class="hidden"></div>
     </header>
 
     <div class="container">
         
+        <!-- SCHERMATA ACCESSO / REGISTRAZIONE -->
+        <div id="auth-screen">
+            <h2 id="auth-title">Accedi al tuo Budget</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="auth-email" class="form-control" placeholder="esempio@email.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="auth-password" class="form-control" placeholder="Inserisci la tua password">
+            </div>
+            <button class="btn" id="btn-auth-primary" onclick="gestisciAutenticazione()">Accedi</button>
+            <button class="btn btn-secondary" id="btn-auth-toggle" onclick="toggleModalitaAuth()" style="font-size:12px;">Non hai un account? Registrati</button>
+            <p id="auth-error" class="error-msg"></p>
+        </div>
+
         <!-- SCHERMATA CONFIGURAZIONE COMPARTI E BUDGET TOTALE -->
         <div id="view-setup" class="view">
             <div class="mini-card" style="padding: 20px;">
                 <h3 style="margin-bottom: 12px; text-align:center;">Configurazione Iniziale</h3>
                 
-                <!-- NUOVO: INPUT BUDGET TOTALE INDIPENDENTE -->
                 <div class="form-group" style="margin-bottom: 20px; background: #e0f2fe; padding: 12px; border-radius: 12px; border: 1px solid #bae6fd;">
                     <label style="color:#0369a1; font-weight:700;">1. INSERISCI IL BUDGET MENSILE TOTALE (€)</label>
                     <input type="number" id="setup-budget-totale-input" class="form-control" placeholder="Es. 1500" inputmode="decimal" style="border-color:#7dd3fc; font-size:16px; font-weight:700;">
@@ -290,7 +319,7 @@
         <button class="nav-item" onclick="switchView('salvadanai', this)"><i class="fa-solid fa-piggy-bank"></i><span>Piani</span></button>
         <button class="nav-center-btn" onclick="apriModalNuovaSpesa()"><i class="fa-solid fa-plus"></i></button>
         <button class="nav-item" onclick="switchView('storico', this)"><i class="fa-solid fa-clock-rotate-left"></i><span>Storico</span></button>
-        <button class="nav-item" style="color:var(--danger);" onclick="resetCompleto()"><i class="fa-solid fa-triangle-exclamation"></i><span>Reset App</span></button>
+        <button class="nav-item" style="color:var(--danger);" onclick="eseguiLogout()"><i class="fa-solid fa-right-from-bracket"></i><span>Esci</span></button>
     </nav>
 
     <!-- MODALE INSERIMENTO / MODIFICA SPESA -->
@@ -341,8 +370,9 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
@@ -356,14 +386,121 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const budgetRef = ref(db, 'budget_familiare');
-        const storicoRef = ref(db, 'budget_storico');
+        const auth = getAuth(app);
+
+        let isLoginMode = true;
+        let utenteCorrente = null;
+        let budgetRef = null;
+        let storicoRef = null;
 
         let appData = { entrate: 0, cassetti: {}, spese: {}, salvadanai: {}, scadenze: {} };
         let listaCompartiTemporanea = {};
         let myChart = null;
         let cassettoFiltratoDaGrafico = null;
 
+        // --- SISTEMA DI AUTENTICAZIONE ---
+        window.gestisciAutenticazione = async () => {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const errorEl = document.getElementById('auth-error');
+            errorEl.textContent = "";
+
+            if(!email || !password) {
+                errorEl.textContent = "Inserisci sia l'email che la password.";
+                return;
+            }
+
+            try {
+                if(isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                errorEl.textContent = "Errore: " + traduciErroreFirebase(error.code);
+            }
+        };
+
+        window.toggleModalitaAuth = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').textContent = isLoginMode ? "Accedi al tuo Budget" : "Crea un nuovo account";
+            document.getElementById('btn-auth-primary').textContent = isLoginMode ? "Accedi" : "Registrati";
+            document.getElementById('btn-auth-toggle').textContent = isLoginMode ? "Non hai un account? Registrati" : "Hai già un account? Accedi";
+        };
+
+        window.eseguiLogout = () => {
+            signOut(auth).then(() => {
+                window.location.reload();
+            });
+        };
+
+        function traduciErroreFirebase(code) {
+            switch(code) {
+                case 'auth/invalid-credential': return 'Credenziali non valide o errate.';
+                case 'auth/weak-password': return 'La password deve avere almeno 6 caratteri.';
+                case 'auth/email-already-in-use': return 'Questa email è già associata ad un account.';
+                case 'auth/invalid-email': return 'Formato dell\'email non valido.';
+                default: return 'Impossibile completare l\'operazione.';
+            }
+        }
+
+        // Monitoraggio dello stato utente
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                utenteCorrente = user;
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-nav').style.display = 'flex';
+                document.getElementById('user-header-info').classList.remove('hidden');
+                document.getElementById('user-header-info').textContent = "Connesso come: " + user.email;
+
+                // Configura i percorsi del database in base all'utente isolato
+                budgetRef = ref(db, 'utenti/' + user.uid + '/budget_familiare');
+                storicoRef = ref(db, 'utenti/' + user.uid + '/budget_storico');
+
+                avviaAscoltoDati();
+            } else {
+                utenteCorrente = null;
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('app-nav').style.display = 'none';
+                document.getElementById('user-header-info').classList.add('hidden');
+                disattivaViste();
+            }
+        });
+
+        function disattivaViste() {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        }
+
+        function avviaAscoltoDati() {
+            onValue(budgetRef, (snapshot) => {
+                const data = snapshot.val();
+                if(!data) {
+                    switchViewWithoutBtn('setup');
+                    document.getElementById('btn-annulla-setup').style.display = 'none';
+                    appData = { entrate: 0, cassetti: {}, spese: {}, salvadanai: {}, scadenze: {} };
+                } else {
+                    appData = {
+                        entrate: data.entrate || 0,
+                        cassetti: data.cassetti || {},
+                        spese: data.spese || {},
+                        salvadanai: data.salvadanai || {},
+                        scadenze: data.scadenze || {}
+                    };
+                    if(document.getElementById('view-setup').classList.contains('active')) {
+                        switchViewWithoutBtn('home');
+                    } else if (!document.querySelector('.view.active')) {
+                        switchViewWithoutBtn('home');
+                    }
+                    calcolaERenderizzaUI();
+                }
+            });
+
+            onValue(storicoRef, (snapshot) => {
+                renderizzaStorico(snapshot.val());
+            });
+        }
+
+        // --- GESTIONE LOGICA E VECCHIE FUNZIONI INTERFACCIA ---
         window.aggiungiCompartoLista = function() {
             const nome = document.getElementById('add-comp-nome').value.trim();
             const budget = parseFloat(document.getElementById('add-comp-budget').value) || 0;
@@ -372,563 +509,625 @@
                 listaCompartiTemporanea[id] = { nome: nome, budget: budget };
                 document.getElementById('add-comp-nome').value = '';
                 document.getElementById('add-comp-budget').value = '';
-                renderizzaListaSetupTemporanea();
+                aggiornaAnteprimaListaSetup();
             }
-        }
+        };
 
         window.rimuoviCompartoListaTemporanea = function(id) {
             delete listaCompartiTemporanea[id];
-            renderizzaListaSetupTemporanea();
-        }
+            aggiornaAnteprimaListaSetup();
+        };
 
-        function renderizzaListaSetupTemporanea() {
-            const cont = document.getElementById('lista-comparti-setup');
-            cont.innerHTML = '';
+        function aggiornaAnteprimaListaSetup() {
+            const container = document.getElementById('lista-comparti-setup');
+            container.innerHTML = '';
             let somma = 0;
-            Object.entries(listaCompartiTemporanea).forEach(([id, c]) => {
+            Object.keys(listaCompartiTemporanea).forEach(id => {
+                const c = listaCompartiTemporanea[id];
                 somma += c.budget;
-                cont.innerHTML += `
+                container.innerHTML += `
                     <div class="setup-comparto-item">
-                        <span><b>${c.nome}</b>: ${c.budget.toLocaleString('it-IT')} €</span>
-                        <button class="btn-delete" onclick="rimuoviCompartoListaTemporanea('${id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>`;
+                        <span><b>${c.nome}</b>: ${c.budget.toFixed(2)} €</span>
+                        <button class="btn-delete" onclick="rimuoviCompartoListaTemporanea('${id}')"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                `;
             });
-            document.getElementById('setup-somma-comparti').innerText = somma.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
-        }
-
-        window.apriModificaBudget = function() {
-            listaCompartiTemporanea = JSON.parse(JSON.stringify(appData.cassetti || {}));
-            document.getElementById('setup-budget-totale-input').value = appData.entrate || '';
-            renderizzaListaSetupTemporanea();
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-setup').classList.add('active');
-            document.getElementById('btn-annulla-setup').style.display = "block";
-            document.getElementById('app-nav').style.display = "none";
-        }
-
-        window.chiudiModificaBudget = function() {
-            document.getElementById('view-setup').classList.remove('active');
-            document.getElementById('view-home').classList.add('active');
-            document.getElementById('app-nav').style.display = "flex";
+            document.getElementById('setup-somma-comparti').textContent = somma.toFixed(2) + " €";
         }
 
         window.salvaConfigurazioneComparti = function() {
-            const budgetTotaleDigitato = parseFloat(document.getElementById('setup-budget-totale-input').value) || 0;
-            if(budgetTotaleDigitato <= 0) {
-                alert("Per favore, inserisci un Budget Mensile Totale valido superiore a 0 €!");
+            const budgetTotale = parseFloat(document.getElementById('setup-budget-totale-input').value) || 0;
+            if(budgetTotale <= 0) {
+                alert("Inserisci un budget mensile totale valido.");
                 return;
             }
-            
-            // Creiamo sempre un comparto jolly nascosto per le spese "Generiche" se l'utente vuole spendere fuori dai comparti
-            if(!listaCompartiTemporanea['generico']) {
-                listaCompartiTemporanea['generico'] = { nome: 'Generico / Altro', budget: 0 };
+
+            let sommaComp = 0;
+            Object.keys(listaCompartiTemporanea).forEach(k => sommaComp += listaCompartiTemporanea[k].budget);
+            if(sommaComp > budgetTotale) {
+                alert("La somma dei comparti (" + sommaComp.toFixed(2) + "€) supera il budget totale impostato (" + budgetTotale.toFixed(2) + "€).");
+                return;
             }
 
-            appData.entrate = budgetTotaleDigitato;
-            appData.cassetti = listaCompartiTemporanea;
+            const rimasuglioFondoOpzionale = budgetTotale - sommaComp;
+            if(rimasuglioFondoOpzionale > 0) {
+                listaCompartiTemporanea['libero_restante'] = { nome: 'Fondo Libero', budget: rimasuglioFondoOpzionale };
+            }
+
+            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/entrate'), budgetTotale);
+            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/cassetti'), listaCompartiTemporanea);
             
-            set(budgetRef, appData).then(() => {
-                document.getElementById('btn-annulla-setup').style.display = "none";
-                switchView('home', document.getElementById('nav-btn-home'));
+            switchViewWithoutBtn('home');
+        };
+
+        window.apriModificaBudget = function() {
+            document.getElementById('setup-budget-totale-input').value = appData.entrate;
+            listaCompartiTemporanea = JSON.parse(JSON.stringify(appData.cassetti));
+            if(listaCompartiTemporanea['libero_restante']) delete listaCompartiTemporanea['libero_restante'];
+            aggiornaAnteprimaListaSetup();
+            document.getElementById('btn-annulla-setup').style.display = 'block';
+            switchViewWithoutBtn('setup');
+        };
+
+        window.chiudiModificaBudget = function() {
+            switchViewWithoutBtn('home');
+        };
+
+        window.calcolaERenderizzaUI = function() {
+            let totaleSpeso = 0;
+            let spesoPerCassetto = {};
+
+            Object.keys(appData.cassetti).forEach(k => spesoPerCassetto[k] = 0);
+            Object.keys(appData.spese).forEach(k => {
+                const s = appData.spese[k];
+                totaleSpeso += s.importo;
+                if(spesoPerCassetto[s.cassetto] !== undefined) {
+                    spesoPerCassetto[s.cassetto] += s.importo;
+                } else {
+                    if(!appData.cassetti[s.cassetto]) {
+                        spesoPerCassetto['libero_restante'] = (spesoPerCassetto['libero_restante'] || 0) + s.importo;
+                    }
+                }
+            });
+
+            const totaleDisponibile = appData.entrate - totaleSpeso;
+            document.getElementById('dash-entrate').textContent = appData.entrate.toFixed(2) + " €";
+            document.getElementById('dash-speso').textContent = totaleSpeso.toFixed(2) + " €";
+            document.getElementById('dash-disponibile').textContent = totaleDisponibile.toFixed(2) + " €";
+
+            const lbl = document.getElementById('status-label');
+            if(totaleDisponibile < 0) {
+                lbl.className = "status-banner status-alert"; labelText("🔴 Budget in Negativo!");
+            } else if(totaleDisponibile < (appData.entrate * 0.15)) {
+                lbl.className = "status-banner status-warn"; labelText("🟡 Attenzione, fondi quasi esauriti");
+            } else {
+                lbl.className = "status-banner status-ok"; labelText("🟢 Tutto sotto controllo");
+            }
+
+            renderizzaSezioneCassetti(spesoPerCassetto);
+            renderizzaSezioneScadenze();
+            renderizzaSezioneSpese(spesoPerCassetto);
+            renderizzaSezioneSalvadanai();
+            aggiornaSelectMenuModali();
+            renderizzaGraficoQuota(spesoPerCassetto);
+        };
+
+        function labelText(t) { document.getElementById('status-label').textContent = t; }
+
+        function renderizzaSezioneCassetti(spesoPerCassetto) {
+            const container = document.getElementById('cassetti-container');
+            container.innerHTML = '';
+            Object.keys(appData.cassetti).forEach(id => {
+                const cas = appData.cassetti[id];
+                const speso = spesoPerCassetto[id] || 0;
+                const rimasto = cas.budget - speso;
+                let percent = cas.budget > 0 ? (speso / cas.budget) * 100 : 0;
+                if(percent > 100) percent = 100;
+
+                let color = "var(--success)";
+                if(percent > 85) color = "var(--danger)";
+                else if(percent > 60) color = "var(--warning)";
+
+                container.innerHTML += `
+                    <div class="cassetto-row">
+                        <div class="cassetto-header">
+                            <span class="cassetto-name"><i class="fa-solid fa-folder-open" style="color:var(--accent)"></i> ${cas.nome}</span>
+                            <span class="cassetto-dispo" style="color:${rimasto < 0 ? 'var(--danger)': 'var(--text-main)'}">
+                                ${rimasto.toFixed(2)} € <span style="font-size:10px; font-weight:normal; color:var(--text-muted);">rimasti di ${cas.budget}€</span>
+                                <button class="badge-btn" style="padding:2px 6px; font-size:10px;" onclick="event.stopPropagation(); avviaRicalibrazioneVeloceCassetto('${id}', ${cas.budget})">✏️</button>
+                            </span>
+                        </div>
+                        <div class="cassetto-progress"><div class="cassetto-progress-bar" style="width: ${percent}%; background: ${color};"></div></div>
+                    </div>
+                `;
             });
         }
 
-        window.modificaBudgetSingoloCompartoDirect = function(id, vecchioNome) {
-            const nuovoVal = parseFloat(prompt(`Inserisci il nuovo budget assegnato al comparto "${vecchioNome}":`));
-            if(!isNaN(nuovoVal) && nuovoVal >= 0) {
-                appData.cassetti[id].budget = nuovoVal;
-                set(budgetRef, appData);
+        window.avviaRicalibrazioneVeloceCassetto = function(id, budgetAttuale) {
+            if(id === 'libero_restante') {
+                alert("Il Fondo Libero si ricalcola da solo in base alle modifiche degli altri comparti o del budget totale.");
+                return;
             }
+            const nuovoB = parseFloat(prompt("Modifica budget per questo comparto (€):", budgetAttuale));
+            if(!isNaN(nuovoB) && nuovoB >= 0) {
+                let sommaAltri = 0;
+                Object.keys(appData.cassetti).forEach(k => {
+                    if(k !== id && k !== 'libero_restante') sommaAltri += appData.cassetti[k].budget;
+                });
+                if((sommaAltri + nuovoB) > appData.entrate) {
+                    alert("Impossibile. La somma supererebbe il budget mensile totale impostato.");
+                    return;
+                }
+                
+                let copiaCassetti = JSON.parse(JSON.stringify(appData.cassetti));
+                copiaCassetti[id].budget = nuovoB;
+                if(copiaCassetti['libero_restante']) delete copiaCassetti['libero_restante'];
+                
+                let nuovaSomma = 0;
+                Object.keys(copiaCassetti).forEach(k => nuovaSomma += copiaCassetti[k].budget);
+                const avanzo = appData.entrate - nuovaSomma;
+                if(avanzo > 0) copiaCassetti['libero_restante'] = { nome: 'Fondo Libero', budget: avanzo };
+
+                set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/cassetti'), copiaCassetti);
+            }
+        };
+
+        function renderizzaSezioneScadenze() {
+            const container = document.getElementById('scadenze-container');
+            container.innerHTML = '';
+            const chiavi = Object.keys(appData.scadenze);
+            if(chiavi.length === 0) {
+                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Nessuna uscita programmata impostata.</p>';
+                return;
+            }
+            chiavi.forEach(k => {
+                const sc = appData.scadenze[k];
+                const nomeComparto = appData.cassetti[sc.cassetto] ? appData.cassetti[sc.cassetto].nome : 'Generale';
+                container.innerHTML += `
+                    <div class="spesa-item" style="border-left: 4px solid ${sc.pagata ? 'var(--success)': 'var(--warning)'};" onclick="apriModalePagamentoScadenza('${k}')">
+                        <div class="spesa-info">
+                            <h4>${sc.nome} ${sc.pagata ? '✅ (Registrata)': '⏳'}</h4>
+                            <span>Assegnata a: ${nomeComparto} | Previsti: ${sc.importo.toFixed(2)} €</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-weight:700; font-size:13px;">${sc.importo.toFixed(2)} €</span>
+                            <button class="btn-delete" onclick="event.stopPropagation(); eliminaScadenza('${k}')"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderizzaSezioneSpese(spesoPerCassetto) {
+            const container = document.getElementById('spese-container');
+            container.innerHTML = '';
+            
+            const filtroCat = document.getElementById('filtro-categoria').value;
+            let speseArray = [];
+            Object.keys(appData.spese).forEach(k => {
+                speseArray.push({ id: k, ...appData.spese[k] });
+            });
+            
+            speseArray.sort((a,b) => b.timestamp - a.timestamp);
+
+            if(filtroCat !== 'tutte') {
+                speseArray = speseArray.filter(s => s.cassetto === filtroCat);
+            }
+
+            if(speseArray.length === 0) {
+                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Nessuna spesa trovata.</p>';
+                return;
+            }
+
+            speseArray.forEach(s => {
+                const nomeCas = appData.cassetti[s.cassetto] ? appData.cassetti[s.cassetto].nome : 'Generale';
+                const dataStr = new Date(s.timestamp).toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+                container.innerHTML += `
+                    <div class="spesa-item" onclick="apriModificaSpesaEsistente('${s.id}')">
+                        <div class="spesa-info">
+                            <h4>${s.descrizione}</h4>
+                            <span>${dataStr} • Comparto: <b>${nomeCas}</b></span>
+                        </div>
+                        <span style="font-weight:700; color:var(--danger);">${s.importo.toFixed(2)} €</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderizzaSezioneSalvadanai() {
+            const container = document.getElementById('view-salvadanai');
+            const targetDiv = document.getElementById('salvadanai-container');
+            targetDiv.innerHTML = '';
+
+            const chiavi = Object.keys(appData.salvadanai);
+            if(chiavi.length === 0) {
+                targetDiv.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">Nessun obiettivo di risparmio attivo.</p>';
+                return;
+            }
+
+            const oggi = new Date();
+            const annoCorrente = oggi.getFullYear();
+            const meseCorrente = oggi.getMonth() + 1;
+
+            chiavi.forEach(k => {
+                const sal = appData.salvadanai[k];
+                const accumulato = sal.accumulato || 0;
+                const manca = sal.target - accumulato;
+                
+                let infoPianoRata = "";
+                if(manca > 0 && sal.dataTarget) {
+                    const parti = sal.dataTarget.split('-');
+                    const tAnno = parseInt(parti[0]);
+                    const tMese = parseInt(parti[1]);
+                    
+                    const mesiMancanti = (tAnno - annoCorrente) * 12 + (tMese - meseCorrente);
+                    if(mesiMancanti > 0) {
+                        const quotaMese = manca / mesiMancanti;
+                        infoPianoRata = `<div class="info-piano">Mancano ${mesiMancanti} mesi: metti da parte <b>${quotaMese.toFixed(2)} € / mese</b></div>`;
+                    } else {
+                        infoPianoRata = `<div class="info-piano" style="background:#fee2e2; color:var(--danger)">Scadenza questo mese! Rimanente: <b>${manca.toFixed(2)} €</b></div>`;
+                    }
+                }
+
+                let per = sal.target > 0 ? (accumulato / sal.target) * 100 : 0;
+                if(per > 100) per = 100;
+
+                targetDiv.innerHTML += `
+                    <div class="cassetto-row" style="border-left:5px solid var(--accent);">
+                        <div class="cassetto-header">
+                            <span class="cassetto-name" style="font-size:15px;"><i class="fa-solid fa-piggy-bank" style="color:#ec4899"></i> ${sal.nome}</span>
+                            <button class="btn-delete" onclick="eliminaSalvadanaio('${k}')"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+                            <span>Accumulato: <b>${accumulato.toFixed(2)} €</b> di ${sal.target.toFixed(2)} €</span>
+                            <span style="font-weight:700; color:var(--accent);">${per.toFixed(0)}%</span>
+                        </div>
+                        <div class="cassetto-progress" style="margin-bottom:8px;"><div class="cassetto-progress-bar" style="width: ${per}%; background:var(--accent);"></div></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                            <button class="badge-btn" style="background:#dcfce7; color:#15803d;" onclick="versaNelSalvadanaio('${k}')">+ Versa fondi</button>
+                            <button class="badge-btn" style="background:#fee2e2; color:var(--danger);" onclick="prelevaDalSalvadanaio('${k}')">➖ Preleva</button>
+                        </div>
+                        ${infoPianoRata}
+                    </div>
+                `;
+            });
+        }
+
+        function aggiornaSelectMenuModali() {
+            const menuFiltro = document.getElementById('filtro-categoria');
+            const vecchioFiltroVal = menuFiltro.value;
+            
+            menuFiltro.innerHTML = '<option value="tutte">Tutti i Comparti</option>';
+            
+            const selectSpesa = document.getElementById('spesa-cassetto');
+            selectSpesa.innerHTML = '';
+            
+            const selectScadenza = document.getElementById('scad-cassetto');
+            selectScadenza.innerHTML = '<option value="generale">Generale (Nessuno)</option>';
+
+            Object.keys(appData.cassetti).forEach(id => {
+                const c = appData.cassetti[id];
+                menuFiltro.innerHTML += `<option value="${id}">${c.nome}</option>`;
+                selectSpesa.innerHTML += `<option value="${id}">${c.nome}</option>`;
+                selectScadenza.innerHTML += `<option value="${id}">${c.nome}</option>`;
+            });
+
+            menuFiltro.value = vecchioFiltroVal;
+            if(!menuFiltro.value) menuFiltro.value = 'tutte';
         }
 
         window.apriModalNuovaSpesa = function() {
-            document.getElementById('spesa-modal-titolo').innerText = "💸 Inserisci Spesa";
+            document.getElementById('spesa-modal-titolo').textContent = "💸 Inserisci Spesa";
             document.getElementById('spesa-edit-id').value = '';
             document.getElementById('spesa-importo').value = '';
             document.getElementById('spesa-desc').value = '';
-            document.getElementById('btn-elimina-spesa-diretto').style.display = "none";
+            document.getElementById('btn-elimina-spesa-diretto').style.display = 'none';
             openModal('modal-spesa');
-        }
+        };
 
         window.apriModificaSpesaEsistente = function(id) {
-            const spesa = appData.spese[id];
-            if(!spesa) return;
-            document.getElementById('spesa-modal-titolo').innerText = "✏️ Modifica Spesa";
+            const s = appData.spese[id];
+            if(!s) return;
+            document.getElementById('spesa-modal-titolo').textContent = "✏️ Modifica Spesa";
             document.getElementById('spesa-edit-id').value = id;
-            document.getElementById('spesa-importo').value = spesa.importo;
-            document.getElementById('spesa-desc').value = spesa.desc;
-            document.getElementById('spesa-cassetto').value = spesa.cassetto || 'generico';
-            document.getElementById('btn-elimina-spesa-diretto').style.display = "block";
+            document.getElementById('spesa-importo').value = s.importo;
+            document.getElementById('spesa-desc').value = s.descrizione;
+            document.getElementById('spesa-cassetto').value = s.cassetto;
+            document.getElementById('btn-elimina-spesa-diretto').style.display = 'block';
             openModal('modal-spesa');
-        }
+        };
 
         window.salvaSpesa = function() {
-            const idEdit = document.getElementById('spesa-edit-id').value;
-            const importo = parseFloat(document.getElementById('spesa-importo').value);
-            const desc = document.getElementById('spesa-desc').value.trim();
+            const id = document.getElementById('spesa-edit-id').value;
+            const importo = parseFloat(document.getElementById('spesa-importo').value) || 0;
+            const descrizione = document.getElementById('spesa-desc').value.trim() || 'Spesa';
             const cassetto = document.getElementById('spesa-cassetto').value;
-            
-            if (importo > 0 && desc && cassetto) {
-                const datiSpesa = {
-                    importo, desc, cassetto,
-                    data: idEdit ? appData.spese[idEdit].data : new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})
-                };
 
-                if(idEdit) {
-                    set(ref(db, `budget_familiare/spese/${idEdit}`), datiSpesa).then(() => closeModal('modal-spesa'));
-                } else {
-                    push(ref(db, 'budget_familiare/spese'), datiSpesa).then(() => closeModal('modal-spesa'));
-                }
+            if(importo <= 0) { alert("Inserisci un importo valido."); return; }
+
+            if(id) {
+                set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese/' + id), {
+                    importo: importo, descrizione: descrizione, cassetto: cassetto, timestamp: appData.spese[id].timestamp
+                });
+            } else {
+                const nuovaSpesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
+                set(nuovaSpesaRef, {
+                    importo: importo, descrizione: descrizione, cassetto: cassetto, timestamp: Date.now()
+                });
             }
-        }
+            closeModal('modal-spesa');
+        };
 
         window.clickEliminaSpesaInModifica = function() {
-            const idEdit = document.getElementById('spesa-edit-id').value;
-            if(idEdit && confirm("Vuoi eliminare definitivamente questa spesa?")) {
-                remove(ref(db, `budget_familiare/spese/${idEdit}`)).then(() => closeModal('modal-spesa'));
+            const id = document.getElementById('spesa-edit-id').value;
+            if(id && confirm("Eliminare definitivamente questa spesa?")) {
+                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese/' + id));
+                closeModal('modal-spesa');
             }
-        }
+        };
 
         window.aggiungiScadenza = function() {
             const nome = document.getElementById('scad-nome').value.trim();
             const importo = parseFloat(document.getElementById('scad-importo').value) || 0;
             const cassetto = document.getElementById('scad-cassetto').value;
-            if(nome && importo > 0 && cassetto) {
-                push(ref(db, 'budget_familiare/scadenze'), { nome, importo, cassetto, pagata: false }).then(() => {
-                    closeModal('modal-scadenza');
-                    document.getElementById('scad-nome').value = '';
-                    document.getElementById('scad-importo').value = '';
-                });
-            }
-        }
 
-        window.avviaPagamentoScadenza = function(id, nome, importo, cassetto) {
+            if(!nome || importo <= 0) { alert("Compila correttamente i campi."); return; }
+
+            const nuovaScadRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze'));
+            set(nuovaScadRef, { nome: nome, importo: importo, cassetto: cassetto, pagata: false });
+            
+            document.getElementById('scad-nome').value = '';
+            document.getElementById('scad-importo').value = '';
+            closeModal('modal-scadenza');
+        };
+
+        window.apriModalePagamentoScadenza = function(id) {
+            const sc = appData.scadenze[id];
+            if(sc.pagata) {
+                if(confirm("Questa scadenza risulta pagata. Vuoi contrassegnarla nuovamente come DA PAGARE?")) {
+                    set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id + '/pagata'), false);
+                }
+                return;
+            }
             document.getElementById('paga-scad-id').value = id;
-            document.getElementById('paga-scad-nome').value = nome;
-            document.getElementById('paga-scad-cassetto').value = cassetto;
-            document.getElementById('paga-scad-importo-reale').value = importo;
+            document.getElementById('paga-scad-nome').value = sc.nome;
+            document.getElementById('paga-scad-cassetto').value = sc.cassetto;
+            document.getElementById('paga-scad-importo-reale').value = sc.importo;
             openModal('modal-paga-scadenza');
-        }
+        };
 
         window.confermaPagamentoScadenzaRealizzato = function() {
             const id = document.getElementById('paga-scad-id').value;
-            const nome = document.getElementById('paga-scad-nome').value;
             const cassetto = document.getElementById('paga-scad-cassetto').value;
+            const nome = document.getElementById('paga-scad-nome').value;
             const importoReale = parseFloat(document.getElementById('paga-scad-importo-reale').value) || 0;
 
-            if(importoReale > 0) {
-                push(ref(db, 'budget_familiare/spese'), {
-                    importo: importoReale,
-                    desc: `Scadenza: ${nome}`,
-                    cassetto: cassetto,
-                    data: new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit'})
-                }).then(() => {
-                    set(ref(db, `budget_familiare/scadenze/${id}/pagata`), true);
-                    closeModal('modal-paga-scadenza');
-                });
-            }
-        }
+            if(importoReale <= 0) { alert("Cifra non valida."); return; }
+
+            const nuovaSpesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
+            set(nuovaSpesaRef, {
+                importo: importoReale, descrizione: "Scadenza: " + nome, cassetto: cassetto, timestamp: Date.now()
+            });
+
+            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id + '/pagata'), true);
+            closeModal('modal-paga-scadenza');
+        };
 
         window.eliminaScadenza = function(id) {
-            if(confirm("Rimuovere questa voce dalle scadenze ricorrenti?")) remove(ref(db, `budget_familiare/scadenze/${id}`));
-        }
+            if(confirm("Eliminare questa scadenza pianificata?")) {
+                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id));
+            }
+        };
 
         window.creaSalvadanaio = function() {
             const nome = document.getElementById('salva-nome').value.trim();
             const target = parseFloat(document.getElementById('salva-target').value) || 0;
-            const dataTarget = document.getElementById('salva-data-target').value; 
-            
-            if(nome && target > 0 && dataTarget) {
-                push(ref(db, 'budget_familiare/salvadanai'), { nome, target, dataTarget, attuale: 0 }).then(() => {
-                    closeModal('modal-salvadanaio');
-                    document.getElementById('salva-nome').value = '';
-                    document.getElementById('salva-target').value = '';
-                    document.getElementById('salva-data-target').value = '';
-                });
+            const dataTarget = document.getElementById('salva-data-target').value;
+
+            if(!nome || target <= 0) { alert("Inserisci dati corretti."); return; }
+
+            const nuovoSalvRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai'));
+            set(nuovoSalvRef, { nome: nome, target: target, dataTarget: dataTarget, accumulato: 0 });
+
+            document.getElementById('salva-nome').value = '';
+            document.getElementById('salva-target').value = '';
+            document.getElementById('salva-data-target').value = '';
+            closeModal('modal-salvadanaio');
+        };
+
+        window.versaNelSalvadanaio = function(id) {
+            const cifra = parseFloat(prompt("Quanto vuoi versare in questo piano? \n(Verrà inserita una spesa nel mese attuale per scalare la cifra)"));
+            if(isNaN(cifra) || cifra <= 0) return;
+
+            const nuovoAccumulo = (appData.salvadanai[id].accumulato || 0) + cifra;
+            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai/' + id + '/accumulato'), nuovoAccumulo);
+
+            const spesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
+            set(spesaRef, {
+                importo: cifra, descrizione: "Accantonamento: " + appData.salvadanai[id].nome, cassetto: "libero_restante", timestamp: Date.now()
+            });
+        };
+
+        window.prelevaDalSalvadanaio = function(id) {
+            const cifra = parseFloat(prompt("Quanto vuoi prelevare da questo fondo? \n(Verranno riaccreditati sul fondo libero)"));
+            if(isNaN(cifra) || cifra <= 0) return;
+            if(cifra > appData.salvadanai[id].accumulato) { alert("Fondi insufficienti nel piano."); return; }
+
+            const nuovoAccumulo = appData.salvadanai[id].accumulato - cifra;
+            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai/' + id + '/accumulato'), nuovoAccumulo);
+
+            const spesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
+            set(spesaRef, {
+                importo: -cifra, descrizione: "Prelievo da: " + appData.salvadanai[id].nome, cassetto: "libero_restante", timestamp: Date.now()
+            });
+        };
+
+        window.eliminaSalvadanaio = function(id) {
+            if(confirm("Eliminare questo piano? I fondi accumulati rimarranno tracciati nello storico passato ma il piano sparirà.")) {
+                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai/' + id));
             }
+        };
+
+        window.chiudiEMeseArchivia = function() {
+            const nomeMese = prompt("Inserisci il nome del mese da archiviare (es: Gennaio 2024, Febbraio 2024...):");
+            if(!nomeMese) return;
+
+            if(confirm("Sei sicuro di voler chiudere il mese? Tutte le spese attuali verranno salvate nell'archivio storico e svuotate dalla home per iniziare il mese nuovo.")){
+                const datiDaArchiviare = {
+                    nomeMese: nomeMese,
+                    entrate: appData.entrate,
+                    cassetti: appData.cassetti,
+                    spese: appData.spese,
+                    timestamp: Date.now()
+                };
+                
+                push(storicoRef, datiDaArchiviare);
+
+                // Svuota le spese correnti
+                set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'), {});
+                
+                // Ripristina lo stato delle scadenze mensili su "non pagate"
+                Object.keys(appData.scadenze).forEach(k => {
+                    set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + k + '/pagata'), false);
+                });
+
+                alert("Mese archiviato con successo!");
+            }
+        };
+
+        function renderizzaStorico(datiStorici) {
+            const container = document.getElementById('storico-container');
+            container.innerHTML = '';
+            if(!datiStorici) {
+                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">L\'archivio storico è vuoto.</p>';
+                return;
+            }
+            Object.keys(datiStorici).forEach(k => {
+                const mese = datiStorici[k];
+                let tSpeso = 0;
+                if(mese.spese) {
+                    Object.keys(mese.spese).forEach(sk => tSpeso += mese.spese[sk].importo);
+                }
+                const risp = mese.entrate - tSpeso;
+
+                container.innerHTML += `
+                    <div class="cassetto-row" style="border-left:4px solid #64748b;">
+                        <div class="cassetto-header">
+                            <span class="cassetto-name" style="font-size:14px; font-weight:700;"><i class="fa-solid fa-calendar-check"></i> ${mese.nomeMese}</span>
+                            <button class="btn-delete" onclick="eliminaSingoloMeseStorico('${k}')"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:4px; display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+                            <span>Budget Iniziale: <b>${mese.entrate.toFixed(2)} €</b></span>
+                            <span>Totale Speso: <b style="color:var(--danger)">${tSpeso.toFixed(2)} €</b></span>
+                            <span style="grid-column:span 2; font-weight:600; color:${risp >= 0 ? 'var(--success)': 'var(--danger)'}">Risparmio/Avanzo: ${risp.toFixed(2)} €</span>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        window.gestisciFondiSalvadanaio = function(id) {
-            const val = parseFloat(prompt("Di quanto vuoi variare i risparmi per questo obiettivo? (Usa segno - per prelevare)"));
-            if(!isNaN(val) && val !== 0) {
-                let curr = appData.salvadanai[id].attuale || 0;
-                set(ref(db, `budget_familiare/salvadanai/${id}/attuale`), Math.max(0, curr + val));
+        window.eliminaSingoloMeseStorico = function(id) {
+            if(confirm("Eliminare definitivamente questo mese dall'archivio?")) {
+                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_storico/' + id));
             }
-        }
-        
-        window.eliminaSalvadanaio = function(id, e) {
-            e.stopPropagation();
-            if(confirm("Vuoi cancellare questo obiettivo di risparmio?")) remove(ref(db, `budget_familiare/salvadanai/${id}`));
-        }
+        };
+
+        window.svuotaInteroStorico = function() {
+            if(confirm("ATTENZIONE! Vuoi svuotare permanentemente l'intero archivio storico dei mesi passati? L'operazione non è reversibile.")) {
+                remove(storicoRef);
+            }
+        };
 
         window.esportaInCSV = function() {
             let csv = 'Data,Descrizione,Comparto,Importo (€)\r\n';
-            Object.values(appData.spese).forEach(s => {
-                let nomeComp = appData.cassetti[s.cassetto]?.nome || s.cassetto;
-                csv += `"${s.data}","${s.desc.replace(/"/g, '""')}","${nomeComp}",${s.importo}\r\n`;
+            let cont = 0;
+            Object.keys(appData.spese).forEach(k => {
+                const s = appData.spese[k];
+                const nomeC = appData.cassetti[s.cassetto] ? appData.cassetti[s.cassetto].nome : 'Generale';
+                const d = new Date(s.timestamp).toLocaleDateString('it-IT');
+                csv += `"${d}","${s.descrizione.replace(/"/g, '""')}","${nomeC}",${s.importo}\r\n`;
+                cont++;
             });
-            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
+            if(cont === 0) { alert("Nessuna spesa da esportare."); return; }
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `Budget_Spese_${new Date().toLocaleDateString('it-IT')}.csv`);
+            link.setAttribute("download", "report_spese_budget.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-
-        window.chiudiEMeseArchivia = function() {
-            if(confirm("Confermi la chiusura del mese attuale? I dati di riepilogo per comparto verranno salvati nello Storico. Le spese correnti si azzereranno e le scadenze torneranno da pagare.")) {
-                const meseNome = new Date().toLocaleString('it-IT', { month: 'long', year: 'numeric' });
-                
-                let compartiDettaglioArchivio = {};
-                let diviso = {};
-                Object.keys(appData.cassetti).forEach(k => diviso[k] = 0);
-                Object.values(appData.spese).forEach(s => { if(diviso[s.cassetto] !== undefined) diviso[s.cassetto] += s.importo; });
-                
-                Object.entries(appData.cassetti).forEach(([k, c]) => {
-                    // Salviamo solo i comparti che hanno effettivamente un budget o delle spese
-                    if(c.budget > 0 || diviso[k] > 0) {
-                        compartiDettaglioArchivio[c.nome] = diviso[k] || 0;
-                    }
-                });
-
-                let spesoTot = Object.values(diviso).reduce((a, b) => a + b, 0);
-
-                const archivioDati = {
-                    mese: meseNome,
-                    entrate: appData.entrate,
-                    spesoTotale: spesoTot,
-                    rimastoTotale: appData.entrate - spesoTot,
-                    dettaglio: compartiDettaglioArchivio
-                };
-
-                push(storicoRef, archivioDati).then(() => {
-                    appData.spese = {};
-                    if(appData.scadenze) {
-                        Object.keys(appData.scadenze).forEach(k => { appData.scadenze[k].pagata = false; });
-                    }
-                    set(budgetRef, appData);
-                });
-            }
-        }
-
-        window.svuotaInteroStorico = function() {
-            if(confirm("ATTENZIONE: Stai per eliminare definitivamente tutti i mesi archiviati nello storico. Vuoi procedere?")) {
-                set(storicoRef, null);
-            }
-        }
+        };
 
         window.resetCompleto = function() {
-            if (confirm("Sei sicuro di voler effettuare un Reset di Fabbrica? L'applicazione verrà completamente azzerata.")) {
-                set(budgetRef, null);
-                set(storicoRef, null);
+            if(confirm("Sei veramente sicuro? Questo comando cancellerà TUTTI i dati correnti (Spese, Comparti, Budget, Piani e Scadenze) del tuo utente.")) {
+                remove(budgetRef);
             }
-        }
+        };
 
-        onValue(budgetRef, (snap) => {
-            const data = snap.val();
-            if(!data || !data.cassetti) {
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                document.getElementById('view-setup').classList.add('active');
-                document.getElementById('app-nav').style.display = 'none';
-                return;
-            }
-            appData = data;
-            if(!appData.spese) appData.spese = {};
-            if(!appData.salvadanai) appData.salvadanai = {};
-            if(!appData.scadenze) appData.scadenze = {};
-
-            if(!document.getElementById('view-setup').classList.contains('active')) {
-                document.getElementById('app-nav').style.display = 'flex';
-                if(!document.getElementById('view-salvadanai').classList.contains('active') && !document.getElementById('view-storico').classList.contains('active')) {
-                    document.getElementById('view-home').classList.add('active');
-                }
-            }
-            aggiornaFiltriESelectSincro();
-            calcolaERenderizzaUI();
-        });
-
-        onValue(storicoRef, (snap) => {
-            const storicoData = snap.val() || {};
-            renderStorico(storicoData);
-        });
-
-        function aggiornaFiltriESelectSincro() {
-            const selectSpesa = document.getElementById('spesa-cassetto');
-            const selectScad = document.getElementById('scad-cassetto');
-            const filtroSelect = document.getElementById('filtro-categoria');
-            
-            let options = '';
-            let filtriOptions = '<option value="tutte">Tutte le spese</option>';
-            
-            Object.entries(appData.cassetti).forEach(([id, c]) => {
-                options += `<option value="${id}">${c.nome}</option>`;
-                filtriOptions += `<option value="${id}">${c.nome}</option>`;
-            });
-            
-            selectSpesa.innerHTML = options;
-            selectScad.innerHTML = options;
-            
-            const prevVal = filtroSelect.value;
-            filtroSelect.innerHTML = filtriOptions;
-            if([...filtroSelect.options].some(o => o.value === prevVal)) filtroSelect.value = prevVal;
-        }
-
-        function calcolaERenderizzaUI() {
-            let spesoTot = 0;
-            let diviso = {};
-            Object.keys(appData.cassetti).forEach(k => diviso[k] = 0);
-            
-            Object.values(appData.spese).forEach(s => {
-                let cat = s.cassetto || 'generico';
-                if(diviso[cat] === undefined) diviso[cat] = 0;
-                diviso[cat] += s.importo;
-                spesoTot += s.importo;
-            });
-
-            // La disponibilità rimasta si basa sempre sul BUDGET TOTALE MENSILE
-            const rimasto = appData.entrate - spesoTot;
-            document.getElementById('dash-disponibile').innerText = rimasto.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
-            document.getElementById('dash-entrate').innerText = appData.entrate.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
-            document.getElementById('dash-speso').innerText = spesoTot.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
-
-            // Calcolo dello stato del budget
-            const statusLabel = document.getElementById('status-label');
-            const perc = (spesoTot / appData.entrate) * 100;
-            if(perc >= 100) { statusLabel.className = "status-banner status-alert"; statusLabel.innerText = "🔴 Sei in pieno rosso!"; }
-            else if(perc >= 80) { statusLabel.className = "status-banner status-warn"; statusLabel.innerText = "🟡 Budget in esaurimento"; }
-            else { statusLabel.className = "status-banner status-ok"; statusLabel.innerText = "🟢 Tutto sotto controllo"; }
-
-            // Rendiamo visibili nel grafico solo le categorie che hanno registrato uscite reali
-            let divisoGrafico = {};
-            Object.entries(diviso).forEach(([k, v]) => { if(v > 0) divisoGrafico[k] = v; });
-            renderChart(divisoGrafico);
-
-            // Renderizza i Comparti nella Dashboard
-            const contCassetti = document.getElementById('cassetti-container');
-            contCassetti.innerHTML = '';
-            
-            // Calcoliamo la somma allocata nei comparti definiti per mostrare se c'è un "avanzo" libero dal budget iniziale
-            let sommaAllocataComparti = 0;
-
-            Object.entries(appData.cassetti).forEach(([id, c]) => {
-                if(id === 'generico' && c.budget === 0) {
-                    // Mostriamo il comparto generico solo se ci sono state spese inserite lì dentro
-                    if((diviso[id] || 0) === 0) return;
-                }
-                
-                sommaAllocataComparti += c.budget;
-                let spesoComp = diviso[id] || 0;
-                
-                let rigaBudgetInfo = '';
-                let pct = 0;
-                
-                if(c.budget > 0) {
-                    let disponibilita = c.budget - spesoComp;
-                    pct = Math.max(0, Math.min(100, (disponibilita / c.budget) * 100));
-                    rigaBudgetInfo = `${disponibilita.toFixed(2)} € / ${c.budget} €`;
-                } else {
-                    // Comparto senza tetto fisso (es. Generico)
-                    pct = 0;
-                    rigaBudgetInfo = `Speso: ${spesoComp.toFixed(2)} €`;
-                }
-                
-                contCassetti.innerHTML += `
-                    <div class="cassetto-row">
-                        <div class="cassetto-header">
-                            <div class="cassetto-name"><span>📂 <b>${c.nome}</b></span></div>
-                            <div class="cassetto-dispo">
-                                <span style="font-size:12px;">${rigaBudgetInfo}</span>
-                                ${id !== 'generico' ? `<button class="badge-btn" style="padding:2px 6px;" onclick="modificaBudgetSingoloCompartoDirect('${id}', '${c.nome}')">✏️</button>` : ''}
-                            </div>
-                        </div>
-                        ${c.budget > 0 ? `<div class="cassetto-progress"><div class="cassetto-progress-bar" style="width:${pct}%; background:var(--accent)"></div></div>` : ''}
-                    </div>`;
-            });
-
-            // Se l'utente ha configurato un budget superiore alla somma dei singoli comparti, mostriamo una riga informativa
-            if(appData.entrate > sommaAllocataComparti) {
-                let quotaNonAssegnata = appData.entrate - sommaAllocataComparti;
-                contCassetti.innerHTML += `
-                    <div style="background:#f8fafc; text-align:center; padding:8px; border-radius:12px; font-size:11px; color:var(--text-muted); border:1px dashed var(--card-border); margin-top:5px;">
-                        💡 Hai <b>${quotaNonAssegnata.toFixed(2)} €</b> di Budget libero (non assegnato a comparti specifici).
-                    </div>`;
-            }
-
-            // Renderizza Scadenze
-            const contScad = document.getElementById('scadenze-container');
-            contScad.innerHTML = '';
-            const arrayScad = Object.entries(appData.scadenze);
-            if(arrayScad.length === 0) {
-                contScad.innerHTML = `<p style="font-size:11px; color:var(--text-muted); text-align:center;">Nessuna scadenza fissa inserita.</p>`;
-            } else {
-                arrayScad.forEach(([id, s]) => {
-                    let nomeCategoria = appData.cassetti[s.cassetto]?.nome || 'Generico';
-                    contScad.innerHTML += `
-                        <div class="spesa-item" style="border-left: 4px solid ${s.pagata ? '#cbd5e1' : 'var(--warning)'}; opacity: ${s.pagata ? 0.6 : 1}">
-                            <div class="spesa-info">
-                                <h4>${s.nome}</h4>
-                                <span>Stimato: ${s.importo} € • Assegnato a: ${nomeCategoria}</span>
-                            </div>
-                            <div style="display:flex; gap:8px; align-items:center;">
-                                ${!s.pagata ? `<button class="badge-btn" style="background:#fef3c7; color:var(--warning);" onclick="avviaPagamentoScadenza('${id}','${s.nome}',${s.importo},'${s.cassetto}')">Paga</button>` : `<span style="font-size:11px; color:var(--success); font-weight:700;">Pagata ✓</span>`}
-                                <button class="btn-delete" onclick="eliminaScadenza('${id}')"><i class="fa-solid fa-trash-can" style="font-size:11px; color:var(--text-muted)"></i></button>
-                            </div>
-                        </div>`;
-                });
-            }
-
-            // Renderizza Lista Spese con Filtro
-            const filtro = document.getElementById('filtro-categoria').value;
-            const contSpese = document.getElementById('spese-container');
-            contSpese.innerHTML = '';
-            
-            let arraySpeseFiltrate = Object.entries(appData.spese).reverse();
-            if(cassettoFiltratoDaGrafico) {
-                arraySpeseFiltrate = arraySpeseFiltrate.filter(([_, s]) => (s.cassetto || 'generico') === cassettoFiltratoDaGrafico);
-                document.getElementById('filtro-categoria').value = cassettoFiltratoDaGrafico;
-                cassettoFiltratoDaGrafico = null; 
-            } else if (filtro !== 'tutte') {
-                arraySpeseFiltrate = arraySpeseFiltrate.filter(([_, s]) => (s.cassetto || 'generico') === filtro);
-            }
-
-            if(arraySpeseFiltrate.length === 0) {
-                contSpese.innerHTML = `<p style="font-size:11px; color:var(--text-muted); text-align:center; padding:10px;">Nessuna operazione registrata.</p>`;
-            } else {
-                arraySpeseFiltrate.forEach(([id, s]) => {
-                    let cNome = appData.cassetti[s.cassetto || 'generico']?.nome || 'Generico';
-                    contSpese.innerHTML += `
-                        <div class="spesa-item" onclick="apriModificaSpesaEsistente('${id}')">
-                            <div class="spesa-info"><h4>${s.desc}</h4><span>${s.data} • [${cNome}]</span></div>
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <span style="color:var(--danger); font-weight:700; font-size:13px;">-${s.importo.toFixed(2)} €</span>
-                                <i class="fa-solid fa-chevron-right" style="font-size:10px; color:var(--card-border)"></i>
-                            </div>
-                        </div>`;
-                });
-            }
-
-            // Renderizza Piani di Risparmio Con Conteggio Mesi
-            const contSalva = document.getElementById('salvadanai-container');
-            contSalva.innerHTML = '';
-            Object.entries(appData.salvadanai).forEach(([id, s]) => {
-                let percentualeSalvadanaio = Math.max(0, Math.min(100, ((s.attuale || 0) / s.target) * 100));
-                let infoTempoHtml = '';
-                if(s.dataTarget) {
-                    const oggi = new Date();
-                    const targetData = new Date(s.dataTarget + "-02"); 
-                    let mesiRimasti = (targetData.getFullYear() - oggi.getFullYear()) * 12 + (targetData.getMonth() - oggi.getMonth());
-                    if (mesiRimasti <= 0) mesiRimasti = 1;
-                    let quotaMancante = Math.max(0, s.target - (s.attuale || 0));
-                    let quotaMensileConsigliata = quotaMancante / mesiRimasti;
-                    infoTempoHtml = `<div class="info-piano">📅 Mesi alla scadenza: ${mesiRimasti} | Quota mensile richiesta: ${quotaMensileConsigliata.toFixed(2)} €</div>`;
-                }
-
-                contSalva.innerHTML += `
-                    <div class="mini-card" style="margin-bottom:10px; cursor:pointer;" onclick="gestisciFondiSalvadanaio('${id}')">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; align-items:center;">
-                            <span style="font-weight:700;">💰 ${s.nome}</span>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span style="font-weight:700; color:var(--success); font-size:13px;">${(s.attuale || 0).toLocaleString('it-IT')} € / ${s.target.toLocaleString('it-IT')} €</span>
-                                <button class="btn-delete" style="width:auto; height:auto;" onclick="eliminaSalvadanaio('${id}', event)"><i class="fa-solid fa-trash-can" style="font-size:11px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="cassetto-progress"><div class="cassetto-progress-bar" style="width:${percentualeSalvadanaio}%; background:var(--success)"></div></div>
-                        ${infoTempoHtml}
-                    </div>`;
-            });
-        }
-
-        function renderChart(divisoGrafico) {
+        function renderizzaGraficoQuota(spesoPerCassetto) {
             const ctx = document.getElementById('budgetChart').getContext('2d');
-            const etichette = Object.keys(divisoGrafico).map(k => appData.cassetti[k]?.nome || 'Generico');
-            const cifre = Object.values(divisoGrafico);
+            
+            let etichette = [];
+            let cifreData = [];
+            let coloriBackground = [ '#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#8b5cf6', '#64748b' ];
 
-            if(cifre.length === 0) {
-                if(myChart) { myChart.destroy(); myChart = null; }
-                return;
-            }
+            Object.keys(appData.cassetti).forEach(id => {
+                etichette.push(appData.cassetti[id].nome);
+                cifreData.push(spesoPerCassetto[id] || 0);
+            });
 
-            if (myChart) {
-                myChart.data.labels = etichette;
-                myChart.data.datasets[0].data = cifre;
-                myChart.update();
-            } else {
-                myChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: etichette,
-                        datasets: [{
-                            data: cifre,
-                            backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'],
-                            borderWidth: 0
-                        }]
+            if(myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: etichette,
+                    datasets: [{
+                        data: cifreData,
+                        backgroundColor: coloriBackground.slice(0, etichette.length),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
                     },
-                    options: { 
-                        responsive: true, 
-                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
-                        onClick: (evt, item) => {
-                            if(item && item.length > 0) {
-                                const index = item[0].index;
-                                const keys = Object.keys(divisoGrafico);
-                                cassettoFiltratoDaGrafico = keys[index];
-                                calcolaERenderizzaUI();
-                            }
+                    onClick: (evt, item) => {
+                        if(item && item.length > 0) {
+                            const index = item[0].index;
+                            const nomeCompSelezionato = etichette[index];
+                            let trovatoId = 'tutte';
+                            Object.keys(appData.cassetti).forEach(id => {
+                                if(appData.cassetti[id].nome === nomeCompSelezionato) trovatoId = id;
+                            });
+                            document.getElementById('filtro-categoria').value = trovatoId;
+                            calcolaERenderizzaUI();
                         }
                     }
-                });
-            }
-        }
-
-        function renderStorico(storicoData) {
-            const cont = document.getElementById('storico-container');
-            cont.innerHTML = '';
-            const elementi = Object.values(storicoData).reverse();
-            
-            if(elementi.length === 0) {
-                cont.innerHTML = `<p style="font-size:11px; color:var(--text-muted); text-align:center;">Nessun archivio salvato.</p>`;
-                return;
-            }
-            
-            elementi.forEach(m => {
-                let dettagliDettagliatiHtml = '';
-                if(m.dettaglio) {
-                    Object.entries(m.dettaglio).forEach(([nomeComp, spesoC]) => {
-                        dettagliDettagliatiHtml += `<div style="font-size:11px; color:var(--text-muted);">${nomeComp}: <b>${spesoC.toFixed(2)} €</b></div>`;
-                    });
                 }
-                
-                cont.innerHTML += `
-                    <div class="mini-card" style="margin-bottom:8px;">
-                        <h4 style="text-transform: capitalize; color: var(--accent); margin-bottom:6px;">📅 ${m.mese}</h4>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; font-size:12px; gap:4px; margin-bottom:6px; border-bottom:1px solid var(--card-border); padding-bottom:4px;">
-                            <div>Budget: <b>${m.entrate.toFixed(2)} €</b></div>
-                            <div>Tot. Speso: <span style="color:var(--danger)"><b>${m.spesoTotale.toLocaleString('it-IT', {style:'currency', currency:'EUR'})}</b></span></div>
-                        </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2px;">
-                            ${dettagliDettagliatiHtml}
-                        </div>
-                    </div>`;
             });
         }
-    </script>
 
-    <script>
-        function switchView(viewId, element) {
+        // --- SISTEMA APERTURA MODALI E INTERFACCIA VISIVA ---
+        window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
+        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
+        window.closeModalOnBackdrop = function(e) { if(e.target.classList.contains('modal')) e.target.classList.remove('active'); };
+
+        window.switchView = function(viewId, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + viewId).classList.add('active');
-            if (element) {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                element.classList.add('active');
-            }
-            const headerTitolo = document.getElementById('header-title');
-            if(viewId === 'home') headerTitolo.innerText = "Mio Budget 📊";
-            if(viewId === 'salvadanai') headerTitolo.innerText = "Piani & Scadenze 🐷";
-            if(viewId === 'storico') headerTitolo.innerText = "Archivio Storico 🕒";
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+        };
+
+        function switchViewWithoutBtn(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(viewId === 'home') document.getElementById('nav-btn-home').classList.add('active');
         }
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function closeModalOnBackdrop(e) { if(e.target.classList.contains('modal')) e.target.classList.remove('active'); }
     </script>
 </body>
 </html>
