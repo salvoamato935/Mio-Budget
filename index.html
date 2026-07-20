@@ -5,21 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Budget Familiare Pro</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f0f12">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-weight/6.4.2/css/all.min.css">
+    <meta name="theme-color" content="#f1f5f9">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0f0f12;
-            --card-bg: #16161c;
-            --card-border: #23232a;
-            --accent: #6366f1;
-            --accent-gradient: linear-gradient(135deg, #5b21b6, #6366f1);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --fisse: #2563eb;
-            --variabili: #059669;
-            --svago: #d946ef;
-            --danger: #f43f5e;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --accent: #4f46e5;
+            --accent-gradient: linear-gradient(135deg, #4f46e5, #6366f1);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --fisse: #3b82f6;
+            --variabili: #10b981;
+            --svago: #ec4899;
+            --danger: #ef4444;
         }
 
         * {
@@ -68,17 +68,29 @@
         }
 
         .main-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 22px;
+            background: var(--accent-gradient);
+            color: white;
+            border-radius: 24px;
+            padding: 24px;
             text-align: center;
             margin-bottom: 16px;
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card .bg-illustration {
+            position: absolute;
+            right: -10px;
+            bottom: -15px;
+            font-size: 90px;
+            opacity: 0.12;
+            transform: rotate(-15px);
         }
 
         .main-card p {
             font-size: 13px;
-            color: var(--text-muted);
+            opacity: 0.9;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 6px;
@@ -92,7 +104,7 @@
         }
 
         .progress-bar-container {
-            background: #23232a;
+            background: rgba(255, 255, 255, 0.25);
             border-radius: 10px;
             height: 6px;
             width: 100%;
@@ -100,7 +112,7 @@
         }
 
         .progress-bar {
-            background: var(--accent-gradient);
+            background: #ffffff;
             height: 100%;
             width: 0%;
             transition: width 0.4s ease;
@@ -115,9 +127,10 @@
 
         .mini-card {
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 14px;
             border: 1px solid var(--card-border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .mini-card span {
@@ -133,12 +146,12 @@
         }
 
         .section-title {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
-            margin: 20px 0 12px 0;
+            margin: 22px 0 12px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -146,13 +159,14 @@
 
         .cassetto-row {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 14px;
+            border-radius: 18px;
+            padding: 16px;
             margin-bottom: 10px;
             border: 1px solid var(--card-border);
             display: flex;
             flex-direction: column;
             gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .cassetto-header {
@@ -170,14 +184,14 @@
         }
 
         .cassetto-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .cassetto-amounts {
@@ -195,8 +209,8 @@
         }
 
         .cassetto-progress {
-            height: 4px;
-            background: #23232a;
+            height: 5px;
+            background: #e2e8f0;
             border-radius: 4px;
             overflow: hidden;
         }
@@ -209,7 +223,7 @@
 
         .spesa-item {
             background: var(--card-bg);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 12px 14px;
             margin-bottom: 8px;
             display: flex;
@@ -231,7 +245,7 @@
         .spesa-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .spesa-amount {
@@ -241,17 +255,22 @@
         }
 
         .btn-delete {
-            background: none;
+            background: #fee2e2;
             border: none;
-            color: #475569;
+            color: var(--danger);
             cursor: pointer;
-            font-size: 14px;
-            padding: 4px;
-            transition: color 0.2s;
+            font-size: 12px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
         }
 
         .btn-delete:hover {
-            color: var(--danger);
+            background: #fca5a5;
         }
 
         .btn {
@@ -265,12 +284,15 @@
             width: 100%;
             cursor: pointer;
             margin-top: 8px;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
         }
 
         .btn-secondary {
-            background: #23232a;
+            background: #ffffff;
             color: var(--text-main);
-            margin-top: 25px;
+            border: 1px solid var(--card-border);
+            margin-top: 15px;
+            box-shadow: none;
         }
 
         .form-group {
@@ -282,16 +304,16 @@
             font-size: 12px;
             color: var(--text-muted);
             margin-bottom: 5px;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .form-control {
             width: 100%;
-            background: #1c1c24;
+            background: #ffffff;
             border: 1px solid var(--card-border);
             padding: 12px;
             border-radius: 12px;
-            color: white;
+            color: var(--text-main);
             font-size: 15px;
             outline: none;
         }
@@ -302,9 +324,10 @@
 
         .setup-box {
             background: var(--card-bg);
-            padding: 22px;
-            border-radius: 20px;
+            padding: 24px;
+            border-radius: 24px;
             border: 1px solid var(--card-border);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
 
         .setup-grid {
@@ -319,7 +342,7 @@
             position: fixed;
             bottom: 0; left: 0; right: 0;
             height: 70px;
-            background: rgba(22, 22, 28, 0.94);
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(12px);
             border-top: 1px solid var(--card-border);
             display: flex;
@@ -359,14 +382,15 @@
             transform: translateY(-12px);
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.25);
         }
 
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.75);
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
             z-index: 2000;
             align-items: flex-end;
         }
@@ -381,6 +405,7 @@
             padding: 22px;
             padding-bottom: calc(22px + env(safe-area-inset-bottom));
             animation: slideUp 0.25s ease-out;
+            border-top: 1px solid var(--card-border);
         }
 
         @keyframes slideUp {
@@ -389,28 +414,29 @@
         }
 
         .badge-info {
-            background: #23232a;
+            background: #f1f5f9;
             padding: 4px 8px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 11px;
             color: var(--accent);
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1 id="header-title">Budget Familiare 🏠</h1>
+        <h1 id="header-title">Budget Familiare 📈</h1>
     </header>
 
     <div class="container">
         
-        <!-- SCHERMATA SETUP LIBERO -->
+        <!-- SCHERMATA SETUP / MODIFICA BUDGET -->
         <div id="view-setup" class="view">
             <div class="setup-box" style="text-align: center;">
-                <i class="fa-solid fa-sliders" style="font-size: 36px; color: var(--accent); margin-bottom: 12px;"></i>
-                <h3 style="margin-bottom: 6px;">Configurazione Flessibile</h3>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Le percentuali sotto sono solo consigliate. Puoi ripartire le cifre a tuo piacimento.</p>
+                <i class="fa-solid fa-chart-pie" style="font-size: 42px; color: var(--accent); margin-bottom: 12px;"></i>
+                <h3 id="setup-titolo-schermata" style="margin-bottom: 6px;">Configura il tuo Budget</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Inserisci le cifre per ciascun comparto. Puoi modificarle quando vuoi.</p>
                 
                 <div class="form-group" style="text-align: left;">
                     <label>Entrate Mensili Totali (€)</label>
@@ -419,27 +445,29 @@
 
                 <div class="setup-grid">
                     <div class="form-group">
-                        <label>🏠 Fisse (Cons: 50%)</label>
+                        <label>🏠 Fisse</label>
                         <input type="number" id="setup-fisse" class="form-control" inputmode="decimal">
                     </div>
                     <div class="form-group">
-                        <label>🛒 Variabili (Cons: 30%)</label>
+                        <label>🛒 Variabili</label>
                         <input type="number" id="setup-variabili" class="form-control" inputmode="decimal">
                     </div>
                 </div>
                 <div class="form-group" style="text-align: left;">
-                    <label>🎉 Svago e Coccole (Cons: 20%)</label>
+                    <label>🎉 Svago e Coccole</label>
                     <input type="number" id="setup-svago" class="form-control" inputmode="decimal">
                 </div>
 
                 <div id="setup-error" style="color: var(--danger); font-size: 12px; margin-bottom: 10px; display:none; font-weight:600;"></div>
-                <button class="btn" onclick="inizializzaBudgetCustom()">Salva Ripartizione</button>
+                <button class="btn" onclick="inizializzaBudgetCustom()">Salva Configurazione</button>
+                <button class="btn btn-secondary" id="btn-annulla-setup" style="display:none;" onclick="chiudiModificaBudget()">Annulla</button>
             </div>
         </div>
 
         <!-- SCHERMATA DASHBOARD -->
         <div id="view-home" class="view">
             <div class="main-card">
+                <i class="fa-solid fa-money-bill-trend-up bg-illustration"></i>
                 <p>Budget Disponibile Totale</p>
                 <h2 id="dash-disponibile">0,00 €</h2>
                 <div class="progress-bar-container">
@@ -458,24 +486,28 @@
                 </div>
             </div>
 
-            <h3 class="section-title">I Cassetti Principali</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button class="btn btn-secondary" style="margin:0; flex:1;" onclick="apriModificaBudget()"><i class="fa-solid fa-pen-to-square"></i> Modifica Budget</button>
+            </div>
+
+            <h3 class="section-title">📊 I Comparti Principali</h3>
             <div id="cassetti-container"></div>
 
             <h3 class="section-title">
-                Altre Voci di Spesa
+                🏷️ Altre Voci Libere
                 <button class="badge-info" style="border:none; cursor:pointer;" onclick="openModal('modal-voce')">+ Aggiungi Voce</button>
             </h3>
             <div id="altre-voci-container"></div>
 
-            <h3 class="section-title">Ultime Spese di Casa</h3>
+            <h3 class="section-title">🕒 Ultime Spese Registrate</h3>
             <div id="spese-container"></div>
             
-            <button class="btn btn-secondary" onclick="resetCompleto()">🔄 Reset Nuovo Mese</button>
+            <button class="btn btn-secondary" style="color: var(--danger); border-color:#fca5a5;" onclick="resetCompleto()">🔄 Reset Completo Mese</button>
         </div>
 
         <!-- SCHERMATA SALVADANAI -->
         <div id="view-salvadanai" class="view">
-            <h3 class="section-title">Obiettivi di Risparmio</h3>
+            <h3 class="section-title">🐷 Obiettivi di Risparmio</h3>
             <div id="salvadanai-container"></div>
             <button class="btn" onclick="openModal('modal-salvadanaio')"><i class="fa-solid fa-plus"></i> Nuovo Salvadanaio</button>
         </div>
@@ -485,7 +517,7 @@
     <!-- NAVBAR IN BASSO FIXED -->
     <nav class="nav-bar" id="app-nav" style="display:none;">
         <button class="nav-item active" id="nav-btn-home" onclick="switchView('home', this)">
-            <i class="fa-solid fa-layer-group"></i>
+            <i class="fa-solid fa-wallet"></i>
             <span>Dashboard</span>
         </button>
         <button class="nav-center-btn" onclick="openModal('modal-spesa')">
@@ -500,7 +532,7 @@
     <!-- MODALE AGGIUNGI SPESA -->
     <div id="modal-spesa" class="modal" onclick="closeModalOnBackdrop(event)">
         <div class="modal-content">
-            <h3 style="margin-bottom: 15px;">Registra Spesa</h3>
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-cart-shopping" style="color:var(--accent)"></i> Registra Spesa</h3>
             <div class="form-group">
                 <label>Importo (€)</label>
                 <input type="number" id="spesa-importo" class="form-control" placeholder="0.00" step="0.01" inputmode="decimal">
@@ -510,7 +542,7 @@
                 <input type="text" id="spesa-desc" class="form-control" placeholder="Es. Conad, Enel, Ristorante...">
             </div>
             <div class="form-group">
-                <label>Seleziona Comparto o Voce</label>
+                <label>Seleziona Categoria</label>
                 <select id="spesa-cassetto" class="form-control"></select>
             </div>
             <button class="btn" onclick="aggiungiSpesa()">Salva Spesa</button>
@@ -520,9 +552,9 @@
     <!-- MODALE NUOVA VOCE PERSONALIZZATA -->
     <div id="modal-voce" class="modal" onclick="closeModalOnBackdrop(event)">
         <div class="modal-content">
-            <h3 style="margin-bottom: 15px;">Crea Nuova Voce Libera</h3>
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-tags" style="color:var(--accent)"></i> Crea Nuova Voce Libera</h3>
             <div class="form-group">
-                <label>Nome Voce (es. Regali, Manutenzione, Animali)</label>
+                <label>Nome Voce (es. Regali, Animali, Imprevisti)</label>
                 <input type="text" id="voce-nome" class="form-control" placeholder="Es. Fondo Emergenza">
             </div>
             <div class="form-group">
@@ -536,7 +568,7 @@
     <!-- MODALE AGGIUNGI SALVADANAIO -->
     <div id="modal-salvadanaio" class="modal" onclick="closeModalOnBackdrop(event)">
         <div class="modal-content">
-            <h3 style="margin-bottom: 15px;">Nuovo Obiettivo di Risparmio</h3>
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-vault" style="color:var(--accent)"></i> Nuovo Salvadanaio</h3>
             <div class="form-group">
                 <label>Nome Obiettivo</label>
                 <input type="text" id="salva-nome" class="form-control" placeholder="Es. Assicurazione, Viaggio...">
@@ -576,12 +608,33 @@
         };
 
         window.suggerisciRipartizione = function() {
+            // Suggerisce la ripartizione solo se i campi sono vuoti (primo setup)
+            if(document.getElementById('setup-titolo-schermata').innerText.includes("Modifica")) return;
             const tot = parseFloat(document.getElementById('setup-totale').value) || 0;
             if (tot > 0) {
                 document.getElementById('setup-fisse').value = Math.round(tot * 0.5);
                 document.getElementById('setup-variabili').value = Math.round(tot * 0.3);
                 document.getElementById('setup-svago').value = Math.round(tot * 0.2);
             }
+        }
+
+        window.apriModificaBudget = function() {
+            document.getElementById('setup-titolo-schermata').innerText = "Modifica Configurazione Budget";
+            document.getElementById('setup-totale').value = appData.entrate;
+            document.getElementById('setup-fisse').value = appData.cassetti.fisse;
+            document.getElementById('setup-variabili').value = appData.cassetti.variabili;
+            document.getElementById('setup-svago').value = appData.cassetti.svago;
+            
+            document.getElementById('view-home').classList.remove('active');
+            document.getElementById('view-setup').classList.add('active');
+            document.getElementById('btn-annulla-setup').style.display = "block";
+            document.getElementById('app-nav').style.display = "none";
+        }
+
+        window.chiudiModificaBudget = function() {
+            document.getElementById('view-setup').classList.remove('active');
+            document.getElementById('view-home').classList.add('active');
+            document.getElementById('app-nav').style.display = "flex";
         }
 
         window.inizializzaBudgetCustom = function() {
@@ -600,19 +653,19 @@
             }
 
             if (sommaRipartita !== entrate) {
-                errDiv.innerText = `La somma dei tre comparti (${sommaRipartita} €) deve essere uguale al totale inserito (${entrate} €)! Ajusta i valori liberamente.`;
+                errDiv.innerText = `La somma dei tre comparti (${sommaRipartita} €) deve essere uguale al totale inserito (${entrate} €)! Rivedi le cifre.`;
                 errDiv.style.display = "block";
                 return;
             }
 
             errDiv.style.display = "none";
+            
+            // Aggiorna solo la parte del budget lasciando intatte spese e voci libere esistenti
             appData.entrate = entrate;
             appData.cassetti = { fisse, variabili, svago };
-            appData.spese = {};
-            appData.vociLibere = {};
-            appData.salvadanai = {};
 
             set(budgetRef, appData).then(() => {
+                document.getElementById('btn-annulla-setup').style.display = "none";
                 switchView('home', document.getElementById('nav-btn-home'));
             });
         }
@@ -655,7 +708,7 @@
         }
 
         window.eliminaSpesa = function(idSpesa) {
-            if (confirm("Sei sicuro di voler rimuovere definitivamente questa spesa?")) {
+            if (confirm("Vuoi rimuovere questa spesa? Il budget si aggiornerà subito.")) {
                 const singolaSpesaRef = ref(db, `budget_familiare/spese/${idSpesa}`);
                 remove(singolaSpesaRef);
             }
@@ -692,6 +745,7 @@
         onValue(budgetRef, (snapshot) => {
             const data = snapshot.val();
             if (!data || !data.entrate) {
+                document.getElementById('setup-titolo-schermata').innerText = "Configura il tuo Budget";
                 document.getElementById('view-setup').classList.add('active');
                 document.getElementById('view-home').classList.remove('active');
                 document.getElementById('view-salvadanai').classList.remove('active');
@@ -704,10 +758,12 @@
             if (!appData.vociLibere) appData.vociLibere = {};
             if (!appData.salvadanai) appData.salvadanai = {};
 
-            document.getElementById('view-setup').classList.remove('active');
-            document.getElementById('app-nav').style.display = 'flex';
-            if(!document.getElementById('view-salvadanai').classList.contains('active')) {
-                document.getElementById('view-home').classList.add('active');
+            // Se siamo in modalità modifica, non forzare il ritorno alla home
+            if(!document.getElementById('view-setup').classList.contains('active')) {
+                document.getElementById('app-nav').style.display = 'flex';
+                if(!document.getElementById('view-salvadanai').classList.contains('active')) {
+                    document.getElementById('view-home').classList.add('active');
+                }
             }
             
             aggiornaSelectOpzioni();
@@ -765,9 +821,9 @@
             const containerCassetti = document.getElementById('cassetti-container');
             containerCassetti.innerHTML = '';
             const dettagliCassetti = {
-                fisse: { nome: 'Spese Fisse', icon: 'fa-home', colore: 'var(--fisse)' },
-                variabili: { nome: 'Spese Variabili', icon: 'fa-shopping-cart', colore: 'var(--variabili)' },
-                svago: { nome: 'Svago e Coccole', icon: 'fa-face-smile', colore: 'var(--svago)' }
+                fisse: { nome: 'Spese Fisse', icon: 'fa-house-chimney', colore: 'var(--fisse)' },
+                variabili: { nome: 'Spese Variabili', icon: 'fa-basket-shopping', colore: 'var(--variabili)' },
+                svago: { nome: 'Svago e Coccole', icon: 'fa-champagne-glasses', colore: 'var(--svago)' }
             };
 
             for (let key in appData.cassetti) {
@@ -817,7 +873,7 @@
                         <div class="cassetto-row">
                             <div class="cassetto-header">
                                 <div class="cassetto-name">
-                                    <div class="cassetto-icon" style="background-color: #475569"><i class="fa-solid fa-tag"></i></div>
+                                    <div class="cassetto-icon" style="background-color: #64748b"><i class="fa-solid fa-tag"></i></div>
                                     <span>${voce.nome}</span>
                                 </div>
                                 <div class="cassetto-amounts">
@@ -826,14 +882,14 @@
                                 </div>
                             </div>
                             <div class="cassetto-progress">
-                                <div class="cassetto-progress-bar" style="width: ${percentuale}%; background-color: #475569"></div>
+                                <div class="cassetto-progress-bar" style="width: ${percentuale}%; background-color: #64748b"></div>
                             </div>
                         </div>
                     `;
                 });
             }
 
-            // Render Ultime Spese Con Tasto Rimuovi
+            // Render Ultime Spese Con Tasto "X" Rossa Funzionante
             const containerSpese = document.getElementById('spese-container');
             containerSpese.innerHTML = '';
             
@@ -851,8 +907,8 @@
                             </div>
                             <div class="spesa-right">
                                 <div class="spesa-amount">- ${s.importo.toFixed(2)} €</div>
-                                <button class="btn-delete" onclick="eliminaSpesa('${idSpesa}')" title="Rimuovi spesa">
-                                    <i class="fa-solid fa-trash-can"></i>
+                                <button class="btn-delete" onclick="eliminaSpesa('${idSpesa}')">
+                                    <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
                         </div>
@@ -874,7 +930,7 @@
                     containerSalvadanai.innerHTML += `
                         <div class="mini-card" style="margin-bottom:10px; cursor:pointer;" onclick="modificaSalvadanaio('${id}')">
                             <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <span style="font-weight:700; color:white;">💰 ${item.nome}</span>
+                                <span style="font-weight:700;">💰 ${item.nome}</span>
                                 <span style="font-weight:700; color:var(--variabili); font-size:13px;">${(item.attuale || 0).toLocaleString('it-IT')} € / ${item.target} €</span>
                             </div>
                             <div class="cassetto-progress">
@@ -887,7 +943,7 @@
         }
 
         window.resetCompleto = function() {
-            if (confirm("Vuoi azzerare l'app per inserire un budget completamente nuovo?")) {
+            if (confirm("Attenzione: questo cancellerà TUTTE le spese e le voci create per ripartire da zero. Continuare?")) {
                 set(budgetRef, null);
             }
         }
