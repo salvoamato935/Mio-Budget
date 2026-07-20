@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Budget Familiare Pro Ultra</title>
+    <title>Mio Budget Pro</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f1f5f9">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -192,19 +192,27 @@
 
     <div class="container">
         
-        <!-- SCHERMATA CONFIGURAZIONE COMPARTI -->
+        <!-- SCHERMATA CONFIGURAZIONE COMPARTI E BUDGET TOTALE -->
         <div id="view-setup" class="view">
             <div class="mini-card" style="padding: 20px;">
-                <h3 style="margin-bottom: 12px; text-align:center;">Configura i tuoi Comparti</h3>
-                <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px; text-align:center;">Crea le tue macro-categorie di spesa. Le entrate totali si aggiorneranno da sole.</p>
+                <h3 style="margin-bottom: 12px; text-align:center;">Configurazione Iniziale</h3>
                 
+                <!-- NUOVO: INPUT BUDGET TOTALE INDIPENDENTE -->
+                <div class="form-group" style="margin-bottom: 20px; background: #e0f2fe; padding: 12px; border-radius: 12px; border: 1px solid #bae6fd;">
+                    <label style="color:#0369a1; font-weight:700;">1. INSERISCI IL BUDGET MENSILE TOTALE (€)</label>
+                    <input type="number" id="setup-budget-totale-input" class="form-control" placeholder="Es. 1500" inputmode="decimal" style="border-color:#7dd3fc; font-size:16px; font-weight:700;">
+                </div>
+
+                <hr style="border: 0; height: 1px; background: var(--card-border); margin: 20px 0;">
+
+                <h4 style="margin-bottom: 10px; font-size:13px; color:var(--text-main);">2. AGGIUNGI I TUOI COMPARTI (Opzionale)</h4>
                 <div style="background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--card-border);">
                     <div class="form-group">
-                        <label>Nome Comparto (es. Auto, Casa, Spesa...)</label>
+                        <label>Nome Comparto (es. Auto, Casa, Pizzeria...)</label>
                         <input type="text" id="add-comp-nome" class="form-control" placeholder="Es. Auto">
                     </div>
                     <div class="form-group">
-                        <label>Budget Mensile Allocato (€)</label>
+                        <label>Somma Assegnata a questo Comparto (€)</label>
                         <input type="number" id="add-comp-budget" class="form-control" placeholder="Es. 400" inputmode="decimal">
                     </div>
                     <button class="btn btn-secondary" style="font-size:12px; padding:6px;" onclick="aggiungiCompartoLista()">+ Aggiungi Comparto</button>
@@ -212,8 +220,8 @@
 
                 <div id="lista-comparti-setup" style="margin-bottom:16px;"></div>
                 
-                <div style="text-align:center; font-weight:700; margin-bottom:16px;">
-                    Entrate Mensili Totali stimati: <span id="setup-entrate-totali" style="color:var(--success)">0,00 €</span>
+                <div style="background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; text-align:center; font-weight:600; margin-bottom:16px;">
+                    Assegnato ai Comparti: <span id="setup-somma-comparti" style="color:var(--accent)">0,00 €</span>
                 </div>
 
                 <button class="btn" onclick="salvaConfigurazioneComparti()">Salva ed Entra</button>
@@ -226,7 +234,7 @@
             <div class="main-card">
                 <p style="font-size:12px; opacity:0.9;">Disponibilità Totale Rimasta</p>
                 <h2 id="dash-disponibile">0,00 €</h2>
-                <button class="badge-btn" style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;" onclick="apriModificaBudget()"><i class="fa-solid fa-sliders"></i> Gestisci Comparti</button>
+                <button class="badge-btn" style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;" onclick="apriModificaBudget()"><i class="fa-solid fa-sliders"></i> Gestisci Budget e Comparti</button>
             </div>
 
             <div class="chart-box">
@@ -234,7 +242,7 @@
             </div>
 
             <div class="budget-details">
-                <div class="mini-card"><span>Entrate Totali</span><p id="dash-entrate" style="color:var(--success);">0 €</p></div>
+                <div class="mini-card"><span>Budget Totale</span><p id="dash-entrate" style="color:var(--success);">0 €</p></div>
                 <div class="mini-card"><span>Speso Totale</span><p id="dash-speso" style="color:var(--danger);">0 €</p></div>
             </div>
 
@@ -258,7 +266,7 @@
             </div>
         </div>
 
-        <!-- OBIETTIVI E RISPARMI (SALVADANAI CON DATA TARGET) -->
+        <!-- OBIETTIVI E RISPARMI (SALVADANAI) -->
         <div id="view-salvadanai" class="view">
             <h3 class="section-title">Piani di Risparmio & Scadenze Future</h3>
             <div id="salvadanai-container"></div>
@@ -309,7 +317,7 @@
         </div>
     </div>
 
-    <!-- MODALE PAGAMENTO SCADENZA (CON IMPORTO REALE) -->
+    <!-- MODALE PAGAMENTO SCADENZA -->
     <div id="modal-paga-scadenza" class="modal" onclick="closeModalOnBackdrop(event)">
         <div class="modal-content">
             <h3>Regola Importo Effettivo Scadenza</h3>
@@ -321,13 +329,13 @@
         </div>
     </div>
 
-    <!-- MODALE NUOVO PIANO DI RISPARMIO / OBIETTIVO AUTO -->
+    <!-- MODALE NUOVO PIANO DI RISPARMIO -->
     <div id="modal-salvadanaio" class="modal" onclick="closeModalOnBackdrop(event)">
         <div class="modal-content">
             <h3>🐷 Nuovo Obiettivo Risparmio / Scadenza Futura</h3>
-            <div class="form-group"><label>Nome Obiettivo (es. Saldo Macchina, Tasse...)</label><input type="text" id="salva-nome" class="form-control" placeholder="Es. Saldo T-Cross"></div>
+            <div class="form-group"><label>Nome Obiettivo</label><input type="text" id="salva-nome" class="form-control" placeholder="Es. Saldo T-Cross"></div>
             <div class="form-group"><label>Cifra Totale da Raggiungere (€)</label><input type="number" id="salva-target" class="form-control" inputmode="decimal"></div>
-            <div class="form-group"><label>Data di Scadenza Obiettivo (Mese/Anno finale)</label><input type="month" id="salva-data-target" class="form-control"></div>
+            <div class="form-group"><label>Data di Scadenza Obiettivo</label><input type="month" id="salva-data-target" class="form-control"></div>
             <button class="btn" onclick="creaSalvadanaio()">Inizia Piano</button>
         </div>
     </div>
@@ -385,11 +393,12 @@
                         <button class="btn-delete" onclick="rimuoviCompartoListaTemporanea('${id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>`;
             });
-            document.getElementById('setup-entrate-totali').innerText = somma.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
+            document.getElementById('setup-somma-comparti').innerText = somma.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
         }
 
         window.apriModificaBudget = function() {
             listaCompartiTemporanea = JSON.parse(JSON.stringify(appData.cassetti || {}));
+            document.getElementById('setup-budget-totale-input').value = appData.entrate || '';
             renderizzaListaSetupTemporanea();
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-setup').classList.add('active');
@@ -404,14 +413,18 @@
         }
 
         window.salvaConfigurazioneComparti = function() {
-            if(Object.keys(listaCompartiTemporanea).length === 0) {
-                alert("Inserisci almeno un comparto principale!");
+            const budgetTotaleDigitato = parseFloat(document.getElementById('setup-budget-totale-input').value) || 0;
+            if(budgetTotaleDigitato <= 0) {
+                alert("Per favore, inserisci un Budget Mensile Totale valido superiore a 0 €!");
                 return;
             }
-            let entrateTotali = 0;
-            Object.values(listaCompartiTemporanea).forEach(c => entrateTotali += c.budget);
             
-            appData.entrate = entrateTotali;
+            // Creiamo sempre un comparto jolly nascosto per le spese "Generiche" se l'utente vuole spendere fuori dai comparti
+            if(!listaCompartiTemporanea['generico']) {
+                listaCompartiTemporanea['generico'] = { nome: 'Generico / Altro', budget: 0 };
+            }
+
+            appData.entrate = budgetTotaleDigitato;
             appData.cassetti = listaCompartiTemporanea;
             
             set(budgetRef, appData).then(() => {
@@ -421,12 +434,9 @@
         }
 
         window.modificaBudgetSingoloCompartoDirect = function(id, vecchioNome) {
-            const nuovoVal = parseFloat(prompt(`Inserisci il nuovo budget mensile per il comparto "${vecchioNome}":`));
-            if(!isNaN(nuovoVal) && nuovoVal > 0) {
+            const nuovoVal = parseFloat(prompt(`Inserisci il nuovo budget assegnato al comparto "${vecchioNome}":`));
+            if(!isNaN(nuovoVal) && nuovoVal >= 0) {
                 appData.cassetti[id].budget = nuovoVal;
-                let somma = 0;
-                Object.values(appData.cassetti).forEach(c => somma += c.budget);
-                appData.entrate = somma;
                 set(budgetRef, appData);
             }
         }
@@ -447,7 +457,7 @@
             document.getElementById('spesa-edit-id').value = id;
             document.getElementById('spesa-importo').value = spesa.importo;
             document.getElementById('spesa-desc').value = spesa.desc;
-            document.getElementById('spesa-cassetto').value = spesa.cassetto;
+            document.getElementById('spesa-cassetto').value = spesa.cassetto || 'generico';
             document.getElementById('btn-elimina-spesa-diretto').style.display = "block";
             openModal('modal-spesa');
         }
@@ -576,7 +586,10 @@
                 Object.values(appData.spese).forEach(s => { if(diviso[s.cassetto] !== undefined) diviso[s.cassetto] += s.importo; });
                 
                 Object.entries(appData.cassetti).forEach(([k, c]) => {
-                    compartiDettaglioArchivio[c.nome] = diviso[k] || 0;
+                    // Salviamo solo i comparti che hanno effettivamente un budget o delle spese
+                    if(c.budget > 0 || diviso[k] > 0) {
+                        compartiDettaglioArchivio[c.nome] = diviso[k] || 0;
+                    }
                 });
 
                 let spesoTot = Object.values(diviso).reduce((a, b) => a + b, 0);
@@ -667,48 +680,80 @@
             Object.keys(appData.cassetti).forEach(k => diviso[k] = 0);
             
             Object.values(appData.spese).forEach(s => {
-                if(diviso[s.cassetto] !== undefined) {
-                    diviso[s.cassetto] += s.importo;
-                    spesoTot += s.importo;
-                }
+                let cat = s.cassetto || 'generico';
+                if(diviso[cat] === undefined) diviso[cat] = 0;
+                diviso[cat] += s.importo;
+                spesoTot += s.importo;
             });
 
+            // La disponibilità rimasta si basa sempre sul BUDGET TOTALE MENSILE
             const rimasto = appData.entrate - spesoTot;
             document.getElementById('dash-disponibile').innerText = rimasto.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
             document.getElementById('dash-entrate').innerText = appData.entrate.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
             document.getElementById('dash-speso').innerText = spesoTot.toLocaleString('it-IT', {style:'currency', currency:'EUR'});
 
-            // Valutazione Stato
+            // Calcolo dello stato del budget
             const statusLabel = document.getElementById('status-label');
             const perc = (spesoTot / appData.entrate) * 100;
             if(perc >= 100) { statusLabel.className = "status-banner status-alert"; statusLabel.innerText = "🔴 Sei in pieno rosso!"; }
             else if(perc >= 80) { statusLabel.className = "status-banner status-warn"; statusLabel.innerText = "🟡 Budget in esaurimento"; }
             else { statusLabel.className = "status-banner status-ok"; statusLabel.innerText = "🟢 Tutto sotto controllo"; }
 
-            // Aggiorna Grafico
-            renderChart(diviso);
+            // Rendiamo visibili nel grafico solo le categorie che hanno registrato uscite reali
+            let divisoGrafico = {};
+            Object.entries(diviso).forEach(([k, v]) => { if(v > 0) divisoGrafico[k] = v; });
+            renderChart(divisoGrafico);
 
-            // Renderizza Comparti Dashboard
+            // Renderizza i Comparti nella Dashboard
             const contCassetti = document.getElementById('cassetti-container');
             contCassetti.innerHTML = '';
             
+            // Calcoliamo la somma allocata nei comparti definiti per mostrare se c'è un "avanzo" libero dal budget iniziale
+            let sommaAllocataComparti = 0;
+
             Object.entries(appData.cassetti).forEach(([id, c]) => {
+                if(id === 'generico' && c.budget === 0) {
+                    // Mostriamo il comparto generico solo se ci sono state spese inserite lì dentro
+                    if((diviso[id] || 0) === 0) return;
+                }
+                
+                sommaAllocataComparti += c.budget;
                 let spesoComp = diviso[id] || 0;
-                let disponibilita = c.budget - spesoComp;
-                let pct = Math.max(0, Math.min(100, (disponibilita / c.budget) * 100));
+                
+                let rigaBudgetInfo = '';
+                let pct = 0;
+                
+                if(c.budget > 0) {
+                    let disponibilita = c.budget - spesoComp;
+                    pct = Math.max(0, Math.min(100, (disponibilita / c.budget) * 100));
+                    rigaBudgetInfo = `${disponibilita.toFixed(2)} € / ${c.budget} €`;
+                } else {
+                    // Comparto senza tetto fisso (es. Generico)
+                    pct = 0;
+                    rigaBudgetInfo = `Speso: ${spesoComp.toFixed(2)} €`;
+                }
                 
                 contCassetti.innerHTML += `
                     <div class="cassetto-row">
                         <div class="cassetto-header">
                             <div class="cassetto-name"><span>📂 <b>${c.nome}</b></span></div>
-                            <div class="cassetto-dispo" style="color:${disponibilita < 0 ? 'var(--danger)' : ''}">
-                                <span>${disponibilita.toFixed(2)} € / ${c.budget} €</span>
-                                <button class="badge-btn" style="padding:2px 6px;" onclick="modificaBudgetSingoloCompartoDirect('${id}', '${c.nome}')">✏️</button>
+                            <div class="cassetto-dispo">
+                                <span style="font-size:12px;">${rigaBudgetInfo}</span>
+                                ${id !== 'generico' ? `<button class="badge-btn" style="padding:2px 6px;" onclick="modificaBudgetSingoloCompartoDirect('${id}', '${c.nome}')">✏️</button>` : ''}
                             </div>
                         </div>
-                        <div class="cassetto-progress"><div class="cassetto-progress-bar" style="width:${pct}%; background:var(--accent)"></div></div>
+                        ${c.budget > 0 ? `<div class="cassetto-progress"><div class="cassetto-progress-bar" style="width:${pct}%; background:var(--accent)"></div></div>` : ''}
                     </div>`;
             });
+
+            // Se l'utente ha configurato un budget superiore alla somma dei singoli comparti, mostriamo una riga informativa
+            if(appData.entrate > sommaAllocataComparti) {
+                let quotaNonAssegnata = appData.entrate - sommaAllocataComparti;
+                contCassetti.innerHTML += `
+                    <div style="background:#f8fafc; text-align:center; padding:8px; border-radius:12px; font-size:11px; color:var(--text-muted); border:1px dashed var(--card-border); margin-top:5px;">
+                        💡 Hai <b>${quotaNonAssegnata.toFixed(2)} €</b> di Budget libero (non assegnato a comparti specifici).
+                    </div>`;
+            }
 
             // Renderizza Scadenze
             const contScad = document.getElementById('scadenze-container');
@@ -718,7 +763,7 @@
                 contScad.innerHTML = `<p style="font-size:11px; color:var(--text-muted); text-align:center;">Nessuna scadenza fissa inserita.</p>`;
             } else {
                 arrayScad.forEach(([id, s]) => {
-                    let nomeCategoria = appData.cassetti[s.cassetto]?.nome || 'Comparto Eliminato';
+                    let nomeCategoria = appData.cassetti[s.cassetto]?.nome || 'Generico';
                     contScad.innerHTML += `
                         <div class="spesa-item" style="border-left: 4px solid ${s.pagata ? '#cbd5e1' : 'var(--warning)'}; opacity: ${s.pagata ? 0.6 : 1}">
                             <div class="spesa-info">
@@ -740,18 +785,18 @@
             
             let arraySpeseFiltrate = Object.entries(appData.spese).reverse();
             if(cassettoFiltratoDaGrafico) {
-                arraySpeseFiltrate = arraySpeseFiltrate.filter(([_, s]) => s.cassetto === cassettoFiltratoDaGrafico);
+                arraySpeseFiltrate = arraySpeseFiltrate.filter(([_, s]) => (s.cassetto || 'generico') === cassettoFiltratoDaGrafico);
                 document.getElementById('filtro-categoria').value = cassettoFiltratoDaGrafico;
                 cassettoFiltratoDaGrafico = null; 
             } else if (filtro !== 'tutte') {
-                arraySpeseFiltrate = arraySpeseFiltrate.filter(([_, s]) => s.cassetto === filtro);
+                arraySpeseFiltrate = arraySpeseFiltrate.filter(([_, s]) => (s.cassetto || 'generico') === filtro);
             }
 
             if(arraySpeseFiltrate.length === 0) {
                 contSpese.innerHTML = `<p style="font-size:11px; color:var(--text-muted); text-align:center; padding:10px;">Nessuna operazione registrata.</p>`;
             } else {
                 arraySpeseFiltrate.forEach(([id, s]) => {
-                    let cNome = appData.cassetti[s.cassetto]?.nome || 'Generico';
+                    let cNome = appData.cassetti[s.cassetto || 'generico']?.nome || 'Generico';
                     contSpese.innerHTML += `
                         <div class="spesa-item" onclick="apriModificaSpesaEsistente('${id}')">
                             <div class="spesa-info"><h4>${s.desc}</h4><span>${s.data} • [${cNome}]</span></div>
@@ -768,23 +813,15 @@
             contSalva.innerHTML = '';
             Object.entries(appData.salvadanai).forEach(([id, s]) => {
                 let percentualeSalvadanaio = Math.max(0, Math.min(100, ((s.attuale || 0) / s.target) * 100));
-                
-                // Algoritmo di calcolo quote basato sul tempo rimasto
                 let infoTempoHtml = '';
                 if(s.dataTarget) {
                     const oggi = new Date();
                     const targetData = new Date(s.dataTarget + "-02"); 
-                    
                     let mesiRimasti = (targetData.getFullYear() - oggi.getFullYear()) * 12 + (targetData.getMonth() - oggi.getMonth());
                     if (mesiRimasti <= 0) mesiRimasti = 1;
-                    
                     let quotaMancante = Math.max(0, s.target - (s.attuale || 0));
                     let quotaMensileConsigliata = quotaMancante / mesiRimasti;
-                    
-                    infoTempoHtml = `
-                        <div class="info-piano">
-                            📅 Mesi alla scadenza: ${mesiRimasti} | Quota mensile richiesta: ${quotaMensileConsigliata.toFixed(2)} €
-                        </div>`;
+                    infoTempoHtml = `<div class="info-piano">📅 Mesi alla scadenza: ${mesiRimasti} | Quota mensile richiesta: ${quotaMensileConsigliata.toFixed(2)} €</div>`;
                 }
 
                 contSalva.innerHTML += `
@@ -802,12 +839,15 @@
             });
         }
 
-        function renderChart(diviso) {
+        function renderChart(divisoGrafico) {
             const ctx = document.getElementById('budgetChart').getContext('2d');
-            const etichette = Object.keys(diviso).map(k => appData.cassetti[k]?.nome || k);
-            const cifre = Object.values(diviso);
+            const etichette = Object.keys(divisoGrafico).map(k => appData.cassetti[k]?.nome || 'Generico');
+            const cifre = Object.values(divisoGrafico);
 
-            if(etichette.length === 0) return;
+            if(cifre.length === 0) {
+                if(myChart) { myChart.destroy(); myChart = null; }
+                return;
+            }
 
             if (myChart) {
                 myChart.data.labels = etichette;
@@ -820,7 +860,7 @@
                         labels: etichette,
                         datasets: [{
                             data: cifre,
-                            backgroundColor: ['#3b82f6', '#10b981', '#ec4899', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899'],
+                            backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'],
                             borderWidth: 0
                         }]
                     },
@@ -830,7 +870,7 @@
                         onClick: (evt, item) => {
                             if(item && item.length > 0) {
                                 const index = item[0].index;
-                                const keys = Object.keys(diviso);
+                                const keys = Object.keys(divisoGrafico);
                                 cassettoFiltratoDaGrafico = keys[index];
                                 calcolaERenderizzaUI();
                             }
@@ -862,14 +902,14 @@
                     <div class="mini-card" style="margin-bottom:8px;">
                         <h4 style="text-transform: capitalize; color: var(--accent); margin-bottom:6px;">📅 ${m.mese}</h4>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; font-size:12px; gap:4px; margin-bottom:6px; border-bottom:1px solid var(--card-border); padding-bottom:4px;">
-                            <div>Entrate: <b>${m.entrate.toFixed(2)} €</b></div>
+                            <div>Budget: <b>${m.entrate.toFixed(2)} €</b></div>
                             <div>Tot. Speso: <span style="color:var(--danger)"><b>${m.spesoTotale.toLocaleString('it-IT', {style:'currency', currency:'EUR'})}</b></span></div>
                         </div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2px;">
                             ${dettagliDettagliatiHtml}
                         </div>
                     </div>`;
-                });
+            });
         }
     </script>
 
