@@ -11,45 +11,45 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen">
 
-    <!-- SCHERMATA LOGIN / REGISTRAZIONE -->
+    <!-- SCHERMATA DI BENVENUTO / ACCESSO -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
             <div class="text-center mb-8">
                 <div class="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-lg">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-900" id="auth-title">Accedi a Mio-Budget</h1>
-                <p class="text-sm text-gray-500 mt-1" id="auth-subtitle">Inserisci le tue credenziali per continuare</p>
+                <h1 class="text-2xl font-bold text-gray-900" id="auth-title">Bentornato!</h1>
+                <p class="text-sm text-gray-500 mt-1" id="auth-subtitle">Accedi per dare un'occhiata ai tuoi conti</p>
             </div>
 
             <form id="auth-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">La tua email</label>
                     <input type="email" id="auth-email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="nome@esempio.it">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Parola chiave (Password)</label>
                     <input type="password" id="auth-password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="••••••••">
                 </div>
                 
                 <p id="auth-error" class="text-red-500 text-xs font-semibold mt-1 hidden"></p>
 
                 <button type="submit" id="auth-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
-                    <span id="auth-btn-text">Accedi</span>
+                    <span id="auth-btn-text">Entra nell'app</span>
                     <i class="fa-solid fa-arrow-right text-sm"></i>
                 </button>
             </form>
 
             <div class="mt-6 text-center text-sm text-gray-600">
-                <span id="auth-toggle-text">Non hai ancora un account?</span>
-                <button type="button" id="auth-toggle-btn" class="text-blue-600 font-semibold hover:underline ml-1">Registrati</button>
+                <span id="auth-toggle-text">Prima volta qui?</span>
+                <button type="button" id="auth-toggle-btn" class="text-blue-600 font-semibold hover:underline ml-1">Crea un profilo</button>
             </div>
         </div>
     </div>
 
-    <!-- DASHBOARD PRINCIPALE (Nascosta prima del login) -->
+    <!-- LA TUA DASHBOARD -->
     <div id="app-screen" class="hidden min-h-screen flex flex-col">
-        <!-- Header -->
+        <!-- Testata -->
         <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
             <div class="flex items-center gap-3">
                 <div class="bg-blue-600 text-white p-2 rounded-lg">
@@ -65,13 +65,13 @@
             </div>
         </header>
 
-        <!-- Contenuto Dashboard -->
+        <!-- Contenuto -->
         <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
-            <!-- Riepilogo Card -->
+            <!-- Schede di riepilogo -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 font-medium">Entrate</p>
+                        <p class="text-sm text-gray-500 font-medium">Soldi entrati</p>
                         <h3 id="total-income" class="text-2xl font-bold text-green-600 mt-1">€ 0,00</h3>
                     </div>
                     <div class="bg-green-100 text-green-600 p-3 rounded-full">
@@ -81,7 +81,7 @@
 
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 font-medium">Uscite</p>
+                        <p class="text-sm text-gray-500 font-medium">Spese fatte</p>
                         <h3 id="total-expense" class="text-2xl font-bold text-red-600 mt-1">€ 0,00</h3>
                     </div>
                     <div class="bg-red-100 text-red-600 p-3 rounded-full">
@@ -91,7 +91,7 @@
 
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 font-medium">Bilancio Totale</p>
+                        <p class="text-sm text-gray-500 font-medium">Quanto ti resta</p>
                         <h3 id="total-balance" class="text-2xl font-bold text-blue-600 mt-1">€ 0,00</h3>
                     </div>
                     <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
@@ -100,39 +100,39 @@
                 </div>
             </div>
 
-            <!-- Form e Movimenti -->
+            <!-- Inserimento e Storia Spese -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Form Nuova Transazione -->
+                <!-- Aggiungi una spesa o un guadagno -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Aggiungi Movimento</h3>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Annota una spesa o un'entrata</h3>
                     <form id="transaction-form" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Cosa è successo?</label>
                             <select id="trans-type" class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                                <option value="expense">Uscita</option>
-                                <option value="income">Entrata</option>
+                                <option value="expense">Ho speso dei soldi (Uscita)</option>
+                                <option value="income">Ho ricevuto dei soldi (Entrata)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Descrizione</label>
-                            <input type="text" id="trans-desc" required placeholder="Es. Spesa al supermercato" class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Per cosa?</label>
+                            <input type="text" id="trans-desc" required placeholder="Es. Spesa al supermercato, Pizzeria..." class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Importo (€)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Quanto? (€)</label>
                             <input type="number" step="0.01" id="trans-amount" required placeholder="0.00" class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
                         </div>
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition shadow">
-                            Salva Movimento
+                            Annota subito
                         </button>
                     </form>
                 </div>
 
-                <!-- Lista Transazioni -->
+                <!-- Lista Storico -->
                 <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Ultimi Movimenti</h3>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">La tua storia delle spese</h3>
                     <div class="overflow-x-auto">
                         <ul id="transactions-list" class="divide-y divide-gray-100">
-                            <li class="py-4 text-center text-gray-400 text-sm">Nessun movimento presente</li>
+                            <li class="py-4 text-center text-gray-400 text-sm">Non hai ancora annotato nulla</li>
                         </ul>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
         </main>
     </div>
 
-    <!-- Script Firebase e App -->
+    <!-- Script Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
@@ -173,7 +173,7 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Elementi DOM
+        // Elementi Schermata
         const authScreen = document.getElementById('auth-screen');
         const appScreen = document.getElementById('app-screen');
         const authForm = document.getElementById('auth-form');
@@ -190,18 +190,18 @@
 
         let isLoginMode = true;
 
-        // Switch tra Login e Registrazione
+        // Cambio Login / Registrazione con testi semplici
         authToggleBtn.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
-            authTitle.innerText = isLoginMode ? "Accedi a Mio-Budget" : "Crea un Account";
-            authSubtitle.innerText = isLoginMode ? "Inserisci le tue credenziali per continuare" : "Registrati per iniziare a tracciare i tuoi costi";
-            authBtnText.innerText = isLoginMode ? "Accedi" : "Registrati";
-            authToggleText.innerText = isLoginMode ? "Non hai ancora un account?" : "Hai già un account?";
-            authToggleBtn.innerText = isLoginMode ? "Registrati" : "Accedi";
+            authTitle.innerText = isLoginMode ? "Bentornato!" : "Iniziamo!";
+            authSubtitle.innerText = isLoginMode ? "Accedi per dare un'occhiata ai tuoi conti" : "Crea il tuo profilo personale in pochi secondi";
+            authBtnText.innerText = isLoginMode ? "Entra nell'app" : "Crea profilo";
+            authToggleText.innerText = isLoginMode ? "Prima volta qui?" : "Hai già un profilo?";
+            authToggleBtn.innerText = isLoginMode ? "Crea un profilo" : "Accedi qui";
             authError.classList.add('hidden');
         });
 
-        // Gestione Login / Registrazione
+        // Gestione Accesso
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = authEmail.value.trim();
@@ -211,24 +211,22 @@
             if (isLoginMode) {
                 signInWithEmailAndPassword(auth, email, password)
                     .catch((err) => {
-                        authError.innerText = "Errore d'accesso: " + err.message;
+                        authError.innerText = "Ops! Email o password non corrette.";
                         authError.classList.remove('hidden');
-                        alert("IMPOSSIBILE ACCEDERE:\n" + err.message);
                     });
             } else {
                 createUserWithEmailAndPassword(auth, email, password)
                     .then(() => {
-                        alert("Account creato con successo! Accesso in corso...");
+                        alert("Profilo creato con successo! Entriamo...");
                     })
                     .catch((err) => {
-                        authError.innerText = "Errore registrazione: " + err.message;
+                        authError.innerText = "Non siamo riusciti a creare il profilo: " + err.message;
                         authError.classList.remove('hidden');
-                        alert("ERRORE REGISTRAZIONE:\n" + err.message);
                     });
             }
         });
 
-        // Controllo Stato Autenticazione (Cambio Schermata)
+        // Cambio Schermata in automatico quando sei collegato
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 authScreen.classList.add('hidden');
@@ -241,12 +239,12 @@
             }
         });
 
-        // Logout
+        // Tasto Esci
         logoutBtn.addEventListener('click', () => {
             signOut(auth);
         });
 
-        // Gestione Transazioni
+        // Gestione annotazioni
         const transactionForm = document.getElementById('transaction-form');
         const transType = document.getElementById('trans-type');
         const transDesc = document.getElementById('trans-desc');
@@ -273,7 +271,7 @@
                     transactionForm.reset();
                 })
                 .catch((err) => {
-                    alert("Errore salvataggio dati: " + err.message);
+                    alert("Errore nel salvataggio: " + err.message);
                 });
         });
 
@@ -284,7 +282,7 @@
                 transactionsList.innerHTML = '';
 
                 if (!data) {
-                    transactionsList.innerHTML = '<li class="py-4 text-center text-gray-400 text-sm">Nessun movimento presente</li>';
+                    transactionsList.innerHTML = '<li class="py-4 text-center text-gray-400 text-sm">Non hai ancora annotato nulla</li>';
                     totalIncomeEl.innerText = '€ 0,00';
                     totalExpenseEl.innerText = '€ 0,00';
                     totalBalanceEl.innerText = '€ 0,00';
