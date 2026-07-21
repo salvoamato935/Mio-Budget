@@ -402,8 +402,11 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
+        let currentUser = null;
         let isLogin = true;
+        let compartiSetupTemp = [];
 
+        // ESPORTAZIONE FUNZIONI GLOBALI PER L'INTERFACCIA
         window.toggleModalitaAuth = function() {
             isLogin = !isLogin;
             document.getElementById('auth-title').innerText = isLogin ? "Bentornato!" : "Crea il tuo profilo";
@@ -440,21 +443,6 @@
             signOut(auth);
         };
 
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                document.getElementById('auth-screen').style.display = "none";
-                document.getElementById('app-nav').style.display = "flex";
-                document.getElementById('user-header-info').innerText = user.email;
-                document.getElementById('user-header-info').classList.remove('hidden');
-                document.getElementById('view-home').classList.add('active');
-            } else {
-                document.getElementById('auth-screen').style.display = "block";
-                document.getElementById('app-nav').style.display = "none";
-                document.getElementById('user-header-info').classList.add('hidden');
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            }
-        });
-
         window.switchView = function(viewId, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -471,6 +459,148 @@
                 e.target.classList.remove('active');
             }
         };
+
+        // GESTIONE CONFIGURAZIONE E BUDGET
+        window.apriModificaBudget = function() {
+            document.getElementById('btn-annulla-setup').style.display = "block";
+            switchView('setup');
+        };
+
+        window.chiudiModificaBudget = function() {
+            switchView('home', document.getElementById('nav-btn-home'));
+        };
+
+        window.aggiungiCompartoLista = function() {
+            const nomeInput = document.getElementById('add-comp-nome');
+            const budgetInput = document.getElementById('add-comp-budget');
+            const nome = nomeInput.value.trim();
+            const budget = parseFloat(budgetInput.value) || 0;
+
+            if(!nome) return;
+
+            compartiSetupTemp.push({ nome, budget });
+            nomeInput.value = "";
+            budgetInput.value = "";
+            renderListaSetupComparti();
+        };
+
+        function renderListaSetupComparti() {
+            const container = document.getElementById('lista-comparti-setup');
+            container.innerHTML = "";
+            let somma = 0;
+
+            compartiSetupTemp.forEach((item, index) => {
+                somma += item.budget;
+                const div = document.createElement('div');
+                div.className = "setup-comparto-item";
+                div.innerHTML = `
+                    <span><strong>${item.nome}</strong>: ${item.budget.toFixed(2)} €</span>
+                    <button class="btn-delete" onclick="rimuoviCompartoSetup(${index})"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('setup-somma-comparti').innerText = somma.toFixed(2) + " €";
+        }
+
+        window.rimuoviCompartoSetup = function(index) {
+            compartiSetupTemp.splice(index, 1);
+            renderListaSetupComparti();
+        };
+
+        window.salvaConfigurazioneComparti = function() {
+            if(!currentUser) return;
+            const tot = parseFloat(document.getElementById('setup-budget-totale-input').value) || 0;
+            
+            const dataSetup = {
+                budgetTotale: tot,
+                comparti: compartiSetupTemp
+            };
+
+            set(ref(db, `users/${currentUser.uid}/config`), dataSetup).then(() => {
+                switchView('home', document.getElementById('nav-btn-home'));
+            });
+        };
+
+        // GESTIONE SPESE (TASTO + E MODALE)
+        window.apriModalNuovaSpesa = function() {
+            document.getElementById('spesa-edit-id').value = "";
+            document.getElementById('spesa-importo').value = "";
+            document.getElementById('spesa-desc').value = "";
+            document.getElementById('spesa-modal-titolo').innerText = "💸 Annota una Spesa";
+            document.getElementById('btn-elimina-spesa-diretto').style.display = "none";
+            openModal('modal-spesa');
+        };
+
+        window.salvaSpesa = function() {
+            if(!currentUser) return;
+            const importo = parseFloat(document.getElementById('spesa-importo').value);
+            const desc = document.getElementById('spesa-desc').value.trim();
+            const cassetto = document.getElementById('spesa-cassetto').value;
+
+            if(!importo || !desc) return;
+
+            const spesaData = {
+                importo,
+                desc,
+                cassetto,
+                data: new Date().toISOString()
+            };
+
+            push(ref(db, `users/${currentUser.uid}/spese`), spesaData).then(() => {
+                document.getElementById('modal-spesa').classList.remove('active');
+            });
+        };
+
+        // AUTENTICAZIONE ED INIZIALIZZAZIONE DATI
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                currentUser = user;
+                document.getElementById('auth-screen').style.display = "none";
+                document.getElementById('app-nav').style.display = "flex";
+                document.getElementById('user-header-info').innerText = user.email;
+                document.getElementById('user-header-info').classList.remove('hidden');
+                document.getElementById('view-home').classList.add('active');
+
+                // Ascolta modifiche configurazione
+                onValue(ref(db, `users/${user.uid}/config`), (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        document.getElementById('setup-budget-totale-input').value = data.budgetTotale || 0;
+                        document.getElementById('dash-entrate').innerText = (data.budgetTotale || 0).toFixed(2) + " €";
+                        compartiSetupTemp = data.comparti || [];
+                        renderListaSetupComparti();
+                        aggiornaOpzioniCassetti(data.comparti || []);
+                    }
+                });
+
+            } else {
+                currentUser = null;
+                document.getElementById('auth-screen').style.display = "block";
+                document.getElementById('app-nav').style.display = "none";
+                document.getElementById('user-header-info').classList.add('hidden');
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            }
+        });
+
+        function aggiornaOpzioniCassetti(comparti) {
+            const selectSpesa = document.getElementById('spesa-cassetto');
+            const selectScad = document.getElementById('scad-cassetto');
+            selectSpesa.innerHTML = '<option value="generale">Generale (Nessun Cassetto)</option>';
+            selectScad.innerHTML = '<option value="generale">Generale (Nessun Cassetto)</option>';
+
+            comparti.forEach(c => {
+                const opt1 = document.createElement('option');
+                opt1.value = c.nome;
+                opt1.innerText = c.nome;
+                selectSpesa.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = c.nome;
+                opt2.innerText = c.nome;
+                selectScad.appendChild(opt2);
+            });
+        }
     </script>
 </body>
 </html>
