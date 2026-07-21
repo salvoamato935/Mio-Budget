@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mio Budget - Test</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f8fafc">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --accent: #4f46e5;
+            --accent-soft: #eeef2;
+            --accent-gradient: linear-gradient(135deg, #6366f1, #4f46e5);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 90px;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .user-badge { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        .container { padding: 16px; max-width: 480px; margin: 0 auto; }
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* AUTH SCREEN */
+        #auth-screen {
+            background: var(--card-bg);
+            padding: 28px 20px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            margin-top: 30px;
+            text-align: center;
+        }
+        #auth-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        #auth-screen p.subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+        /* DASHBOARD CARDS */
+        .main-card {
+            background: var(--accent-gradient);
+            color: white;
+            border-radius: 24px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
+            box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.3);
+        }
+        .main-card span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85; }
+        .main-card h2 { font-size: 34px; font-weight: 800; margin: 6px 0 12px 0; }
+
+        .budget-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .mini-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            border: 1px solid var(--card-border);
+        }
+        .mini-card span { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .mini-card p { font-size: 17px; font-weight: 700; margin-top: 4px; }
+
+        .section-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        /* CASSETTI */
+        .cassetto-row {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border: 1px solid var(--card-border);
+        }
+        .cassetto-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .cassetto-title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .cassetto-amount { font-weight: 700; font-size: 15px; }
+
+        .progress-bar-bg { background: #f1f5f9; height: 6px; border-radius: 10px; overflow: hidden; margin-top: 6px; }
+        .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.3s ease; }
+
+        /* SPESE LIST */
+        .spesa-item {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--card-border);
+        }
+        .spesa-item h4 { font-size: 14px; font-weight: 600; }
+        .spesa-item span { font-size: 11px; color: var(--text-muted); }
+
+        /* BUTTONS & FORMS */
+        .btn {
+            background: var(--accent-gradient);
+            color: white; border: none; padding: 12px 16px;
+            border-radius: var(--radius-md); font-weight: 600; font-size: 14px;
+            width: 100%; cursor: pointer; transition: transform 0.1s ease;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-secondary { background: #ffffff; color: var(--text-main); border: 1px solid var(--card-border); }
+        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; }
+        .btn-delete { background: none; border: none; color: #cbd5e1; padding: 6px; cursor: pointer; font-size: 14px; transition: color 0.2s; }
+        .btn-delete:hover { color: var(--danger); }
+
+        .form-group { margin-bottom: 14px; text-align: left; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        .form-control { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--card-border); font-size: 15px; background: #fff; }
+
+        /* NAV BAR */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+        }
+        .nav-item { background: none; border: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        .nav-item.active { color: var(--accent); font-weight: 700; }
+        .nav-item i { font-size: 18px; }
+        .nav-center-btn {
+            width: 50px; height: 50px; background: var(--accent-gradient); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;
+            transform: translateY(-12px); border: none; box-shadow: 0 6px 15px rgba(79, 70, 229, 0.35); cursor: pointer;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 2000; align-items: flex-end;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--card-bg); width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 24px 20px; animation: slideUp 0.2s ease-out; max-height: 85vh; overflow-y: auto;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .hidden { display: none !important; }
+        .error-msg { color: var(--danger); font-size: 13px; margin-top: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Mio Budget 📊 <span style="font-size: 10px; background: #e0e7ff; color: var(--accent); padding: 2px 6px; border-radius: 6px;">TEST</span></h1>
+        <div id="user-header-info" class="user-badge hidden"></div>
+    </header>
+
+    <div class="container">
+        
+        <!-- LOGIN / REGISTRAZIONE -->
+        <div id="auth-screen">
+            <h2 id="auth-title">Bentornato!</h2>
+            <p class="subtitle" id="auth-subtitle">Accedi per gestire le tue spese di casa</p>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="auth-email" class="form-control" placeholder="nome@esempio.it">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="auth-password" class="form-control" placeholder="••••••••">
+            </div>
+            <button class="btn" id="btn-auth-primary" onclick="window.gestisciAutenticazione()">Entra nel tuo Budget</button>
+            <button class="btn btn-secondary" id="btn-auth-toggle" onclick="window.toggleModalitaAuth()" style="margin-top:10px; font-size:12px;">Non hai ancora un account? Registrati</button>
+            <p id="auth-error" class="error-msg"></p>
+        </div>
+
+        <!-- SETUP CASSETTI -->
+        <div id="view-setup" class="view">
+            <div class="mini-card" style="padding: 20px;">
+                <h3 style="margin-bottom: 16px; text-align:center;">⚙️ Organizza il tuo Mese</h3>
+                
+                <div class="form-group" style="background: #f0fdf4; padding: 14px; border-radius: 12px; border: 1px solid #bbf7d0;">
+                    <label style="color:#166534; font-weight:700;">1. BUDGET TOTALE DISPONIBILE (€)</label>
+                    <input type="number" id="setup-budget-totale-input" class="form-control" placeholder="Es. 1500" inputmode="decimal" style="font-size:18px; font-weight:700;">
+                </div>
+
+                <hr style="border: 0; height: 1px; background: var(--card-border); margin: 20px 0;">
+
+                <h4 style="margin-bottom: 12px; font-size:13px; color:var(--text-main);">2. AGGIUNGI I TUOI CASSETTI</h4>
+                <div style="background: #f8fafc; padding: 14px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--card-border);">
+                    <div class="form-group">
+                        <label>Nome Cassetto</label>
+                        <input type="text" id="add-comp-nome" class="form-control" placeholder="Es. Spesa Alimentare, Pizzeria, Auto...">
+                    </div>
+                    <div class="form-group">
+                        <label>Budget per questo Cassetto (€)</label>
+                        <input type="number" id="add-comp-budget" class="form-control" placeholder="Es. 400" inputmode="decimal">
+                    </div>
+                    <button class="btn btn-secondary" style="font-size:13px;" onclick="window.aggiungiCompartoLista()">+ Aggiungi Cassetto</button>
+                </div>
+
+                <div id="lista-comparti-setup" style="margin-bottom:16px;"></div>
+                
+                <div style="background:#f1f5f9; padding:12px; border-radius:10px; font-size:13px; text-align:center; font-weight:600; margin-bottom:16px;">
+                    Totale Cassetti Allocato: <span id="setup-somma-comparti" style="color:var(--accent)">0,00 €</span>
+                </div>
+
+                <button class="btn" onclick="window.salvaConfigurazioneComparti()">Salva e Vai alla Dashboard</button>
+                <button class="btn btn-secondary" id="btn-annulla-setup" style="display:none; margin-top:8px;" onclick="window.chiudiModificaBudget()">Annulla</button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD PRINCIPALE -->
+        <div id="view-home" class="view">
+            <div class="main-card">
+                <span>Rimanente Questo Mese</span>
+                <h2 id="dash-disponibile">0,00 €</h2>
+                <button class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.2); color:white; border:none;" onclick="window.apriModificaBudget()"><i class="fa-solid fa-pen"></i> Modifica Budget & Cassetti</button>
+            </div>
+
+            <div class="budget-details">
+                <div class="mini-card"><span>Budget Iniziale</span><p id="dash-entrate" style="color:var(--success);">0,00 €</p></div>
+                <div class="mini-card"><span>Totale Speso</span><p id="dash-speso" style="color:var(--danger);">0,00 €</p></div>
+            </div>
+
+            <h3 class="section-title">📂 I Tuoi Cassetti</h3>
+            <div id="cassetti-container"></div>
+
+            <h3 class="section-title">📝 Ultimi Movimenti</h3>
+            <div id="spese-container"></div>
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="nav-bar" id="app-nav" style="display:none;">
+        <button class="nav-item active" id="nav-btn-home" onclick="window.switchView('home', this)"><i class="fa-solid fa-house"></i><span>Home</span></button>
+        <button class="nav-center-btn" onclick="window.apriModalNuovaSpesa()"><i class="fa-solid fa-plus"></i></button>
+        <button class="nav-item" style="color:var(--danger);" onclick="window.eseguiLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Esci</span></button>
+    </nav>
+
+    <!-- MODALE AGGIUNGI SPESA -->
+    <div id="modal-spesa" class="modal" onclick="window.closeModalOnBackdrop(event)">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 16px;">💸 Nuova Spesa</h3>
+            <div class="form-group">
+                <label>Importo (€)</label>
+                <input type="number" id="spesa-importo" class="form-control" step="0.01" inputmode="decimal" placeholder="0.00" style="font-size:20px; font-weight:700;">
+            </div>
+            <div class="form-group">
+                <label>Descrizione / Negozio</label>
+                <input type="text" id="spesa-desc" class="form-control" placeholder="Es. Supermercato, Benzina, Bar...">
+            </div>
+            <div class="form-group">
+                <label>Seleziona Cassetto</label>
+                <select id="spesa-cassetto" class="form-control"></select>
+            </div>
+            <button class="btn" style="margin-top:10px;" onclick="window.salvaSpesa()">Registra Spesa</button>
+        </div>
+    </div>
+
+    <!-- LOGICA FIREBASE JS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
+            authDomain: "budget-casa-7eead.firebaseapp.com",
+            databaseURL: "https://budget-casa-7eead-default-rtdb.firebaseio.com",
+            projectId: "budget-casa-7eead",
+            storageBucket: "budget-casa-7eead.firebasestorage.app",
+            messagingSenderId: "529644674685",
+            appId: "1:529644674685:web:93438c7393631bc7d4db14"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let isLogin = true;
+        let compartiTemp = [];
+        let configCorrente = { budgetTotale: 0, comparti: [] };
+        let listaSpeseCorrenti = [];
+
+        // FUNZIONI GLOBALI (WINDOW)
+        window.toggleModalitaAuth = function() {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Bentornato!" : "Crea un Profilo";
+            document.getElementById('auth-subtitle').innerText = isLogin ? "Accedi per gestire le tue spese di casa" : "Registrati in pochi secondi per iniziare";
+            document.getElementById('btn-auth-primary').innerText = isLogin ? "Entra nel tuo Budget" : "Registrati ora";
+            document.getElementById('btn-auth-toggle').innerText = isLogin ? "Non hai ancora un account? Registrati" : "Hai già un account? Accedi";
+            document.getElementById('auth-error').innerText = "";
+        };
+
+        window.gestisciAutenticazione = function() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const errEl = document.getElementById('auth-error');
+            errEl.innerText = "";
+
+            if(!email || !password) {
+                errEl.innerText = "Inserisci email e password per proseguire.";
+                return;
+            }
+
+            if(isLogin) {
+                signInWithEmailAndPassword(auth, email, password).catch(err => errEl.innerText = "Credenziali non valide o errore di connessione.");
+            } else {
+                createUserWithEmailAndPassword(auth, email, password).catch(err => errEl.innerText = "Errore durante la registrazione: " + err.message);
+            }
+        };
+
+        window.eseguiLogout = function() { signOut(auth); };
+
+        window.switchView = function(viewId, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            if(btn) btn.classList.add('active');
+        };
+
+        window.closeModalOnBackdrop = function(e) {
+            if(e.target.classList.contains('modal')) e.target.classList.remove('active');
+        };
+
+        window.apriModificaBudget = function() {
+            document.getElementById('btn-annulla-setup').style.display = "block";
+            compartiTemp = [...(configCorrente.comparti || [])];
+            document.getElementById('setup-budget-totale-input').value = configCorrente.budgetTotale || "";
+            renderListaSetup();
+            window.switchView('setup');
+        };
+
+        window.chiudiModificaBudget = function() {
+            window.switchView('home', document.getElementById('nav-btn-home'));
+        };
+
+        window.aggiungiCompartoLista = function() {
+            const nomeEl = document.getElementById('add-comp-nome');
+            const budgetEl = document.getElementById('add-comp-budget');
+            const nome = nomeEl.value.trim();
+            const budget = parseFloat(budgetEl.value) || 0;
+
+            if(!nome) return;
+
+            compartiTemp.push({ nome, budget });
+            nomeEl.value = "";
+            budgetEl.value = "";
+            renderListaSetup();
+        };
+
+        window.rimuoviCompartoSetup = function(idx) {
+            compartiTemp.splice(idx, 1);
+            renderListaSetup();
+        };
+
+        function renderListaSetup() {
+            const container = document.getElementById('lista-comparti-setup');
+            container.innerHTML = "";
+            let somma = 0;
+            compartiTemp.forEach((c, idx) => {
+                somma += c.budget;
+                container.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px 12px; border-radius:8px; margin-bottom:6px; border:1px solid var(--card-border);">
+                        <span><strong>${c.nome}</strong>: ${c.budget.toFixed(2)} €</span>
+                        <button class="btn-delete" onclick="window.rimuoviCompartoSetup(${idx})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+            document.getElementById('setup-somma-comparti').innerText = somma.toFixed(2) + " €";
+        }
+
+        window.salvaConfigurazioneComparti = function() {
+            if(!currentUser) return;
+            const tot = parseFloat(document.getElementById('setup-budget-totale-input').value) || 0;
+            const dataToSave = { budgetTotale: tot, comparti: compartiTemp };
+
+            set(ref(db, `users/${currentUser.uid}/config`), dataToSave).then(() => {
+                window.switchView('home', document.getElementById('nav-btn-home'));
+            });
+        };
+
+        window.apriModalNuovaSpesa = function() {
+            document.getElementById('spesa-importo').value = "";
+            document.getElementById('spesa-desc').value = "";
+            document.getElementById('modal-spesa').classList.add('active');
+        };
+
+        window.salvaSpesa = function() {
+            if(!currentUser) return;
+            const importo = parseFloat(document.getElementById('spesa-importo').value);
+            const desc = document.getElementById('spesa-desc').value.trim();
+            const cassetto = document.getElementById('spesa-cassetto').value;
+
+            if(!importo || !desc) return;
+
+            const nuovaSpesa = { importo, desc, cassetto, data: new Date().toISOString() };
+
+            push(ref(db, `users/${currentUser.uid}/spese`), nuovaSpesa).then(() => {
+                document.getElementById('modal-spesa').classList.remove('active');
+            });
+        };
+
+        window.eliminaSpesa = function(key) {
+            if(!currentUser) return;
+            remove(ref(db, `users/${currentUser.uid}/spese/${key}`));
+        };
+
+        // EVENTI LOGIN/LOGOUT & ASCOLTO DATI
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                currentUser = user;
+                document.getElementById('auth-screen').style.display = "none";
+                document.getElementById('app-nav').style.display = "flex";
+                document.getElementById('user-header-info').innerText = "Account: " + user.email;
+                document.getElementById('user-header-info').classList.remove('hidden');
+
+                // Carica Configurazione
+                onValue(ref(db, `users/${user.uid}/config`), (snap) => {
+                    const data = snap.val();
+                    if(data) {
+                        configCorrente = data;
+                        compartiTemp = data.comparti || [];
+                        aggiornaSelectCassetti(data.comparti || []);
+                    } else {
+                        window.switchView('setup');
+                    }
+                    aggiornaUI();
+                });
+
+                // Carica Spese
+                onValue(ref(db, `users/${user.uid}/spese`), (snap) => {
+                    const data = snap.val();
+                    listaSpeseCorrenti = [];
+                    if(data) {
+                        Object.keys(data).forEach(key => {
+                            listaSpeseCorrenti.push({ key, ...data[key] });
+                        });
+                    }
+                    aggiornaUI();
+                });
+
+                window.switchView('home', document.getElementById('nav-btn-home'));
+
+            } else {
+                currentUser = null;
+                document.getElementById('auth-screen').style.display = "block";
+                document.getElementById('app-nav').style.display = "none";
+                document.getElementById('user-header-info').classList.add('hidden');
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            }
+        });
+
+        function aggiornaSelectCassetti(comparti) {
+            const select = document.getElementById('spesa-cassetto');
+            select.innerHTML = '<option value="Generale">Spesa Generale</option>';
+            comparti.forEach(c => {
+                select.innerHTML += `<option value="${c.nome}">${c.nome}</option>`;
+            });
+        }
+
+        function aggiornaUI() {
+            let totaleSpeso = 0;
+            let spesoPerCassetto = {};
+
+            listaSpeseCorrenti.forEach(s => {
+                totaleSpeso += s.importo;
+                spesoPerCassetto[s.cassetto] = (spesoPerCassetto[s.cassetto] || 0) + s.importo;
+            });
+
+            const budgetTotale = configCorrente.budgetTotale || 0;
+            const disponibile = budgetTotale - totaleSpeso;
+
+            document.getElementById('dash-entrate').innerText = budgetTotale.toFixed(2) + " €";
+            document.getElementById('dash-speso').innerText = totaleSpeso.toFixed(2) + " €";
+            document.getElementById('dash-disponibile').innerText = disponibile.toFixed(2) + " €";
+
+            // Render Cassetti con barra visiva
+            const cassettiContainer = document.getElementById('cassetti-container');
+            cassettiContainer.innerHTML = "";
+            (configCorrente.comparti || []).forEach(c => {
+                const speso = spesoPerCassetto[c.nome] || 0;
+                const rimasto = c.budget - speso;
+                const percent = Math.min(Math.max((speso / c.budget) * 100, 0), 100) || 0;
+
+                cassettiContainer.innerHTML += `
+                    <div class="cassetto-row">
+                        <div class="cassetto-header">
+                            <span class="cassetto-title"><i class="fa-solid fa-folder" style="color:var(--accent);"></i> ${c.nome}</span>
+                            <span class="cassetto-amount" style="color:${rimasto < 0 ? 'var(--danger)' : 'var(--text-main)'}">${rimasto.toFixed(2)} €</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                            <span>Speso: ${speso.toFixed(2)} €</span>
+                            <span>Budget: ${c.budget.toFixed(2)} €</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${percent}%; background:${percent >= 100 ? 'var(--danger)' : 'var(--accent)'}"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render Ultime Spese
+            const speseContainer = document.getElementById('spese-container');
+            speseContainer.innerHTML = "";
+            if(listaSpeseCorrenti.length === 0) {
+                speseContainer.innerHTML = '<p style="font-size:13px; color:var(--text-muted); text-align:center; padding: 12px;">Nessun movimento registrato finora.</p>';
+            } else {
+                listaSpeseCorrenti.slice().reverse().forEach(s => {
+                    speseContainer.innerHTML += `
+                        <div class="spesa-item">
+                            <div>
+                                <h4>${s.desc}</h4>
+                                <span>${s.cassetto}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <strong style="color:var(--danger)">-${s.importo.toFixed(2)} €</strong>
+                                <button class="btn-delete" onclick="window.eliminaSpesa('${s.key}')"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
