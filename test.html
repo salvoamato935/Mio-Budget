@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mio Budget Pro 2.0</title>
-
-    <meta name="theme-color" content="#f1f5f9">
-
+    <title>Mio Budget Pro</title>
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f1f5f9">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
         :root {
             --bg-color: #f1f5f9;
@@ -23,7 +20,6 @@
             --danger: #ef4444;
             --warning: #f59e0b;
             --success: #10b981;
-            --info: #0ea5e9;
         }
 
         * {
@@ -51,10 +47,7 @@
             z-index: 100;
         }
 
-        header h1 {
-            font-size: 18px;
-            font-weight: 700;
-        }
+        header h1 { font-size: 18px; font-weight: 700; }
 
         .status-banner {
             font-size: 12px;
@@ -64,39 +57,23 @@
             display: inline-block;
             margin-top: 5px;
         }
+        .status-ok { background: #dcfce7; color: #15803d; }
+        .status-warn { background: #fef3c7; color: #b45309; }
+        .status-alert { background: #fee2e2; color: #b91c1c; }
 
-        .status-ok {
-            background: #dcfce7;
-            color: #15803d;
-        }
+        .container { padding: 16px; max-width: 480px; margin: 0 auto; }
+        .view { display: none; }
+        .view.active { display: block; }
 
-        .status-warn {
-            background: #fef3c7;
-            color: #b45309;
+        #auth-screen {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-top: 40px;
+            text-align: center;
         }
-
-        .status-alert {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .container {
-            padding: 16px;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-
-        .view {
-            display: none;
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        #auth-screen h2 { margin-bottom: 20px; font-size: 20px; font-weight: 700; }
 
         .main-card {
             background: var(--accent-gradient);
@@ -107,21 +84,7 @@
             margin-bottom: 16px;
             box-shadow: 0 10px 20px rgba(79, 70, 229, 0.1);
         }
-
-        .main-card h2 {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .chart-box {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid var(--card-border);
-            height: 240px;
-        }
+        .main-card h2 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
 
         .budget-details {
             display: grid;
@@ -129,26 +92,9 @@
             gap: 12px;
             margin-bottom: 16px;
         }
-
-        .mini-card {
-            background: var(--card-bg);
-            border-radius: 18px;
-            padding: 14px;
-            border: 1px solid var(--card-border);
-            position: relative;
-        }
-
-        .mini-card span {
-            font-size: 11px;
-            color: var(--text-muted);
-            display: block;
-        }
-
-        .mini-card p {
-            font-size: 16px;
-            font-weight: 700;
-            margin-top: 3px;
-        }
+        .mini-card { background: var(--card-bg); border-radius: 18px; padding: 14px; border: 1px solid var(--card-border); position: relative;}
+        .mini-card span { font-size: 11px; color: var(--text-muted); display: block; }
+        .mini-card p { font-size: 16px; font-weight: 700; }
 
         .section-title {
             font-size: 13px;
@@ -160,7 +106,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
         }
 
         .cassetto-row {
@@ -170,49 +115,9 @@
             margin-bottom: 8px;
             border: 1px solid var(--card-border);
         }
-
-        .cassetto-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            gap: 8px;
-        }
-
-        .cassetto-name {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            min-width: 0;
-        }
-
-        .cassetto-name span {
-            overflow-wrap: anywhere;
-        }
-
-        .cassetto-dispo {
-            font-weight: 700;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .cassetto-progress {
-            height: 5px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .cassetto-progress-bar {
-            height: 100%;
-            width: 0%;
-            transition: width 0.4s;
-        }
+        .cassetto-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .cassetto-name { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+        .cassetto-dispo { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px;}
 
         .spesa-item {
             background: var(--card-bg);
@@ -223,4346 +128,427 @@
             justify-content: space-between;
             align-items: center;
             border: 1px solid var(--card-border);
-            cursor: pointer;
-            gap: 10px;
         }
+        .spesa-info h4 { font-size: 13px; font-weight: 600; }
+        .spesa-info span { font-size: 10px; color: var(--text-muted); }
 
-        .spesa-info {
-            min-width: 0;
-        }
-
-        .spesa-info h4 {
-            font-size: 13px;
-            font-weight: 600;
-            overflow-wrap: anywhere;
-        }
-
-        .spesa-info span {
-            font-size: 10px;
-            color: var(--text-muted);
-        }
-
-        .btn-delete {
-            background: none;
-            border: none;
-            color: var(--danger);
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
+        .btn-delete { background: none; border: none; color: var(--danger); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        
         .btn {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            width: 100%;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            margin-bottom: 8px;
+            background: var(--accent-gradient); color: white; border: none; padding: 12px;
+            border-radius: 12px; font-weight: 600; font-size: 14px; width: 100%; cursor: pointer;
+            transition: transform 0.1s ease; margin-bottom: 8px;
         }
+        .btn:active { transform: scale(0.98); }
+        .btn-secondary { background: #ffffff; color: var(--text-main); border: 1px solid var(--card-border); }
+        .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid #fca5a5; }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            background: #ffffff;
-            color: var(--text-main);
-            border: 1px solid var(--card-border);
-        }
-
-        .btn-danger {
-            background: #fee2e2;
-            color: var(--danger);
-            border: 1px solid #fca5a5;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--card-border);
-            font-size: 14px;
-            background: #fff;
-        }
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-control { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--card-border); font-size: 14px; background: #fff;}
 
         .nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 65px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
+            position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
-
-        .nav-item {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 9px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            cursor: pointer;
-            width: 60px;
-        }
-
-        .nav-item.active {
-            color: var(--accent);
-        }
-
-        .nav-item i {
-            font-size: 16px;
-        }
-
+        .nav-item { background: none; border: none; color: var(--text-muted); font-size: 9px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; width: 60px;}
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { font-size: 16px; }
         .nav-center-btn {
-            width: 46px;
-            height: 46px;
-            background: var(--accent-gradient);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            transform: translateY(-10px);
-            border: none;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+            width: 46px; height: 46px; background: var(--accent-gradient); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;
+            transform: translateY(-10px); border: none; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
         }
 
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 23, 42, 0.3);
-            backdrop-filter: blur(4px);
-            z-index: 2000;
-            align-items: flex-end;
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(4px); z-index: 2000; align-items: flex-end;
         }
-
-        .modal.active {
-            display: flex;
-        }
-
+        .modal.active { display: flex; }
         .modal-content {
-            background: var(--card-bg);
-            width: 100%;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            padding: 20px;
-            animation: slideUp 0.2s ease-out;
-            max-height: 85vh;
-            overflow-y: auto;
+            background: var(--card-bg); width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px;
+            padding: 20px; animation: slideUp 0.2s ease-out; max-height: 85vh; overflow-y: auto;
         }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-            }
-
-            to {
-                transform: translateY(0);
-            }
-        }
-
-        .badge-btn {
-            background: #f1f5f9;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            color: var(--accent);
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-        }
-
-        .setup-comparto-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8fafc;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            font-size: 13px;
-            gap: 8px;
-        }
-
-        .filter-select {
-            background: transparent;
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 4px 8px;
-            font-size: 12px;
-            color: var(--text-main);
-        }
-
-        .info-piano {
-            font-size: 11px;
-            background: #e0f2fe;
-            color: #0369a1;
-            padding: 6px 10px;
-            border-radius: 8px;
-            margin-top: 6px;
-            font-weight: 600;
-        }
-
-        .error-msg {
-            color: #ef4444;
-            font-size: 13px;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-
-        .month-selector {
-            width: 100%;
-            background: white;
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .summary-box {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 12px;
-            margin: 12px 0;
-            font-size: 12px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .summary-row:last-child {
-            margin-bottom: 0;
-            font-weight: 700;
-            border-top: 1px solid var(--card-border);
-            padding-top: 8px;
-        }
-
-        .transaction-type {
-            font-size: 10px;
-            padding: 3px 6px;
-            border-radius: 5px;
-            font-weight: 700;
-            display: inline-block;
-            margin-top: 3px;
-        }
-
-        .type-expense {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .type-transfer {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .type-income {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .empty-state {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 20px;
-        }
+        .badge-btn { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--accent); font-weight: 600; border: none; cursor: pointer; }
+        .setup-comparto-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 13px;}
+        .hidden { display: none !important; }
+        .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; font-weight: 500; }
     </style>
 </head>
-
 <body>
 
     <header>
         <h1 id="header-title">Mio Budget 📊</h1>
-
-        <div id="status-label" class="status-banner status-ok">
-            🟢 Tutto sotto controllo
-        </div>
-
-        <div id="user-header-info"
-             style="font-size:11px; color:var(--text-muted); margin-top:4px;"
-             class="hidden">
-        </div>
+        <div id="status-label" class="status-banner status-ok">🟢 Tutto sotto controllo</div>
+        <div id="user-header-info" style="font-size:11px; color:var(--text-muted); margin-top:4px;" class="hidden"></div>
     </header>
 
     <div class="container">
-
-        <!-- AUTENTICAZIONE -->
-
-        <div id="auth-screen" class="mini-card" style="padding:24px; margin-top:40px; text-align:center;">
-
-            <h2 id="auth-title" style="margin-bottom:20px; font-size:20px;">
-                Accedi al tuo Budget
-            </h2>
-
+        
+        <!-- SCHERMATA ACCESSO -->
+        <div id="auth-screen">
+            <h2 id="auth-title">Bentornato!</h2>
             <div class="form-group">
-                <label>Email</label>
-                <input type="email"
-                       id="auth-email"
-                       class="form-control"
-                       placeholder="esempio@email.com">
+                <label>La tua email</label>
+                <input type="email" id="auth-email" class="form-control" placeholder="nome@esempio.it">
             </div>
-
             <div class="form-group">
                 <label>Password</label>
-                <input type="password"
-                       id="auth-password"
-                       class="form-control"
-                       placeholder="Inserisci la tua password">
+                <input type="password" id="auth-password" class="form-control" placeholder="••••••••">
             </div>
-
-            <button class="btn" id="btn-auth-primary" onclick="gestisciAutenticazione()">
-                Accedi
-            </button>
-
-            <button class="btn btn-secondary"
-                    id="btn-auth-toggle"
-                    onclick="toggleModalitaAuth()"
-                    style="font-size:12px;">
-                Non hai un account? Registrati
-            </button>
-
-            <button class="btn btn-secondary"
-                    onclick="recuperaPassword()"
-                    style="font-size:12px;">
-                Password dimenticata?
-            </button>
-
+            <button class="btn" id="btn-auth-primary" onclick="window.gestisciAutenticazione()">Entra nel tuo Budget</button>
+            <button class="btn btn-secondary" id="btn-auth-toggle" onclick="window.toggleModalitaAuth()" style="font-size:12px;">Prima volta qui? Crea un profilo</button>
             <p id="auth-error" class="error-msg"></p>
-
         </div>
 
-        <!-- CONFIGURAZIONE -->
-
+        <!-- SCHERMATA CONFIGURAZIONE CASSETTI -->
         <div id="view-setup" class="view">
-
-            <div class="mini-card" style="padding:20px;">
-
-                <h3 style="margin-bottom:12px; text-align:center;">
-                    Configurazione Budget
-                </h3>
-
-                <div class="form-group"
-                     style="margin-bottom:20px; background:#e0f2fe; padding:12px; border-radius:12px; border:1px solid #bae6fd;">
-
-                    <label style="color:#0369a1; font-weight:700;">
-                        BUDGET MENSILE TOTALE (€)
-                    </label>
-
-                    <input type="number"
-                           id="setup-budget-totale-input"
-                           class="form-control"
-                           placeholder="Es. 1500"
-                           inputmode="decimal"
-                           style="border-color:#7dd3fc; font-size:16px; font-weight:700;">
-
+            <div class="mini-card" style="padding: 20px;">
+                <h3 style="margin-bottom: 12px; text-align:center;">Organizza il tuo Mese</h3>
+                
+                <div class="form-group" style="margin-bottom: 20px; background: #e0f2fe; padding: 12px; border-radius: 12px; border: 1px solid #bae6fd;">
+                    <label style="color:#0369a1; font-weight:700;">1. QUANTO VUOI SPENDERE QUESTO MESE? (€)</label>
+                    <input type="number" id="setup-budget-totale-input" class="form-control" placeholder="Es. 1500" inputmode="decimal" style="border-color:#7dd3fc; font-size:16px; font-weight:700;">
                 </div>
 
-                <hr style="border:0; height:1px; background:var(--card-border); margin:20px 0;">
+                <hr style="border: 0; height: 1px; background: var(--card-border); margin: 20px 0;">
 
-                <h4 style="margin-bottom:10px; font-size:13px;">
-                    COMPARTI DI BUDGET
-                </h4>
-
-                <div style="background:#f8fafc; padding:12px; border-radius:12px; margin-bottom:16px; border:1px solid var(--card-border);">
-
+                <h4 style="margin-bottom: 10px; font-size:13px; color:var(--text-main);">2. DIVIDI IL BUDGET IN CASSETTI</h4>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--card-border);">
                     <div class="form-group">
-                        <label>Nome Comparto</label>
-
-                        <input type="text"
-                               id="add-comp-nome"
-                               class="form-control"
-                               placeholder="Es. Casa, Auto, Spesa...">
+                        <label>Nome Cassetto</label>
+                        <input type="text" id="add-comp-nome" class="form-control" placeholder="Es. Spesa Casa, Pizzeria, Auto...">
                     </div>
-
                     <div class="form-group">
-                        <label>Budget assegnato (€)</label>
-
-                        <input type="number"
-                               id="add-comp-budget"
-                               class="form-control"
-                               placeholder="Es. 400"
-                               inputmode="decimal">
+                        <label>Importo per questo Cassetto (€)</label>
+                        <input type="number" id="add-comp-budget" class="form-control" placeholder="Es. 400" inputmode="decimal">
                     </div>
-
-                    <button class="btn btn-secondary"
-                            style="font-size:12px; padding:6px;"
-                            onclick="aggiungiCompartoLista()">
-
-                        + Aggiungi Comparto
-
-                    </button>
-
+                    <button class="btn btn-secondary" style="font-size:12px; padding:6px;" onclick="window.aggiungiCompartoLista()">+ Aggiungi Cassetto</button>
                 </div>
 
                 <div id="lista-comparti-setup" style="margin-bottom:16px;"></div>
-
+                
                 <div style="background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; text-align:center; font-weight:600; margin-bottom:16px;">
-
-                    Assegnato ai Comparti:
-                    <span id="setup-somma-comparti"
-                          style="color:var(--accent);">
-                        0,00 €
-                    </span>
-
-                    <br>
-
-                    Non Assegnato:
-                    <span id="setup-budget-non-assegnato"
-                          style="color:var(--success);">
-                        0,00 €
-                    </span>
-
+                    Totale Cassetti: <span id="setup-somma-comparti" style="color:var(--accent)">0,00 €</span>
                 </div>
 
-                <button class="btn" onclick="salvaConfigurazioneComparti()">
-                    Salva Configurazione
-                </button>
-
-                <button class="btn btn-secondary"
-                        id="btn-annulla-setup"
-                        style="display:none;"
-                        onclick="chiudiModificaBudget()">
-
-                    Annulla
-
-                </button>
-
+                <button class="btn" onclick="window.salvaConfigurazioneComparti()">Salva e Continua</button>
+                <button class="btn btn-secondary" id="btn-annulla-setup" style="display:none;" onclick="window.chiudiModificaBudget()">Annulla</button>
             </div>
-
         </div>
 
-        <!-- HOME -->
-
+        <!-- DASHBOARD -->
         <div id="view-home" class="view">
-
-            <select id="mese-selettore"
-                    class="month-selector"
-                    onchange="cambiaMese(this.value)">
-            </select>
-
             <div class="main-card">
-
-                <p style="font-size:12px; opacity:0.9;">
-                    Disponibilità del Mese
-                </p>
-
-                <h2 id="dash-disponibile">
-                    0,00 €
-                </h2>
-
-                <button class="badge-btn"
-                        style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;"
-                        onclick="apriModificaBudget()">
-
-                    <i class="fa-solid fa-sliders"></i>
-                    Gestisci Budget
-
-                </button>
-
-            </div>
-
-            <div class="chart-box">
-                <canvas id="budgetChart"></canvas>
+                <p style="font-size:12px; opacity:0.9;">Quanto ti resta ancora</p>
+                <h2 id="dash-disponibile">0,00 €</h2>
+                <button class="badge-btn" style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;" onclick="window.apriModificaBudget()"><i class="fa-solid fa-sliders"></i> Regola Budget e Cassetti</button>
             </div>
 
             <div class="budget-details">
-
-                <div class="mini-card">
-                    <span>Budget Totale</span>
-                    <p id="dash-entrate" style="color:var(--success);">
-                        0 €
-                    </p>
-                </div>
-
-                <div class="mini-card">
-                    <span>Spese</span>
-                    <p id="dash-speso" style="color:var(--danger);">
-                        0 €
-                    </p>
-                </div>
-
-                <div class="mini-card">
-                    <span>Accantonato</span>
-                    <p id="dash-accantonato" style="color:var(--info);">
-                        0 €
-                    </p>
-                </div>
-
-                <div class="mini-card">
-                    <span>Giornaliero Consigliato</span>
-                    <p id="dash-giornaliero" style="color:var(--accent);">
-                        0 €
-                    </p>
-                </div>
-
+                <div class="mini-card"><span>Budget Iniziale</span><p id="dash-entrate" style="color:var(--success);">0,00 €</p></div>
+                <div class="mini-card"><span>Già Speso</span><p id="dash-speso" style="color:var(--danger);">0,00 €</p></div>
             </div>
 
-            <h3 class="section-title">
-                📊 I Tuoi Comparti
-            </h3>
-
+            <h3 class="section-title">📊 I Tuoi Cassetti</h3>
             <div id="cassetti-container"></div>
 
-            <h3 class="section-title">
-
-                📅 Scadenze
-
-                <button class="badge-btn"
-                        onclick="openModal('modal-scadenza')">
-
-                    + Aggiungi
-
-                </button>
-
-            </h3>
-
-            <div id="scadenze-container"></div>
-
-            <h3 class="section-title">
-
-                🕒 Movimenti
-
-                <select id="filtro-categoria"
-                        class="filter-select"
-                        onchange="calcolaERenderizzaUI()">
-
-                    <option value="tutte">
-                        Tutti
-                    </option>
-
-                </select>
-
-            </h3>
-
+            <h3 class="section-title">🕒 Ultime Spese</h3>
             <div id="spese-container"></div>
-
-            <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-
-                <button class="btn btn-secondary"
-                        style="color:var(--accent); border-color:var(--accent);"
-                        onclick="esportaInCSV()">
-
-                    <i class="fa-solid fa-file-csv"></i>
-                    Esporta
-
-                </button>
-
-                <button class="btn btn-secondary"
-                        style="color:var(--accent); border-color:var(--accent);"
-                        onclick="apriRiepilogoChiusuraMese()">
-
-                    <i class="fa-solid fa-box-archive"></i>
-                    Riepilogo
-
-                </button>
-
-            </div>
-
-        </div>
-
-        <!-- SALVADANAI -->
-
-        <div id="view-salvadanai" class="view">
-
-            <h3 class="section-title">
-                🐷 Piani di Risparmio
-            </h3>
-
-            <div id="salvadanai-container"></div>
-
-            <button class="btn"
-                    onclick="openModal('modal-salvadanaio')">
-
-                <i class="fa-solid fa-plus"></i>
-                Nuovo Obiettivo
-
-            </button>
-
-        </div>
-
-        <!-- STORICO -->
-
-        <div id="view-storico" class="view">
-
-            <div class="section-title">
-
-                <span>
-                    Archivio Mesi
-                </span>
-
-                <button class="badge-btn"
-                        style="color:var(--danger); background:#fee2e2;"
-                        onclick="svuotaInteroStorico()">
-
-                    <i class="fa-solid fa-trash-can"></i>
-                    Svuota
-
-                </button>
-
-            </div>
-
-            <div id="storico-container"></div>
-
         </div>
 
     </div>
 
-    <!-- NAV -->
-
-    <nav class="nav-bar"
-         id="app-nav"
-         style="display:none;">
-
-        <button class="nav-item active"
-                id="nav-btn-home"
-                onclick="switchView('home', this)">
-
-            <i class="fa-solid fa-wallet"></i>
-            <span>Home</span>
-
-        </button>
-
-        <button class="nav-item"
-                onclick="switchView('salvadanai', this)">
-
-            <i class="fa-solid fa-piggy-bank"></i>
-            <span>Piani</span>
-
-        </button>
-
-        <button class="nav-center-btn"
-                onclick="apriModalNuovaSpesa()">
-
-            <i class="fa-solid fa-plus"></i>
-
-        </button>
-
-        <button class="nav-item"
-                onclick="switchView('storico', this)">
-
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>Storico</span>
-
-        </button>
-
-        <button class="nav-item"
-                style="color:var(--danger);"
-                onclick="eseguiLogout()">
-
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Esci</span>
-
-        </button>
-
+    <!-- NAVBAR IN BASSO -->
+    <nav class="nav-bar" id="app-nav" style="display:none;">
+        <button class="nav-item active" id="nav-btn-home" onclick="window.switchView('home', this)"><i class="fa-solid fa-wallet"></i><span>Home</span></button>
+        <button class="nav-center-btn" onclick="window.apriModalNuovaSpesa()"><i class="fa-solid fa-plus"></i></button>
+        <button class="nav-item" style="color:var(--danger);" onclick="window.eseguiLogout()"><i class="fa-solid fa-right-from-bracket"></i><span>Esci</span></button>
     </nav>
 
     <!-- MODALE SPESA -->
-
-    <div id="modal-spesa"
-         class="modal"
-         onclick="closeModalOnBackdrop(event)">
-
+    <div id="modal-spesa" class="modal" onclick="window.closeModalOnBackdrop(event)">
         <div class="modal-content">
-
-            <h3 id="spesa-modal-titolo">
-                💸 Inserisci Spesa
-            </h3>
-
-            <input type="hidden"
-                   id="spesa-edit-id">
-
-            <div class="form-group">
-
-                <label>Importo (€)</label>
-
-                <input type="number"
-                       id="spesa-importo"
-                       class="form-control"
-                       step="0.01"
-                       inputmode="decimal">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Descrizione</label>
-
-                <input type="text"
-                       id="spesa-desc"
-                       class="form-control"
-                       placeholder="Es. Spesa Conad">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Comparto</label>
-
-                <select id="spesa-cassetto"
-                        class="form-control">
-                </select>
-
-            </div>
-
-            <button class="btn"
-                    onclick="salvaSpesa()">
-
-                Conferma Spesa
-
-            </button>
-
-            <button class="btn btn-danger"
-                    id="btn-elimina-spesa-diretto"
-                    style="display:none;"
-                    onclick="clickEliminaSpesaInModifica()">
-
-                Elimina Spesa
-
-            </button>
-
+            <h3>💸 Annota una Spesa</h3>
+            <div class="form-group"><label>Importo Spesa (€)</label><input type="number" id="spesa-importo" class="form-control" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+            <div class="form-group"><label>Descrizione</label><input type="text" id="spesa-desc" class="form-control" placeholder="Es. Spesa alimentare, Carburante..."></div>
+            <div class="form-group"><label>Seleziona Cassetto</label><select id="spesa-cassetto" class="form-control"></select></div>
+            <button class="btn" onclick="window.salvaSpesa()">Registra Spesa</button>
         </div>
-
-    </div>
-
-    <!-- MODALE SCADENZA -->
-
-    <div id="modal-scadenza"
-         class="modal"
-         onclick="closeModalOnBackdrop(event)">
-
-        <div class="modal-content">
-
-            <h3>
-                📅 Nuova Scadenza
-            </h3>
-
-            <div class="form-group">
-
-                <label>Nome</label>
-
-                <input type="text"
-                       id="scad-nome"
-                       class="form-control"
-                       placeholder="Es. Assicurazione">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Importo (€)</label>
-
-                <input type="number"
-                       id="scad-importo"
-                       class="form-control"
-                       inputmode="decimal">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Frequenza</label>
-
-                <select id="scad-frequenza"
-                        class="form-control">
-
-                    <option value="monthly">
-                        Ogni mese
-                    </option>
-
-                    <option value="bimonthly">
-                        Ogni 2 mesi
-                    </option>
-
-                    <option value="quarterly">
-                        Ogni 3 mesi
-                    </option>
-
-                    <option value="halfyearly">
-                        Ogni 6 mesi
-                    </option>
-
-                    <option value="yearly">
-                        Ogni anno
-                    </option>
-
-                    <option value="once">
-                        Una volta sola
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Prima scadenza</label>
-
-                <input type="date"
-                       id="scad-data"
-                       class="form-control">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Comparto</label>
-
-                <select id="scad-cassetto"
-                        class="form-control">
-                </select>
-
-            </div>
-
-            <button class="btn"
-                    onclick="aggiungiScadenza()">
-
-                Salva Scadenza
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- MODALE PAGAMENTO SCADENZA -->
-
-    <div id="modal-paga-scadenza"
-         class="modal"
-         onclick="closeModalOnBackdrop(event)">
-
-        <div class="modal-content">
-
-            <h3>
-                💳 Registra Pagamento
-            </h3>
-
-            <input type="hidden"
-                   id="paga-scad-id">
-
-            <div class="form-group">
-
-                <label>Scadenza</label>
-
-                <input type="text"
-                       id="paga-scad-nome"
-                       class="form-control"
-                       readonly>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Importo effettivo (€)</label>
-
-                <input type="number"
-                       id="paga-scad-importo-reale"
-                       class="form-control"
-                       step="0.01"
-                       inputmode="decimal">
-
-            </div>
-
-            <button class="btn"
-                    onclick="confermaPagamentoScadenza()">
-
-                Registra Pagamento
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- MODALE SALVADANAIO -->
-
-    <div id="modal-salvadanaio"
-         class="modal"
-         onclick="closeModalOnBackdrop(event)">
-
-        <div class="modal-content">
-
-            <h3>
-                🐷 Nuovo Obiettivo
-            </h3>
-
-            <div class="form-group">
-
-                <label>Nome</label>
-
-                <input type="text"
-                       id="salva-nome"
-                       class="form-control"
-                       placeholder="Es. Vacanze">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Obiettivo (€)</label>
-
-                <input type="number"
-                       id="salva-target"
-                       class="form-control"
-                       inputmode="decimal">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Scadenza</label>
-
-                <input type="month"
-                       id="salva-data-target"
-                       class="form-control">
-
-            </div>
-
-            <button class="btn"
-                    onclick="creaSalvadanaio()">
-
-                Inizia Piano
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- MODALE VERSAMENTO -->
-
-    <div id="modal-versamento"
-         class="modal"
-         onclick="closeModalOnBackdrop(event)">
-
-        <div class="modal-content">
-
-            <h3>
-                💰 Accantona Fondi
-            </h3>
-
-            <input type="hidden"
-                   id="versamento-salvadanaio-id">
-
-            <p id="versamento-salvadanaio-nome"
-               style="font-weight:700; margin:10px 0 15px;">
-            </p>
-
-            <div class="form-group">
-
-                <label>Importo (€)</label>
-
-                <input type="number"
-                       id="versamento-importo"
-                       class="form-control"
-                       step="0.01"
-                       inputmode="decimal">
-
-            </div>
-
-            <button class="btn"
-                    onclick="confermaVersamento()">
-
-                Accantona
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- MODALE RIEPILOGO -->
-
-    <div id="modal-riepilogo"
-         class="modal"
-         onclick="closeModalOnBackdrop(event)">
-
-        <div class="modal-content">
-
-            <h3>
-                📦 Riepilogo del Mese
-            </h3>
-
-            <div id="riepilogo-contenuto"></div>
-
-            <button class="btn"
-                    onclick="chiudiMese()">
-
-                Chiudi Mese
-
-            </button>
-
-            <button class="btn btn-secondary"
-                    onclick="closeModal('modal-riepilogo')">
-
-                Annulla
-
-            </button>
-
-        </div>
-
     </div>
 
     <script type="module">
-
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-
-        import {
-            getDatabase,
-            ref,
-            set,
-            update,
-            onValue,
-            remove
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getDatabase, 
+            ref, 
+            push, 
+            onValue, 
+            remove, 
+            set 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        import {
-            getAuth,
-            signInWithEmailAndPassword,
-            createUserWithEmailAndPassword,
-            sendPasswordResetEmail,
-            signOut,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-
-        /*
-        ============================================================
-        FIREBASE
-        ============================================================
-        */
-
         const firebaseConfig = {
-
             apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
-
             authDomain: "budget-casa-7eead.firebaseapp.com",
-
-            databaseURL: "https://budget-casa-7eead-default-rtdb.firebaseio.com/",
-
+            databaseURL: "https://budget-casa-7eead-default-rtdb.firebaseio.com",
             projectId: "budget-casa-7eead",
-
             storageBucket: "budget-casa-7eead.firebasestorage.app",
-
             messagingSenderId: "529644674685",
-
             appId: "1:529644674685:web:93438c7393631bc7d4db14"
-
         };
-
 
         const app = initializeApp(firebaseConfig);
-
+        const auth = getAuth(app);
         const db = getDatabase(app);
 
-        const auth = getAuth(app);
+        let currentUser = null;
+        let isLogin = true;
+        let compartiTemp = [];
+        let configCorrente = { budgetTotale: 0, comparti: [] };
+        let listaSpeseCorrenti = [];
 
-
-        /*
-        ============================================================
-        STATO APPLICAZIONE
-        ============================================================
-        */
-
-        let isLoginMode = true;
-
-        let utenteCorrente = null;
-
-        let budgetRef = null;
-
-        let storicoRef = null;
-
-        let appData = {
-
-            budget: {},
-
-            salvadanai: {},
-
-            scadenze: {}
-
+        // ESPORTAZIONE FUNZIONI GLOBALI SU WINDOW
+        window.toggleModalitaAuth = function() {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Bentornato!" : "Crea un profilo";
+            document.getElementById('btn-auth-primary').innerText = isLogin ? "Entra nel tuo Budget" : "Registrati subito";
+            document.getElementById('btn-auth-toggle').innerText = isLogin ? "Prima volta qui? Crea un profilo" : "Hai già un profilo? Accedi";
+            document.getElementById('auth-error').innerText = "";
         };
 
-        let meseCorrente = getMonthKey();
+        window.gestisciAutenticazione = function() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const errEl = document.getElementById('auth-error');
+            errEl.innerText = "";
 
-        let listaCompartiTemporanea = {};
-
-        let myChart = null;
-
-
-        /*
-        ============================================================
-        FUNZIONI GENERALI
-        ============================================================
-        */
-
-        function getMonthKey(date = new Date()) {
-
-            const anno = date.getFullYear();
-
-            const mese = String(date.getMonth() + 1).padStart(2, "0");
-
-            return `${anno}-${mese}`;
-
-        }
-
-
-        function formatCurrency(value) {
-
-            return Number(value || 0).toLocaleString("it-IT", {
-
-                minimumFractionDigits: 2,
-
-                maximumFractionDigits: 2
-
-            }) + " €";
-
-        }
-
-
-        function formatMonth(monthKey) {
-
-            if (!monthKey) return "";
-
-            const [anno, mese] = monthKey.split("-");
-
-            const date = new Date(Number(anno), Number(mese) - 1, 1);
-
-            return date.toLocaleDateString("it-IT", {
-
-                month: "long",
-
-                year: "numeric"
-
-            });
-
-        }
-
-
-        function escapeHTML(value) {
-
-            return String(value ?? "")
-
-                .replace(/&/g, "&amp;")
-
-                .replace(/</g, "&lt;")
-
-                .replace(/>/g, "&gt;")
-
-                .replace(/"/g, "&quot;")
-
-                .replace(/'/g, "&#039;");
-
-        }
-
-
-        function generateId() {
-
-            if (crypto.randomUUID) {
-
-                return crypto.randomUUID();
-
-            }
-
-            return "id_" + Date.now() + "_" + Math.random().toString(36).substring(2);
-
-        }
-
-
-        function getDaysRemainingInMonth() {
-
-            const now = new Date();
-
-            const lastDay = new Date(
-
-                now.getFullYear(),
-
-                now.getMonth() + 1,
-
-                0
-
-            ).getDate();
-
-            return Math.max(1, lastDay - now.getDate() + 1);
-
-        }
-
-
-        /*
-        ============================================================
-        AUTENTICAZIONE
-        ============================================================
-        */
-
-        window.gestisciAutenticazione = async function () {
-
-            const email =
-                document.getElementById("auth-email").value.trim();
-
-            const password =
-                document.getElementById("auth-password").value;
-
-            const errorEl =
-                document.getElementById("auth-error");
-
-            errorEl.textContent = "";
-
-            if (!email || !password) {
-
-                errorEl.textContent =
-                    "Inserisci email e password.";
-
+            if(!email || !password) {
+                errEl.innerText = "Inserisci email e password per continuare.";
                 return;
-
             }
 
-            try {
-
-                if (isLoginMode) {
-
-                    await signInWithEmailAndPassword(
-
-                        auth,
-
-                        email,
-
-                        password
-
-                    );
-
-                } else {
-
-                    await createUserWithEmailAndPassword(
-
-                        auth,
-
-                        email,
-
-                        password
-
-                    );
-
-                }
-
-            } catch (error) {
-
-                errorEl.textContent =
-                    traduciErroreFirebase(error.code);
-
+            if(isLogin) {
+                signInWithEmailAndPassword(auth, email, password).catch(err => errEl.innerText = "Email o password errate.");
+            } else {
+                createUserWithEmailAndPassword(auth, email, password).catch(err => errEl.innerText = "Errore registrazione: " + err.message);
             }
-
         };
 
+        window.eseguiLogout = function() { signOut(auth); };
 
-        window.toggleModalitaAuth = function () {
-
-            isLoginMode = !isLoginMode;
-
-            document.getElementById("auth-title").textContent =
-                isLoginMode
-                    ? "Accedi al tuo Budget"
-                    : "Crea un nuovo account";
-
-            document.getElementById("btn-auth-primary").textContent =
-                isLoginMode
-                    ? "Accedi"
-                    : "Registrati";
-
-            document.getElementById("btn-auth-toggle").textContent =
-                isLoginMode
-                    ? "Non hai un account? Registrati"
-                    : "Hai già un account? Accedi";
-
+        window.switchView = function(viewId, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            if(btn) btn.classList.add('active');
         };
 
-
-        window.recuperaPassword = async function () {
-
-            const email =
-                document.getElementById("auth-email").value.trim();
-
-            const errorEl =
-                document.getElementById("auth-error");
-
-            if (!email) {
-
-                errorEl.textContent =
-                    "Inserisci prima la tua email.";
-
-                return;
-
-            }
-
-            try {
-
-                await sendPasswordResetEmail(auth, email);
-
-                errorEl.style.color = "var(--success)";
-
-                errorEl.textContent =
-                    "Email per il recupero password inviata.";
-
-            } catch (error) {
-
-                errorEl.style.color = "var(--danger)";
-
-                errorEl.textContent =
-                    traduciErroreFirebase(error.code);
-
-            }
-
+        window.closeModalOnBackdrop = function(e) {
+            if(e.target.classList.contains('modal')) e.target.classList.remove('active');
         };
 
+        window.apriModificaBudget = function() {
+            document.getElementById('btn-annulla-setup').style.display = "block";
+            compartiTemp = [...(configCorrente.comparti || [])];
+            document.getElementById('setup-budget-totale-input').value = configCorrente.budgetTotale || "";
+            renderListaSetup();
+            window.switchView('setup');
+        };
 
-        window.eseguiLogout = function () {
+        window.chiudiModificaBudget = function() {
+            window.switchView('home', document.getElementById('nav-btn-home'));
+        };
 
-            signOut(auth).then(() => {
+        window.aggiungiCompartoLista = function() {
+            const nomeEl = document.getElementById('add-comp-nome');
+            const budgetEl = document.getElementById('add-comp-budget');
+            const nome = nomeEl.value.trim();
+            const budget = parseFloat(budgetEl.value) || 0;
 
-                window.location.reload();
+            if(!nome) return;
 
+            compartiTemp.push({ nome, budget });
+            nomeEl.value = "";
+            budgetEl.value = "";
+            renderListaSetup();
+        };
+
+        window.rimuoviCompartoSetup = function(idx) {
+            compartiTemp.splice(idx, 1);
+            renderListaSetup();
+        };
+
+        function renderListaSetup() {
+            const container = document.getElementById('lista-comparti-setup');
+            container.innerHTML = "";
+            let somma = 0;
+            compartiTemp.forEach((c, idx) => {
+                somma += c.budget;
+                container.innerHTML += `
+                    <div class="setup-comparto-item">
+                        <span><strong>${c.nome}</strong>: ${c.budget.toFixed(2)} €</span>
+                        <button class="btn-delete" onclick="window.rimuoviCompartoSetup(${idx})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
             });
-
-        };
-
-
-        function traduciErroreFirebase(code) {
-
-            switch (code) {
-
-                case "auth/invalid-credential":
-
-                    return "Credenziali non valide.";
-
-                case "auth/weak-password":
-
-                    return "La password deve avere almeno 6 caratteri.";
-
-                case "auth/email-already-in-use":
-
-                    return "Questa email è già associata a un account.";
-
-                case "auth/invalid-email":
-
-                    return "Formato email non valido.";
-
-                case "auth/user-not-found":
-
-                    return "Utente non trovato.";
-
-                case "auth/too-many-requests":
-
-                    return "Troppi tentativi. Riprova più tardi.";
-
-                default:
-
-                    return "Impossibile completare l'operazione.";
-
-            }
-
+            document.getElementById('setup-somma-comparti').innerText = somma.toFixed(2) + " €";
         }
 
+        window.salvaConfigurazioneComparti = function() {
+            if(!currentUser) return;
+            const tot = parseFloat(document.getElementById('setup-budget-totale-input').value) || 0;
+            const dataToSave = { budgetTotale: tot, comparti: compartiTemp };
 
-        /*
-        ============================================================
-        LOGIN STATE
-        ============================================================
-        */
+            set(ref(db, `users/${currentUser.uid}/config`), dataToSave).then(() => {
+                window.switchView('home', document.getElementById('nav-btn-home'));
+            });
+        };
 
-        onAuthStateChanged(auth, user => {
+        window.apriModalNuovaSpesa = function() {
+            document.getElementById('spesa-importo').value = "";
+            document.getElementById('spesa-desc').value = "";
+            document.getElementById('modal-spesa').classList.add('active');
+        };
 
-            if (user) {
+        window.salvaSpesa = function() {
+            if(!currentUser) return;
+            const importo = parseFloat(document.getElementById('spesa-importo').value);
+            const desc = document.getElementById('spesa-desc').value.trim();
+            const cassetto = document.getElementById('spesa-cassetto').value;
 
-                utenteCorrente = user;
+            if(!importo || !desc) return;
 
-                document
-                    .getElementById("auth-screen")
-                    .classList.add("hidden");
+            const nuovaSpesa = { importo, desc, cassetto, data: new Date().toISOString() };
 
-                document
-                    .getElementById("app-nav")
-                    .style.display = "flex";
+            push(ref(db, `users/${currentUser.uid}/spese`), nuovaSpesa).then(() => {
+                document.getElementById('modal-spesa').classList.remove('active');
+            });
+        };
 
-                const info =
-                    document.getElementById("user-header-info");
+        window.eliminaSpesa = function(key) {
+            if(!currentUser) return;
+            remove(ref(db, `users/${currentUser.uid}/spese/${key}`));
+        };
 
-                info.classList.remove("hidden");
+        // ASCOLTO FIREBASE IN TEMPO REALE
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                currentUser = user;
+                document.getElementById('auth-screen').style.display = "none";
+                document.getElementById('app-nav').style.display = "flex";
+                document.getElementById('user-header-info').innerText = user.email;
+                document.getElementById('user-header-info').classList.remove('hidden');
 
-                info.textContent =
-                    "Connesso come: " + user.email;
+                // Leggi Configurazione
+                onValue(ref(db, `users/${user.uid}/config`), (snap) => {
+                    const data = snap.val();
+                    if(data) {
+                        configCorrente = data;
+                        compartiTemp = data.comparti || [];
+                        aggiornaSelectCassetti(data.comparti || []);
+                    } else {
+                        window.switchView('setup');
+                    }
+                    aggiornaUI();
+                });
 
-                budgetRef =
-                    ref(db, "utenti/" + user.uid + "/budget");
+                // Leggi Spese
+                onValue(ref(db, `users/${user.uid}/spese`), (snap) => {
+                    const data = snap.val();
+                    listaSpeseCorrenti = [];
+                    if(data) {
+                        Object.keys(data).forEach(key => {
+                            listaSpeseCorrenti.push({ key, ...data[key] });
+                        });
+                    }
+                    aggiornaUI();
+                });
 
-                storicoRef =
-                    ref(db, "utenti/" + user.uid + "/storico");
-
-                avviaAscoltoDati();
+                window.switchView('home', document.getElementById('nav-btn-home'));
 
             } else {
-
-                utenteCorrente = null;
-
-                document
-                    .getElementById("auth-screen")
-                    .classList.remove("hidden");
-
-                document
-                    .getElementById("app-nav")
-                    .style.display = "none";
-
-                document
-                    .getElementById("user-header-info")
-                    .classList.add("hidden");
-
-                disattivaViste();
-
+                currentUser = null;
+                document.getElementById('auth-screen').style.display = "block";
+                document.getElementById('app-nav').style.display = "none";
+                document.getElementById('user-header-info').classList.add('hidden');
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             }
-
         });
 
-
-        function disattivaViste() {
-
-            document
-                .querySelectorAll(".view")
-                .forEach(view => {
-
-                    view.classList.remove("active");
-
-                });
-
+        function aggiornaSelectCassetti(comparti) {
+            const select = document.getElementById('spesa-cassetto');
+            select.innerHTML = '<option value="generale">Generale (Nessun Cassetto)</option>';
+            comparti.forEach(c => {
+                select.innerHTML += `<option value="${c.nome}">${c.nome}</option>`;
+            });
         }
 
+        function aggiornaUI() {
+            let totaleSpeso = 0;
+            let spesoPerCassetto = {};
 
-        /*
-        ============================================================
-        LETTURA DATI
-        ============================================================
-        */
-
-        function avviaAscoltoDati() {
-
-            onValue(budgetRef, snapshot => {
-
-                const data = snapshot.val();
-
-                if (!data) {
-
-                    appData = {
-
-                        budget: {},
-
-                        salvadanai: {},
-
-                        scadenze: {}
-
-                    };
-
-                    switchViewWithoutBtn("setup");
-
-                    document
-                        .getElementById("btn-annulla-setup")
-                        .style.display = "none";
-
-                    return;
-
-                }
-
-                appData = {
-
-                    budget: data.budget || {},
-
-                    salvadanai: data.salvadanai || {},
-
-                    scadenze: data.scadenze || {}
-
-                };
-
-                aggiornaSelettoreMesi();
-
-                if (!document.querySelector(".view.active") ||
-                    document.getElementById("view-setup").classList.contains("active")) {
-
-                    switchViewWithoutBtn("home");
-
-                }
-
-                calcolaERenderizzaUI();
-
+            listaSpeseCorrenti.forEach(s => {
+                totaleSpeso += s.importo;
+                spesoPerCassetto[s.cassetto] = (spesoPerCassetto[s.cassetto] || 0) + s.importo;
             });
 
-
-            onValue(storicoRef, snapshot => {
-
-                renderizzaStorico(snapshot.val());
-
-            });
-
-        }
-
-
-        function getBudgetMese() {
-
-            return appData.budget[meseCorrente] || {
-
-                entrate: 0,
-
-                cassetti: {},
-
-                transazioni: {}
-
-            };
-
-        }
-
-
-        /*
-        ============================================================
-        GESTIONE MESI
-        ============================================================
-        */
-
-        function aggiornaSelettoreMesi() {
-
-            const select =
-                document.getElementById("mese-selettore");
-
-            const mesi = new Set();
-
-            mesi.add(getMonthKey());
-
-            Object.keys(appData.budget || {})
-                .forEach(mese => mesi.add(mese));
-
-            const mesiOrdinati =
-                Array.from(mesi).sort().reverse();
-
-            select.innerHTML = "";
-
-            mesiOrdinati.forEach(mese => {
-
-                const option =
-                    document.createElement("option");
-
-                option.value = mese;
-
-                option.textContent =
-                    formatMonth(mese);
-
-                if (mese === meseCorrente) {
-
-                    option.selected = true;
-
-                }
-
-                select.appendChild(option);
-
-            });
-
-        }
-
-
-        window.cambiaMese = function (mese) {
-
-            meseCorrente = mese;
-
-            calcolaERenderizzaUI();
-
-        };
-
-
-        /*
-        ============================================================
-        CONFIGURAZIONE BUDGET
-        ============================================================
-        */
-
-        window.aggiungiCompartoLista = function () {
-
-            const nome =
-                document
-                    .getElementById("add-comp-nome")
-                    .value
-                    .trim();
-
-            const budget =
-                parseFloat(
-                    document
-                        .getElementById("add-comp-budget")
-                        .value
-                ) || 0;
-
-            if (!nome || budget <= 0) {
-
-                alert("Inserisci nome e budget validi.");
-
-                return;
-
-            }
-
-            const id = generateId();
-
-            listaCompartiTemporanea[id] = {
-
-                nome,
-
-                budget
-
-            };
-
-            document
-                .getElementById("add-comp-nome")
-                .value = "";
-
-            document
-                .getElementById("add-comp-budget")
-                .value = "";
-
-            aggiornaAnteprimaListaSetup();
-
-        };
-
-
-        window.rimuoviCompartoListaTemporanea = function (id) {
-
-            delete listaCompartiTemporanea[id];
-
-            aggiornaAnteprimaListaSetup();
-
-        };
-
-
-        function aggiornaAnteprimaListaSetup() {
-
-            const container =
-                document.getElementById("lista-comparti-setup");
-
-            container.innerHTML = "";
-
-            let somma = 0;
-
-            Object.keys(listaCompartiTemporanea)
-                .forEach(id => {
-
-                    const comparto =
-                        listaCompartiTemporanea[id];
-
-                    somma += Number(comparto.budget);
-
-                    const row =
-                        document.createElement("div");
-
-                    row.className =
-                        "setup-comparto-item";
-
-                    row.innerHTML = `
-
-                        <span>
-                            <b>${escapeHTML(comparto.nome)}</b>:
-                            ${formatCurrency(comparto.budget)}
-                        </span>
-
-                        <button class="btn-delete"
-                                data-id="${id}">
-
-                            <i class="fa-solid fa-trash-can"></i>
-
-                        </button>
-
-                    `;
-
-                    row
-                        .querySelector("button")
-                        .addEventListener("click", () => {
-
-                            delete listaCompartiTemporanea[id];
-
-                            aggiornaAnteprimaListaSetup();
-
-                        });
-
-                    container.appendChild(row);
-
-                });
-
-            const budgetTotale =
-                parseFloat(
-                    document
-                        .getElementById("setup-budget-totale-input")
-                        .value
-                ) || 0;
-
-            const nonAssegnato =
-                Math.max(0, budgetTotale - somma);
-
-            document
-                .getElementById("setup-somma-comparti")
-                .textContent =
-                formatCurrency(somma);
-
-            document
-                .getElementById("setup-budget-non-assegnato")
-                .textContent =
-                formatCurrency(nonAssegnato);
-
-        }
-
-
-        document
-            .getElementById("setup-budget-totale-input")
-            .addEventListener("input", aggiornaAnteprimaListaSetup);
-
-
-        window.salvaConfigurazioneComparti = async function () {
-
-            const budgetTotale =
-                parseFloat(
-                    document
-                        .getElementById("setup-budget-totale-input")
-                        .value
-                ) || 0;
-
-            if (budgetTotale <= 0) {
-
-                alert("Inserisci un budget valido.");
-
-                return;
-
-            }
-
-            let somma = 0;
-
-            Object.values(listaCompartiTemporanea)
-                .forEach(comparto => {
-
-                    somma += Number(comparto.budget);
-
-                });
-
-            if (somma > budgetTotale) {
-
-                alert("I comparti superano il budget totale.");
-
-                return;
-
-            }
-
-            const meseRef =
-                ref(
-                    db,
-                    `utenti/${utenteCorrente.uid}/budget/${meseCorrente}`
-                );
-
-            const budgetAttuale =
-                getBudgetMese();
-
-            await update(meseRef, {
-
-                entrate: budgetTotale,
-
-                cassetti: listaCompartiTemporanea,
-
-                transazioni:
-                    budgetAttuale.transazioni || {}
-
-            });
-
-            switchViewWithoutBtn("home");
-
-        };
-
-
-        window.apriModificaBudget = function () {
-
-            const budget =
-                getBudgetMese();
-
-            document
-                .getElementById("setup-budget-totale-input")
-                .value =
-                budget.entrate || "";
-
-            listaCompartiTemporanea =
-                JSON.parse(
-                    JSON.stringify(
-                        budget.cassetti || {}
-                    )
-                );
-
-            aggiornaAnteprimaListaSetup();
-
-            document
-                .getElementById("btn-annulla-setup")
-                .style.display = "block";
-
-            switchViewWithoutBtn("setup");
-
-        };
-
-
-        window.chiudiModificaBudget = function () {
-
-            switchViewWithoutBtn("home");
-
-        };
-
-
-        /*
-        ============================================================
-        CALCOLO FINANZIARIO
-        ============================================================
-        */
-
-        function calcolaDatiMese() {
-
-            const budget =
-                getBudgetMese();
-
-            const transazioni =
-                budget.transazioni || {};
-
-            let spese = 0;
-
-            let accantonato = 0;
-
-            let prelevato = 0;
-
-            const spesoPerCassetto = {};
-
-            Object.keys(budget.cassetti || {})
-                .forEach(id => {
-
-                    spesoPerCassetto[id] = 0;
-
-                });
-
-
-            Object.values(transazioni)
-                .forEach(transazione => {
-
-                    const importo =
-                        Number(transazione.importo) || 0;
-
-                    if (transazione.tipo === "expense") {
-
-                        spese += importo;
-
-                        if (spesoPerCassetto[transazione.cassetto] !== undefined) {
-
-                            spesoPerCassetto[transazione.cassetto] += importo;
-
-                        }
-
-                    }
-
-                    if (transazione.tipo === "transfer_to_savings") {
-
-                        accantonato += importo;
-
-                    }
-
-                    if (transazione.tipo === "transfer_from_savings") {
-
-                        prelevato += importo;
-
-                    }
-
-                });
-
-            const disponibile =
-                Number(budget.entrate || 0)
-                - spese
-                - accantonato
-                + prelevato;
-
-            return {
-
-                budget,
-
-                transazioni,
-
-                spese,
-
-                accantonato,
-
-                prelevato,
-
-                disponibile,
-
-                spesoPerCassetto
-
-            };
-
-        }
-
-
-        window.calcolaERenderizzaUI = function () {
-
-            const dati =
-                calcolaDatiMese();
-
-            document
-                .getElementById("dash-entrate")
-                .textContent =
-                formatCurrency(dati.budget.entrate);
-
-            document
-                .getElementById("dash-speso")
-                .textContent =
-                formatCurrency(dati.spese);
-
-            document
-                .getElementById("dash-accantonato")
-                .textContent =
-                formatCurrency(dati.accantonato);
-
-            document
-                .getElementById("dash-disponibile")
-                .textContent =
-                formatCurrency(dati.disponibile);
-
-            const giorni =
-                getDaysRemainingInMonth();
-
-            document
-                .getElementById("dash-giornaliero")
-                .textContent =
-                formatCurrency(
-                    Math.max(0, dati.disponibile / giorni)
-                );
-
-
-            const label =
-                document.getElementById("status-label");
-
-            if (dati.disponibile < 0) {
-
-                label.className =
-                    "status-banner status-alert";
-
-                label.textContent =
-                    "🔴 Budget in negativo";
-
-            } else if (
-                dati.disponibile <
-                dati.budget.entrate * 0.15
-            ) {
-
-                label.className =
-                    "status-banner status-warn";
-
-                label.textContent =
-                    "🟡 Fondi quasi esauriti";
-
-            } else {
-
-                label.className =
-                    "status-banner status-ok";
-
-                label.textContent =
-                    "🟢 Tutto sotto controllo";
-
-            }
-
-
-            renderizzaSezioneCassetti(
-                dati.spesoPerCassetto
-            );
-
-            renderizzaSezioneScadenze();
-
-            renderizzaSezioneSpese();
-
-            renderizzaSezioneSalvadanai();
-
-            aggiornaSelectMenuModali();
-
-            renderizzaGrafico(
-                dati.spesoPerCassetto
-            );
-
-        };
-
-
-        /*
-        ============================================================
-        COMPARTI
-        ============================================================
-        */
-
-        function renderizzaSezioneCassetti(spesoPerCassetto) {
-
-            const container =
-                document.getElementById("cassetti-container");
-
-            container.innerHTML = "";
-
-            const budget =
-                getBudgetMese();
-
-            const cassetti =
-                budget.cassetti || {};
-
-            const totaleAssegnato =
-                Object.values(cassetti)
-                    .reduce(
-                        (totale, cassetto) =>
-                            totale + Number(cassetto.budget || 0),
-                        0
-                    );
-
-            const nonAssegnato =
-                Number(budget.entrate || 0)
-                - totaleAssegnato;
-
-            Object.keys(cassetti)
-                .forEach(id => {
-
-                    const comparto =
-                        cassetti[id];
-
-                    const speso =
-                        spesoPerCassetto[id] || 0;
-
-                    const rimasto =
-                        Number(comparto.budget)
-                        - speso;
-
-                    let percentuale =
-                        comparto.budget > 0
-                            ? (speso / comparto.budget) * 100
-                            : 0;
-
-                    const percentualeBarra =
-                        Math.min(100, Math.max(0, percentuale));
-
-                    let colore =
-                        "var(--success)";
-
-                    if (percentuale > 85) {
-
-                        colore =
-                            "var(--danger)";
-
-                    } else if (percentuale > 60) {
-
-                        colore =
-                            "var(--warning)";
-
-                    }
-
-                    const row =
-                        document.createElement("div");
-
-                    row.className =
-                        "cassetto-row";
-
-                    row.innerHTML = `
-
+            const budgetTotale = configCorrente.budgetTotale || 0;
+            const disponibile = budgetTotale - totaleSpeso;
+
+            document.getElementById('dash-entrate').innerText = budgetTotale.toFixed(2) + " €";
+            document.getElementById('dash-speso').innerText = totaleSpeso.toFixed(2) + " €";
+            document.getElementById('dash-disponibile').innerText = disponibile.toFixed(2) + " €";
+
+            // Render Cassetti
+            const cassettiContainer = document.getElementById('cassetti-container');
+            cassettiContainer.innerHTML = "";
+            (configCorrente.comparti || []).forEach(c => {
+                const speso = spesoPerCassetto[c.nome] || 0;
+                const rimasto = c.budget - speso;
+                cassettiContainer.innerHTML += `
+                    <div class="cassetto-row">
                         <div class="cassetto-header">
-
-                            <span class="cassetto-name">
-
-                                <i class="fa-solid fa-folder-open"
-                                   style="color:var(--accent)">
-                                </i>
-
-                                <span>
-                                    ${escapeHTML(comparto.nome)}
-                                </span>
-
-                            </span>
-
-                            <span class="cassetto-dispo"
-                                  style="color:${rimasto < 0 ? "var(--danger)" : "var(--text-main)"}">
-
-                                ${formatCurrency(rimasto)}
-
-                                <button class="badge-btn">
-                                    ✏️
-                                </button>
-
-                            </span>
-
+                            <span class="cassetto-name">${c.nome}</span>
+                            <span class="cassetto-dispo" style="color:${rimasto < 0 ? 'var(--danger)' : 'var(--text-main)'}">${rimasto.toFixed(2)} €</span>
                         </div>
-
-                        <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px;">
-
-                            Speso:
-                            ${formatCurrency(speso)}
-
-                            /
-                            Budget:
-                            ${formatCurrency(comparto.budget)}
-
-                            (${Math.round(percentuale)}%)
-
-                        </div>
-
-                        <div class="cassetto-progress">
-
-                            <div class="cassetto-progress-bar"
-                                 style="width:${percentualeBarra}%; background:${colore};">
-                            </div>
-
-                        </div>
-
-                    `;
-
-                    row
-                        .querySelector("button")
-                        .addEventListener("click", () => {
-
-                            modificaBudgetComparto(
-                                id,
-                                comparto.budget
-                            );
-
-                        });
-
-                    container.appendChild(row);
-
-                });
-
-
-            const fondo =
-                document.createElement("div");
-
-            fondo.className =
-                "cassetto-row";
-
-            fondo.style.borderLeft =
-                "4px solid var(--info)";
-
-            fondo.innerHTML = `
-
-                <div class="cassetto-header">
-
-                    <span class="cassetto-name">
-
-                        <i class="fa-solid fa-wallet"
-                           style="color:var(--info)">
-                        </i>
-
-                        <span>
-                            Budget non assegnato
-                        </span>
-
-                    </span>
-
-                    <strong style="color:${nonAssegnato < 0 ? "var(--danger)" : "var(--info)"}">
-
-                        ${formatCurrency(nonAssegnato)}
-
-                    </strong>
-
-                </div>
-
-                <div style="font-size:10px; color:var(--text-muted);">
-
-                    Quota del budget non assegnata a un comparto specifico.
-
-                </div>
-
-            `;
-
-            container.appendChild(fondo);
-
-        }
-
-
-        function modificaBudgetComparto(id, budgetAttuale) {
-
-            const nuovoBudget =
-                parseFloat(
-                    prompt(
-                        "Nuovo budget del comparto:",
-                        budgetAttuale
-                    )
-                );
-
-            if (
-                isNaN(nuovoBudget) ||
-                nuovoBudget < 0
-            ) {
-
-                return;
-
-            }
-
-            const budget =
-                getBudgetMese();
-
-            const altri =
-                Object.keys(budget.cassetti || {})
-                    .filter(
-                        compartoId =>
-                            compartoId !== id
-                    )
-                    .reduce(
-                        (totale, compartoId) =>
-                            totale +
-                            Number(
-                                budget.cassetti[compartoId].budget
-                            ),
-                        0
-                    );
-
-            if (
-                altri + nuovoBudget >
-                Number(budget.entrate)
-            ) {
-
-                alert(
-                    "Il budget dei comparti supera il budget totale."
-                );
-
-                return;
-
-            }
-
-            const path =
-                `utenti/${utenteCorrente.uid}/budget/${meseCorrente}/cassetti/${id}/budget`;
-
-            set(ref(db, path), nuovoBudget);
-
-        }
-
-
-        /*
-        ============================================================
-        TRANSAZIONI
-        ============================================================
-        */
-
-        window.apriModalNuovaSpesa = function () {
-
-            document
-                .getElementById("spesa-modal-titolo")
-                .textContent =
-                "💸 Inserisci Spesa";
-
-            document
-                .getElementById("spesa-edit-id")
-                .value = "";
-
-            document
-                .getElementById("spesa-importo")
-                .value = "";
-
-            document
-                .getElementById("spesa-desc")
-                .value = "";
-
-            document
-                .getElementById("btn-elimina-spesa-diretto")
-                .style.display = "none";
-
-            openModal("modal-spesa");
-
-        };
-
-
-        window.apriModificaSpesaEsistente = function (id) {
-
-            const budget =
-                getBudgetMese();
-
-            const transazione =
-                budget.transazioni[id];
-
-            if (
-                !transazione ||
-                transazione.tipo !== "expense"
-            ) {
-
-                return;
-
-            }
-
-            document
-                .getElementById("spesa-modal-titolo")
-                .textContent =
-                "✏️ Modifica Spesa";
-
-            document
-                .getElementById("spesa-edit-id")
-                .value = id;
-
-            document
-                .getElementById("spesa-importo")
-                .value =
-                transazione.importo;
-
-            document
-                .getElementById("spesa-desc")
-                .value =
-                transazione.descrizione;
-
-            document
-                .getElementById("spesa-cassetto")
-                .value =
-                transazione.cassetto;
-
-            document
-                .getElementById("btn-elimina-spesa-diretto")
-                .style.display =
-                "block";
-
-            openModal("modal-spesa");
-
-        };
-
-
-        window.salvaSpesa = async function () {
-
-            const id =
-                document
-                    .getElementById("spesa-edit-id")
-                    .value;
-
-            const importo =
-                parseFloat(
-                    document
-                        .getElementById("spesa-importo")
-                        .value
-                ) || 0;
-
-            const descrizione =
-                document
-                    .getElementById("spesa-desc")
-                    .value
-                    .trim() ||
-                "Spesa";
-
-            const cassetto =
-                document
-                    .getElementById("spesa-cassetto")
-                    .value;
-
-            if (importo <= 0) {
-
-                alert("Inserisci un importo valido.");
-
-                return;
-
-            }
-
-            const basePath =
-                `utenti/${utenteCorrente.uid}/budget/${meseCorrente}/transazioni`;
-
-            const transactionId =
-                id || generateId();
-
-            const path =
-                `${basePath}/${transactionId}`;
-
-            const budget =
-                getBudgetMese();
-
-            const transazionePrecedente =
-                budget.transazioni[transactionId];
-
-            await set(ref(db, path), {
-
-                tipo: "expense",
-
-                importo,
-
-                descrizione,
-
-                cassetto,
-
-                timestamp:
-                    transazionePrecedente?.timestamp ||
-                    Date.now()
-
-            });
-
-            closeModal("modal-spesa");
-
-        };
-
-
-        window.clickEliminaSpesaInModifica = async function () {
-
-            const id =
-                document
-                    .getElementById("spesa-edit-id")
-                    .value;
-
-            if (!id) return;
-
-            if (
-                confirm(
-                    "Eliminare definitivamente questa spesa?"
-                )
-            ) {
-
-                await remove(
-
-                    ref(
-
-                        db,
-
-                        `utenti/${utenteCorrente.uid}/budget/${meseCorrente}/transazioni/${id}`
-
-                    )
-
-                );
-
-                closeModal("modal-spesa");
-
-            }
-
-        };
-
-
-        function renderizzaSezioneSpese() {
-
-            const container =
-                document.getElementById("spese-container");
-
-            container.innerHTML = "";
-
-            const budget =
-                getBudgetMese();
-
-            const filtro =
-                document
-                    .getElementById("filtro-categoria")
-                    .value;
-
-            let transazioni =
-                Object.entries(
-                    budget.transazioni || {}
-                )
-                .map(([id, transazione]) => ({
-
-                    id,
-
-                    ...transazione
-
-                }))
-                .sort(
-                    (a, b) =>
-                        b.timestamp - a.timestamp
-                );
-
-            if (filtro !== "tutte") {
-
-                transazioni =
-                    transazioni.filter(
-                        transazione =>
-                            transazione.cassetto === filtro
-                    );
-
-            }
-
-            if (!transazioni.length) {
-
-                container.innerHTML =
-                    `<div class="empty-state">
-                        Nessun movimento nel mese.
-                    </div>`;
-
-                return;
-
-            }
-
-            transazioni.forEach(transazione => {
-
-                const item =
-                    document.createElement("div");
-
-                item.className =
-                    "spesa-item";
-
-                const data =
-                    new Date(
-                        transazione.timestamp
-                    ).toLocaleDateString(
-                        "it-IT",
-                        {
-                            day: "2-digit",
-                            month: "2-digit",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        }
-                    );
-
-                let titolo =
-                    transazione.descrizione ||
-                    "Movimento";
-
-                let tipoTesto =
-                    "Spesa";
-
-                let tipoClasse =
-                    "type-expense";
-
-                if (
-                    transazione.tipo ===
-                    "transfer_to_savings"
-                ) {
-
-                    tipoTesto =
-                        "Accantonamento";
-
-                    tipoClasse =
-                        "type-transfer";
-
-                }
-
-                if (
-                    transazione.tipo ===
-                    "transfer_from_savings"
-                ) {
-
-                    tipoTesto =
-                        "Prelievo dal salvadanaio";
-
-                    tipoClasse =
-                        "type-income";
-
-                }
-
-                const importo =
-                    Number(transazione.importo);
-
-                item.innerHTML = `
-
-                    <div class="spesa-info">
-
-                        <h4>
-                            ${escapeHTML(titolo)}
-                        </h4>
-
-                        <span>
-                            ${data}
-                        </span>
-
-                        <br>
-
-                        <span class="transaction-type ${tipoClasse}">
-                            ${tipoTesto}
-                        </span>
-
+                        <div style="font-size:11px; color:var(--text-muted)">Budget: ${c.budget.toFixed(2)} € | Speso: ${speso.toFixed(2)} €</div>
                     </div>
-
-                    <span style="font-weight:700; color:${importo < 0 ? "var(--success)" : "var(--danger)"}">
-
-                        ${importo < 0 ? "+" : "-"}
-                        ${formatCurrency(Math.abs(importo))}
-
-                    </span>
-
                 `;
-
-                if (
-                    transazione.tipo ===
-                    "expense"
-                ) {
-
-                    item.addEventListener(
-                        "click",
-                        () =>
-                            apriModificaSpesaEsistente(
-                                transazione.id
-                            )
-                    );
-
-                }
-
-                container.appendChild(item);
-
             });
 
-        }
-
-
-        /*
-        ============================================================
-        SALVADANAI
-        ============================================================
-        */
-
-        window.creaSalvadanaio = async function () {
-
-            const nome =
-                document
-                    .getElementById("salva-nome")
-                    .value
-                    .trim();
-
-            const target =
-                parseFloat(
-                    document
-                        .getElementById("salva-target")
-                        .value
-                ) || 0;
-
-            const dataTarget =
-                document
-                    .getElementById("salva-data-target")
-                    .value;
-
-            if (!nome || target <= 0) {
-
-                alert("Inserisci dati validi.");
-
-                return;
-
-            }
-
-            const id =
-                generateId();
-
-            await set(
-
-                ref(
-
-                    db,
-
-                    `utenti/${utenteCorrente.uid}/salvadanai/${id}`
-
-                ),
-
-                {
-
-                    nome,
-
-                    target,
-
-                    dataTarget,
-
-                    accumulato: 0,
-
-                    creato: Date.now()
-
-                }
-
-            );
-
-            document
-                .getElementById("salva-nome")
-                .value = "";
-
-            document
-                .getElementById("salva-target")
-                .value = "";
-
-            document
-                .getElementById("salva-data-target")
-                .value = "";
-
-            closeModal("modal-salvadanaio");
-
-        };
-
-
-        window.versaNelSalvadanaio = function (id) {
-
-            const salvadanaio =
-                appData.salvadanai[id];
-
-            if (!salvadanaio) return;
-
-            document
-                .getElementById("versamento-salvadanaio-id")
-                .value = id;
-
-            document
-                .getElementById("versamento-salvadanaio-nome")
-                .textContent =
-                salvadanaio.nome;
-
-            document
-                .getElementById("versamento-importo")
-                .value = "";
-
-            openModal("modal-versamento");
-
-        };
-
-
-        window.confermaVersamento = async function () {
-
-            const id =
-                document
-                    .getElementById("versamento-salvadanaio-id")
-                    .value;
-
-            const cifra =
-                parseFloat(
-                    document
-                        .getElementById("versamento-importo")
-                        .value
-                ) || 0;
-
-            if (cifra <= 0) {
-
-                alert("Inserisci un importo valido.");
-
-                return;
-
-            }
-
-            const salvadanaio =
-                appData.salvadanai[id];
-
-            if (!salvadanaio) return;
-
-            const nuovoAccumulo =
-                Number(salvadanaio.accumulato || 0)
-                + cifra;
-
-            const transactionId =
-                generateId();
-
-            const updates = {};
-
-            updates[
-                `utenti/${utenteCorrente.uid}/salvadanai/${id}/accumulato`
-            ] =
-                nuovoAccumulo;
-
-            updates[
-                `utenti/${utenteCorrente.uid}/budget/${meseCorrente}/transazioni/${transactionId}`
-            ] = {
-
-                tipo: "transfer_to_savings",
-
-                importo: cifra,
-
-                descrizione:
-                    "Accantonamento: " +
-                    salvadanaio.nome,
-
-                salvadanaioId: id,
-
-                timestamp: Date.now()
-
-            };
-
-            await update(
-                ref(db),
-                updates
-            );
-
-            closeModal("modal-versamento");
-
-        };
-
-
-        window.prelevaDalSalvadanaio = async function (id) {
-
-            const salvadanaio =
-                appData.salvadanai[id];
-
-            if (!salvadanaio) return;
-
-            const cifra =
-                parseFloat(
-                    prompt(
-                        "Quanto vuoi prelevare?"
-                    )
-                );
-
-            if (
-                isNaN(cifra) ||
-                cifra <= 0
-            ) {
-
-                return;
-
-            }
-
-            if (
-                cifra >
-                Number(
-                    salvadanaio.accumulato || 0
-                )
-            ) {
-
-                alert(
-                    "Fondi insufficienti."
-                );
-
-                return;
-
-            }
-
-            const nuovoAccumulo =
-                Number(salvadanaio.accumulato || 0)
-                - cifra;
-
-            const transactionId =
-                generateId();
-
-            const updates = {};
-
-            updates[
-                `utenti/${utenteCorrente.uid}/salvadanai/${id}/accumulato`
-            ] =
-                nuovoAccumulo;
-
-            updates[
-                `utenti/${utenteCorrente.uid}/budget/${meseCorrente}/transazioni/${transactionId}`
-            ] = {
-
-                tipo: "transfer_from_savings",
-
-                importo: cifra,
-
-                descrizione:
-                    "Prelievo da: " +
-                    salvadanaio.nome,
-
-                salvadanaioId: id,
-
-                timestamp: Date.now()
-
-            };
-
-            await update(
-                ref(db),
-                updates
-            );
-
-        };
-
-
-        window.eliminaSalvadanaio = async function (id) {
-
-            if (
-                confirm(
-                    "Eliminare questo obiettivo?"
-                )
-            ) {
-
-                await remove(
-
-                    ref(
-
-                        db,
-
-                        `utenti/${utenteCorrente.uid}/salvadanai/${id}`
-
-                    )
-
-                );
-
-            }
-
-        };
-
-
-        function renderizzaSezioneSalvadanai() {
-
-            const container =
-                document.getElementById(
-                    "salvadanai-container"
-                );
-
-            container.innerHTML = "";
-
-            const salvadanai =
-                appData.salvadanai || {};
-
-            if (
-                Object.keys(salvadanai).length === 0
-            ) {
-
-                container.innerHTML =
-                    `<div class="empty-state">
-                        Nessun obiettivo attivo.
-                    </div>`;
-
-                return;
-
-            }
-
-            Object.entries(salvadanai)
-                .forEach(([id, salvadanaio]) => {
-
-                    const accumulato =
-                        Number(
-                            salvadanaio.accumulato || 0
-                        );
-
-                    const target =
-                        Number(
-                            salvadanaio.target || 0
-                        );
-
-                    const manca =
-                        Math.max(
-                            0,
-                            target - accumulato
-                        );
-
-                    const percentuale =
-                        target > 0
-                            ? Math.min(
-                                100,
-                                (accumulato / target) * 100
-                            )
-                            : 0;
-
-                    const card =
-                        document.createElement("div");
-
-                    card.className =
-                        "cassetto-row";
-
-                    card.style.borderLeft =
-                        "5px solid var(--accent)";
-
-                    card.innerHTML = `
-
-                        <div class="cassetto-header">
-
-                            <span class="cassetto-name">
-
-                                <i class="fa-solid fa-piggy-bank"
-                                   style="color:#ec4899">
-                                </i>
-
-                                <span>
-                                    ${escapeHTML(salvadanaio.nome)}
-                                </span>
-
-                            </span>
-
-                            <button class="btn-delete">
-
-                                <i class="fa-solid fa-trash-can"></i>
-
-                            </button>
-
-                        </div>
-
-                        <div style="font-size:12px; margin-bottom:6px;">
-
-                            Accumulato:
-                            <b>${formatCurrency(accumulato)}</b>
-
-                            di
-                            ${formatCurrency(target)}
-
-                        </div>
-
-                        <div class="cassetto-progress"
-                             style="margin-bottom:8px;">
-
-                            <div class="cassetto-progress-bar"
-                                 style="width:${percentuale}%; background:var(--accent);">
-
-                            </div>
-
-                        </div>
-
-                        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">
-
-                            Mancano:
-                            <b>${formatCurrency(manca)}</b>
-
-                        </div>
-
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-
-                            <button class="badge-btn"
-                                    style="background:#dcfce7; color:#15803d;">
-
-                                + Versa
-
-                            </button>
-
-                            <button class="badge-btn"
-                                    style="background:#fee2e2; color:var(--danger);">
-
-                                − Preleva
-
-                            </button>
-
-                        </div>
-
-                    `;
-
-                    card
-                        .querySelector(".btn-delete")
-                        .addEventListener(
-                            "click",
-                            () =>
-                                eliminaSalvadanaio(id)
-                        );
-
-                    const buttons =
-                        card.querySelectorAll(
-                            ".badge-btn"
-                        );
-
-                    buttons[0]
-                        .addEventListener(
-                            "click",
-                            () =>
-                                versaNelSalvadanaio(id)
-                        );
-
-                    buttons[1]
-                        .addEventListener(
-                            "click",
-                            () =>
-                                prelevaDalSalvadanaio(id)
-                        );
-
-                    container.appendChild(card);
-
-                });
-
-        }
-
-
-        /*
-        ============================================================
-        SCADENZE
-        ============================================================
-        */
-
-        window.aggiungiScadenza = async function () {
-
-            const nome =
-                document
-                    .getElementById("scad-nome")
-                    .value
-                    .trim();
-
-            const importo =
-                parseFloat(
-                    document
-                        .getElementById("scad-importo")
-                        .value
-                ) || 0;
-
-            const frequenza =
-                document
-                    .getElementById("scad-frequenza")
-                    .value;
-
-            const data =
-                document
-                    .getElementById("scad-data")
-                    .value;
-
-            const cassetto =
-                document
-                    .getElementById("scad-cassetto")
-                    .value;
-
-            if (
-                !nome ||
-                importo <= 0 ||
-                !data
-            ) {
-
-                alert(
-                    "Compila correttamente i campi."
-                );
-
-                return;
-
-            }
-
-            const id =
-                generateId();
-
-            await set(
-
-                ref(
-
-                    db,
-
-                    `utenti/${utenteCorrente.uid}/scadenze/${id}`
-
-                ),
-
-                {
-
-                    nome,
-
-                    importo,
-
-                    frequenza,
-
-                    prossimaScadenza: data,
-
-                    cassetto,
-
-                    attiva: true
-
-                }
-
-            );
-
-            closeModal("modal-scadenza");
-
-        };
-
-
-        function getNextDate(dateString, frequency) {
-
-            const date =
-                new Date(
-                    dateString + "T12:00:00"
-                );
-
-            const mesi = {
-
-                monthly: 1,
-
-                bimonthly: 2,
-
-                quarterly: 3,
-
-                halfyearly: 6,
-
-                yearly: 12,
-
-                once: 0
-
-            };
-
-            const incremento =
-                mesi[frequency] ?? 1;
-
-            if (incremento > 0) {
-
-                date.setMonth(
-                    date.getMonth() + incremento
-                );
-
-            }
-
-            return date
-                .toISOString()
-                .split("T")[0];
-
-        }
-
-
-        window.apriModalePagamentoScadenza = function (id) {
-
-            const scadenza =
-                appData.scadenze[id];
-
-            if (!scadenza) return;
-
-            document
-                .getElementById("paga-scad-id")
-                .value = id;
-
-            document
-                .getElementById("paga-scad-nome")
-                .value =
-                scadenza.nome;
-
-            document
-                .getElementById("paga-scad-importo-reale")
-                .value =
-                scadenza.importo;
-
-            openModal(
-                "modal-paga-scadenza"
-            );
-
-        };
-
-
-        window.confermaPagamentoScadenza = async function () {
-
-            const id =
-                document
-                    .getElementById("paga-scad-id")
-                    .value;
-
-            const importo =
-                parseFloat(
-                    document
-                        .getElementById("paga-scad-importo-reale")
-                        .value
-                ) || 0;
-
-            const scadenza =
-                appData.scadenze[id];
-
-            if (
-                !scadenza ||
-                importo <= 0
-            ) {
-
-                return;
-
-            }
-
-            const transactionId =
-                generateId();
-
-            const updates = {};
-
-            updates[
-                `utenti/${utenteCorrente.uid}/budget/${meseCorrente}/transazioni/${transactionId}`
-            ] = {
-
-                tipo: "expense",
-
-                importo,
-
-                descrizione:
-                    "Scadenza: " +
-                    scadenza.nome,
-
-                cassetto:
-                    scadenza.cassetto,
-
-                scadenzaId: id,
-
-                timestamp: Date.now()
-
-            };
-
-            if (
-                scadenza.frequenza ===
-                "once"
-            ) {
-
-                updates[
-                    `utenti/${utenteCorrente.uid}/scadenze/${id}/attiva`
-                ] = false;
-
+            // Render Ultime Spese
+            const speseContainer = document.getElementById('spese-container');
+            speseContainer.innerHTML = "";
+            if(listaSpeseCorrenti.length === 0) {
+                speseContainer.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Nessuna spesa inserita finora.</p>';
             } else {
-
-                updates[
-                    `utenti/${utenteCorrente.uid}/scadenze/${id}/prossimaScadenza`
-                ] =
-                    getNextDate(
-                        scadenza.prossimaScadenza,
-                        scadenza.frequenza
-                    );
-
-            }
-
-            await update(
-                ref(db),
-                updates
-            );
-
-            closeModal(
-                "modal-paga-scadenza"
-            );
-
-        };
-
-
-        window.eliminaScadenza = async function (id) {
-
-            if (
-                confirm(
-                    "Eliminare questa scadenza?"
-                )
-            ) {
-
-                await remove(
-
-                    ref(
-
-                        db,
-
-                        `utenti/${utenteCorrente.uid}/scadenze/${id}`
-
-                    )
-
-                );
-
-            }
-
-        };
-
-
-        function renderizzaSezioneScadenze() {
-
-            const container =
-                document.getElementById(
-                    "scadenze-container"
-                );
-
-            container.innerHTML = "";
-
-            const scadenze =
-                Object.entries(
-                    appData.scadenze || {}
-                )
-                .filter(
-                    ([, scadenza]) =>
-                        scadenza.attiva !== false
-                );
-
-            if (!scadenze.length) {
-
-                container.innerHTML =
-                    `<div class="empty-state">
-                        Nessuna scadenza attiva.
-                    </div>`;
-
-                return;
-
-            }
-
-            scadenze
-                .sort(
-                    ([, a], [, b]) =>
-                        a.prossimaScadenza
-                        .localeCompare(
-                            b.prossimaScadenza
-                        )
-                )
-                .forEach(([id, scadenza]) => {
-
-                    const item =
-                        document.createElement("div");
-
-                    item.className =
-                        "spesa-item";
-
-                    const comparto =
-                        getBudgetMese()
-                            .cassetti?.[
-                                scadenza.cassetto
-                            ];
-
-                    item.innerHTML = `
-
-                        <div class="spesa-info">
-
-                            <h4>
-                                ${escapeHTML(scadenza.nome)}
-                            </h4>
-
-                            <span>
-                                ${escapeHTML(scadenza.prossimaScadenza)}
-                                •
-                                ${formatCurrency(scadenza.importo)}
-                            </span>
-
-                            <br>
-
-                            <span>
-                                ${comparto
-                                    ? escapeHTML(comparto.nome)
-                                    : "Generale"}
-                            </span>
-
+                listaSpeseCorrenti.slice().reverse().forEach(s => {
+                    speseContainer.innerHTML += `
+                        <div class="spesa-item">
+                            <div class="spesa-info">
+                                <h4>${s.desc}</h4>
+                                <span>Cassetto: ${s.cassetto}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <strong style="color:var(--danger)">-${s.importo.toFixed(2)} €</strong>
+                                <button class="btn-delete" onclick="window.eliminaSpesa('${s.key}')"><i class="fa-solid fa-trash"></i></button>
+                            </div>
                         </div>
-
-                        <div style="display:flex; align-items:center; gap:8px;">
-
-                            <button class="badge-btn">
-                                Paga
-                            </button>
-
-                            <button class="btn-delete">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-
-                        </div>
-
                     `;
-
-                    item
-                        .querySelector(".badge-btn")
-                        .addEventListener(
-                            "click",
-                            event => {
-
-                                event.stopPropagation();
-
-                                apriModalePagamentoScadenza(
-                                    id
-                                );
-
-                            }
-                        );
-
-                    item
-                        .querySelector(".btn-delete")
-                        .addEventListener(
-                            "click",
-                            event => {
-
-                                event.stopPropagation();
-
-                                eliminaScadenza(
-                                    id
-                                );
-
-                            }
-                        );
-
-                    container.appendChild(item);
-
                 });
-
+            }
         }
-
-
-        /*
-        ============================================================
-        SELECT MODALI
-        ============================================================
-        */
-
-        function aggiornaSelectMenuModali() {
-
-            const budget =
-                getBudgetMese();
-
-            const filtro =
-                document
-                    .getElementById(
-                        "filtro-categoria"
-                    );
-
-            const valorePrecedente =
-                filtro.value;
-
-            filtro.innerHTML =
-                `<option value="tutte">
-                    Tutti i Comparti
-                </option>`;
-
-            const selectSpesa =
-                document
-                    .getElementById(
-                        "spesa-cassetto"
-                    );
-
-            selectSpesa.innerHTML = "";
-
-            const selectScadenza =
-                document
-                    .getElementById(
-                        "scad-cassetto"
-                    );
-
-            selectScadenza.innerHTML =
-                `<option value="generale">
-                    Generale
-                </option>`;
-
-            Object.entries(
-                budget.cassetti || {}
-            )
-            .forEach(([id, comparto]) => {
-
-                const optionFiltro =
-                    document.createElement("option");
-
-                optionFiltro.value =
-                    id;
-
-                optionFiltro.textContent =
-                    comparto.nome;
-
-                filtro.appendChild(
-                    optionFiltro
-                );
-
-
-                const optionSpesa =
-                    document.createElement("option");
-
-                optionSpesa.value =
-                    id;
-
-                optionSpesa.textContent =
-                    comparto.nome;
-
-                selectSpesa.appendChild(
-                    optionSpesa
-                );
-
-
-                const optionScadenza =
-                    document.createElement("option");
-
-                optionScadenza.value =
-                    id;
-
-                optionScadenza.textContent =
-                    comparto.nome;
-
-                selectScadenza.appendChild(
-                    optionScadenza
-                );
-
-            });
-
-            if (
-                Array.from(
-                    filtro.options
-                )
-                .some(
-                    option =>
-                        option.value ===
-                        valorePrecedente
-                )
-            ) {
-
-                filtro.value =
-                    valorePrecedente;
-
-            }
-
-        }
-
-
-        /*
-        ============================================================
-        GRAFICO
-        ============================================================
-        */
-
-        function renderizzaGrafico(
-            spesoPerCassetto
-        ) {
-
-            const canvas =
-                document.getElementById(
-                    "budgetChart"
-                );
-
-            const budget =
-                getBudgetMese();
-
-            const labels = [];
-
-            const data = [];
-
-            Object.entries(
-                budget.cassetti || {}
-            )
-            .forEach(([id, comparto]) => {
-
-                labels.push(
-                    comparto.nome
-                );
-
-                data.push(
-                    spesoPerCassetto[id] || 0
-                );
-
-            });
-
-            if (myChart) {
-
-                myChart.destroy();
-
-            }
-
-            myChart =
-                new Chart(
-                    canvas.getContext("2d"),
-                    {
-
-                        type: "doughnut",
-
-                        data: {
-
-                            labels,
-
-                            datasets: [
-
-                                {
-
-                                    data,
-
-                                    backgroundColor: [
-
-                                        "#4f46e5",
-
-                                        "#10b981",
-
-                                        "#f59e0b",
-
-                                        "#ef4444",
-
-                                        "#ec4899",
-
-                                        "#06b6d4",
-
-                                        "#8b5cf6",
-
-                                        "#64748b"
-
-                                    ],
-
-                                    borderWidth: 2
-
-                                }
-
-                            ]
-
-                        },
-
-                        options: {
-
-                            responsive: true,
-
-                            maintainAspectRatio: false,
-
-                            plugins: {
-
-                                legend: {
-
-                                    position: "bottom",
-
-                                    labels: {
-
-                                        boxWidth: 10,
-
-                                        font: {
-
-                                            size: 10
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                );
-
-        }
-
-
-        /*
-        ============================================================
-        RIEPILOGO E STORICO
-        ============================================================
-        */
-
-        window.apriRiepilogoChiusuraMese = function () {
-
-            const dati =
-                calcolaDatiMese();
-
-            document
-                .getElementById(
-                    "riepilogo-contenuto"
-                )
-                .innerHTML = `
-
-                    <div class="summary-box">
-
-                        <div class="summary-row">
-
-                            <span>
-                                Budget
-                            </span>
-
-                            <strong>
-                                ${formatCurrency(
-                                    dati.budget.entrate
-                                )}
-                            </strong>
-
-                        </div>
-
-                        <div class="summary-row">
-
-                            <span>
-                                Spese
-                            </span>
-
-                            <strong style="color:var(--danger);">
-
-                                ${formatCurrency(
-                                    dati.spese
-                                )}
-
-                            </strong>
-
-                        </div>
-
-                        <div class="summary-row">
-
-                            <span>
-                                Accantonato
-                            </span>
-
-                            <strong style="color:var(--info);">
-
-                                ${formatCurrency(
-                                    dati.accantonato
-                                )}
-
-                            </strong>
-
-                        </div>
-
-                        <div class="summary-row">
-
-                            <span>
-                                Disponibilità finale
-                            </span>
-
-                            <strong style="color:${dati.disponibile >= 0 ? "var(--success)" : "var(--danger)"};">
-
-                                ${formatCurrency(
-                                    dati.disponibile
-                                )}
-
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-
-                        Il mese verrà salvato nello storico.
-                        Il mese successivo sarà creato automaticamente.
-
-                    </p>
-
-                `;
-
-            openModal(
-                "modal-riepilogo"
-            );
-
-        };
-
-
-        window.chiudiMese = async function () {
-
-            const dati =
-                calcolaDatiMese();
-
-            const nomeMese =
-                formatMonth(
-                    meseCorrente
-                );
-
-            const storicoId =
-                generateId();
-
-            const storicoData = {
-
-                mese: meseCorrente,
-
-                nomeMese,
-
-                budget:
-                    dati.budget.entrate,
-
-                spese:
-                    dati.spese,
-
-                accantonato:
-                    dati.accantonato,
-
-                disponibile:
-                    dati.disponibile,
-
-                timestamp:
-                    Date.now()
-
-            };
-
-            await set(
-
-                ref(
-
-                    db,
-
-                    `utenti/${utenteCorrente.uid}/storico/${storicoId}`
-
-                ),
-
-                storicoData
-
-            );
-
-            const date =
-                new Date(
-                    Number(
-                        meseCorrente.split("-")[0]
-                    ),
-                    Number(
-                        meseCorrente.split("-")[1]
-                    ),
-                    1
-                );
-
-            date.setMonth(
-                date.getMonth() + 1
-            );
-
-            meseCorrente =
-                getMonthKey(
-                    date
-                );
-
-            const nuovoMeseRef =
-                ref(
-
-                    db,
-
-                    `utenti/${utenteCorrente.uid}/budget/${meseCorrente}`
-
-                );
-
-            if (
-                !appData.budget[meseCorrente]
-            ) {
-
-                await set(
-
-                    nuovoMeseRef,
-
-                    {
-
-                        entrate:
-                            dati.budget.entrate,
-
-                        cassetti:
-                            dati.budget.cassetti || {},
-
-                        transazioni: {}
-
-                    }
-
-                );
-
-            }
-
-            closeModal(
-                "modal-riepilogo"
-            );
-
-            aggiornaSelettoreMesi();
-
-            document
-                .getElementById(
-                    "mese-selettore"
-                )
-                .value =
-                meseCorrente;
-
-            alert(
-                "Mese archiviato. Nuovo mese creato."
-            );
-
-        };
-
-
-        function renderizzaStorico(
-            datiStorici
-        ) {
-
-            const container =
-                document.getElementById(
-                    "storico-container"
-                );
-
-            container.innerHTML = "";
-
-            if (
-                !datiStorici ||
-                Object.keys(
-                    datiStorici
-                ).length === 0
-            ) {
-
-                container.innerHTML =
-                    `<div class="empty-state">
-                        Nessun mese archiviato.
-                    </div>`;
-
-                return;
-
-            }
-
-            Object.entries(
-                datiStorici
-            )
-            .sort(
-                ([, a], [, b]) =>
-                    b.timestamp - a.timestamp
-            )
-            .forEach(
-                ([id, mese]) => {
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-                    card.className =
-                        "cassetto-row";
-
-                    card.innerHTML = `
-
-                        <div class="cassetto-header">
-
-                            <span class="cassetto-name">
-
-                                <i class="fa-solid fa-calendar-check">
-                                </i>
-
-                                <span>
-                                    ${escapeHTML(
-                                        mese.nomeMese
-                                    )}
-                                </span>
-
-                            </span>
-
-                            <button class="btn-delete">
-
-                                <i class="fa-solid fa-trash-can">
-                                </i>
-
-                            </button>
-
-                        </div>
-
-                        <div style="font-size:12px; color:var(--text-muted);">
-
-                            Budget:
-                            <b>
-                                ${formatCurrency(
-                                    mese.budget
-                                )}
-                            </b>
-
-                            <br>
-
-                            Spese:
-                            <b style="color:var(--danger);">
-
-                                ${formatCurrency(
-                                    mese.spese
-                                )}
-
-                            </b>
-
-                            <br>
-
-                            Accantonato:
-                            <b style="color:var(--info);">
-
-                                ${formatCurrency(
-                                    mese.accantonato
-                                )}
-
-                            </b>
-
-                            <br>
-
-                            Disponibilità:
-                            <b style="color:${mese.disponibile >= 0 ? "var(--success)" : "var(--danger)"};">
-
-                                ${formatCurrency(
-                                    mese.disponibile
-                                )}
-
-                            </b>
-
-                        </div>
-
-                    `;
-
-                    card
-                        .querySelector(
-                            ".btn-delete"
-                        )
-                        .addEventListener(
-                            "click",
-                            () =>
-                                eliminaSingoloMeseStorico(
-                                    id
-                                )
-                        );
-
-                    container.appendChild(
-                        card
-                    );
-
-                }
-
-            );
-
-        }
-
-
-        window.eliminaSingoloMeseStorico =
-            async function (id) {
-
-                if (
-                    confirm(
-                        "Eliminare questo mese dall'archivio?"
-                    )
-                ) {
-
-                    await remove(
-
-                        ref(
-
-                            db,
-
-                            `utenti/${utenteCorrente.uid}/storico/${id}`
-
-                        )
-
-                    );
-
-                }
-
-            };
-
-
-        window.svuotaInteroStorico =
-            async function () {
-
-                if (
-                    confirm(
-                        "Eliminare definitivamente tutto lo storico?"
-                    )
-                ) {
-
-                    await remove(
-                        storicoRef
-                    );
-
-                }
-
-            };
-
-
-        /*
-        ============================================================
-        CSV
-        ============================================================
-        */
-
-        window.esportaInCSV = function () {
-
-            const budget =
-                getBudgetMese();
-
-            const transazioni =
-                budget.transazioni || {};
-
-            let csv =
-                "Data,Tipo,Descrizione,Comparto,Importo (€)\r\n";
-
-            let count = 0;
-
-            Object.values(
-                transazioni
-            )
-            .forEach(transazione => {
-
-                const data =
-                    new Date(
-                        transazione.timestamp
-                    )
-                    .toLocaleDateString(
-                        "it-IT"
-                    );
-
-                const comparto =
-                    budget
-                        .cassetti?.[
-                            transazione.cassetto
-                        ]?.nome ||
-                    "Generale";
-
-                const descrizione =
-                    String(
-                        transazione.descrizione ||
-                        ""
-                    )
-                    .replace(
-                        /"/g,
-                        '""'
-                    );
-
-                csv +=
-                    `"${data}",` +
-                    `"${transazione.tipo}",` +
-                    `"${descrizione}",` +
-                    `"${comparto}",` +
-                    `${transazione.importo}\r\n`;
-
-                count++;
-
-            });
-
-            if (!count) {
-
-                alert(
-                    "Nessun movimento da esportare."
-                );
-
-                return;
-
-            }
-
-            const blob =
-                new Blob(
-                    [csv],
-                    {
-                        type:
-                            "text/csv;charset=utf-8;"
-                    }
-                );
-
-            const link =
-                document.createElement(
-                    "a"
-                );
-
-            link.href =
-                URL.createObjectURL(
-                    blob
-                );
-
-            link.download =
-                `budget-${meseCorrente}.csv`;
-
-            document
-                .body
-                .appendChild(
-                    link
-                );
-
-            link.click();
-
-            link.remove();
-
-        };
-
-
-        /*
-        ============================================================
-        MODALI E NAVIGAZIONE
-        ============================================================
-        */
-
-        window.openModal = function (id) {
-
-            document
-                .getElementById(id)
-                .classList
-                .add("active");
-
-        };
-
-
-        window.closeModal = function (id) {
-
-            document
-                .getElementById(id)
-                .classList
-                .remove("active");
-
-        };
-
-
-        window.closeModalOnBackdrop =
-            function (event) {
-
-                if (
-                    event.target.classList
-                        .contains("modal")
-                ) {
-
-                    event.target.classList
-                        .remove("active");
-
-                }
-
-            };
-
-
-        window.switchView =
-            function (
-                viewId,
-                btn
-            ) {
-
-                document
-                    .querySelectorAll(
-                        ".view"
-                    )
-                    .forEach(
-                        view =>
-                            view.classList
-                                .remove(
-                                    "active"
-                                )
-                    );
-
-                document
-                    .getElementById(
-                        "view-" +
-                        viewId
-                    )
-                    .classList
-                    .add(
-                        "active"
-                    );
-
-                document
-                    .querySelectorAll(
-                        ".nav-item"
-                    )
-                    .forEach(
-                        nav =>
-                            nav.classList
-                                .remove(
-                                    "active"
-                                )
-                    );
-
-                if (btn) {
-
-                    btn.classList
-                        .add(
-                            "active"
-                        );
-
-                }
-
-                if (
-                    viewId ===
-                    "salvadanai"
-                ) {
-
-                    renderizzaSezioneSalvadanai();
-
-                }
-
-            };
-
-
-        function switchViewWithoutBtn(
-            viewId
-        ) {
-
-            document
-                .querySelectorAll(
-                    ".view"
-                )
-                .forEach(
-                    view =>
-                        view.classList
-                            .remove(
-                                "active"
-                            )
-                );
-
-            document
-                .getElementById(
-                    "view-" +
-                    viewId
-                )
-                .classList
-                .add(
-                    "active"
-                );
-
-            document
-                .querySelectorAll(
-                    ".nav-item"
-                )
-                .forEach(
-                    nav =>
-                        nav.classList
-                            .remove(
-                                "active"
-                            )
-                );
-
-            if (
-                viewId ===
-                "home"
-            ) {
-
-                document
-                    .getElementById(
-                        "nav-btn-home"
-                    )
-                    .classList
-                    .add(
-                        "active"
-                    );
-
-            }
-
-        }
-
     </script>
-
 </body>
 </html>
