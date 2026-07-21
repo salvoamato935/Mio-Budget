@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen">
 
@@ -160,15 +158,15 @@
             remove 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIGURAZIONE FIREBASE
+        // CONFIGURAZIONE FIREBASE REALE
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForTemplatePurposesOnly",
-            authDomain: "mio-budget-app.firebaseapp.com",
-            databaseURL: "https://mio-budget-app-default-rtdb.firebaseio.com",
-            projectId: "mio-budget-app",
-            storageBucket: "mio-budget-app.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef123456"
+            apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
+            authDomain: "budget-casa-7eead.firebaseapp.com",
+            databaseURL: "https://budget-casa-7eead-default-rtdb.firebaseio.com",
+            projectId: "budget-casa-7eead",
+            storageBucket: "budget-casa-7eead.firebasestorage.app",
+            messagingSenderId: "529644674685",
+            appId: "1:529644674685:web:93438c7393631bc7d4db14"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -192,7 +190,7 @@
 
         let isLoginMode = true;
 
-        // Swapp tra Login e Registrazione
+        // Switch tra Login e Registrazione
         authToggleBtn.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             authTitle.innerText = isLoginMode ? "Accedi a Mio-Budget" : "Crea un Account";
@@ -203,7 +201,7 @@
             authError.classList.add('hidden');
         });
 
-        // Gestione Login / Registrazione con Pop-up d'Errore Integrato
+        // Gestione Login / Registrazione
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = authEmail.value.trim();
@@ -212,14 +210,10 @@
 
             if (isLoginMode) {
                 signInWithEmailAndPassword(auth, email, password)
-                    .then(() => {
-                        console.log("Login effettuato!");
-                    })
                     .catch((err) => {
-                        console.error("Errore Login:", err);
                         authError.innerText = "Errore d'accesso: " + err.message;
                         authError.classList.remove('hidden');
-                        alert("IMPOSSIBILE ACCEDERE:\n" + err.code + "\n" + err.message);
+                        alert("IMPOSSIBILE ACCEDERE:\n" + err.message);
                     });
             } else {
                 createUserWithEmailAndPassword(auth, email, password)
@@ -227,10 +221,9 @@
                         alert("Account creato con successo! Accesso in corso...");
                     })
                     .catch((err) => {
-                        console.error("Errore Registrazione:", err);
                         authError.innerText = "Errore registrazione: " + err.message;
                         authError.classList.remove('hidden');
-                        alert("ERRORE REGISTRAZIONE:\n" + err.code + "\n" + err.message);
+                        alert("ERRORE REGISTRAZIONE:\n" + err.message);
                     });
             }
         });
