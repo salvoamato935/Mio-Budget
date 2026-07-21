@@ -222,7 +222,7 @@
             <p id="auth-error" class="error-msg"></p>
         </div>
 
-        <!-- SCHERMATA CONFIGURAZIONE COMPARTI E BUDGET TOTALE -->
+        <!-- SCHERMATA CONFIGURAZIONE CATEGORIE E BUDGET TOTALE -->
         <div id="view-setup" class="view">
             <div class="mini-card" style="padding: 20px;">
                 <h3 style="margin-bottom: 12px; text-align:center;">Configurazione Iniziale</h3>
@@ -234,23 +234,23 @@
 
                 <hr style="border: 0; height: 1px; background: var(--card-border); margin: 20px 0;">
 
-                <h4 style="margin-bottom: 10px; font-size:13px; color:var(--text-main);">2. AGGIUNGI I TUOI COMPARTI (Opzionale)</h4>
+                <h4 style="margin-bottom: 10px; font-size:13px; color:var(--text-main);">2. AGGIUNGI LE TUE CATEGORIE (Opzionale)</h4>
                 <div style="background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--card-border);">
                     <div class="form-group">
-                        <label>Nome Comparto (es. Auto, Casa, Pizzeria...)</label>
+                        <label>Nome Categoria (es. Auto, Casa, Pizzeria...)</label>
                         <input type="text" id="add-comp-nome" class="form-control" placeholder="Es. Auto">
                     </div>
                     <div class="form-group">
-                        <label>Somma Assegnata a questo Comparto (€)</label>
+                        <label>Somma Assegnata a questa Categoria (€)</label>
                         <input type="number" id="add-comp-budget" class="form-control" placeholder="Es. 400" inputmode="decimal">
                     </div>
-                    <button class="btn btn-secondary" style="font-size:12px; padding:6px;" onclick="aggiungiCompartoLista()">+ Aggiungi Comparto</button>
+                    <button class="btn btn-secondary" style="font-size:12px; padding:6px;" onclick="aggiungiCompartoLista()">+ Aggiungi Categoria</button>
                 </div>
 
                 <div id="lista-comparti-setup" style="margin-bottom:16px;"></div>
                 
                 <div style="background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; text-align:center; font-weight:600; margin-bottom:16px;">
-                    Assegnato ai Comparti: <span id="setup-somma-comparti" style="color:var(--accent)">0,00 €</span>
+                    Assegnato alle Categorie: <span id="setup-somma-comparti" style="color:var(--accent)">0,00 €</span>
                 </div>
 
                 <button class="btn" onclick="salvaConfigurazioneComparti()">Salva ed Entra</button>
@@ -263,7 +263,7 @@
             <div class="main-card">
                 <p style="font-size:12px; opacity:0.9;">Disponibilità Totale Rimasta</p>
                 <h2 id="dash-disponibile">0,00 €</h2>
-                <button class="badge-btn" style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;" onclick="apriModificaBudget()"><i class="fa-solid fa-sliders"></i> Gestisci Budget e Comparti</button>
+                <button class="badge-btn" style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;" onclick="apriModificaBudget()"><i class="fa-solid fa-sliders"></i> Gestisci Budget e Categorie</button>
             </div>
 
             <div class="chart-box">
@@ -275,7 +275,8 @@
                 <div class="mini-card"><span>Speso Totale</span><p id="dash-speso" style="color:var(--danger);">0 €</p></div>
             </div>
 
-            <h3 class="section-title">📊 I Tuoi Comparti <span style="font-size:10px; text-transform:none;">(Clicca ✏️ per modificare il budget)</span></h3>
+            <!-- MODIFICATO: "I Tuoi Comparti" -> "Categorie di Spesa" -->
+            <h3 class="section-title">📊 Categorie di Spesa <span style="font-size:10px; text-transform:none;">(Clicca ✏️ per modificare)</span></h3>
             <div id="cassetti-container"></div>
 
             <h3 class="section-title">📅 Scadenze del Mese <button class="badge-btn" onclick="openModal('modal-scadenza')">+ Aggiungi</button></h3>
@@ -329,7 +330,8 @@
             <input type="hidden" id="spesa-edit-id">
             <div class="form-group"><label>Importo (€)</label><input type="number" id="spesa-importo" class="form-control" step="0.01" inputmode="decimal"></div>
             <div class="form-group"><label>Descrizione</label><input type="text" id="spesa-desc" class="form-control" placeholder="Es. Spesa Conad, Rifornimento..."></div>
-            <div class="form-group"><label>Comparto di Riferimento</label><select id="spesa-cassetto" class="form-control"></select></div>
+            <!-- MODIFICATO: "Comparto di Riferimento" -> "Categoria" -->
+            <div class="form-group"><label>Categoria</label><select id="spesa-cassetto" class="form-control"></select></div>
             <button class="btn" onclick="salvaSpesa()">Conferma Spesa</button>
             <button class="btn btn-danger" id="btn-elimina-spesa-diretto" style="display:none;" onclick="clickEliminaSpesaInModifica()">Elimina Spesa</button>
         </div>
@@ -341,7 +343,7 @@
             <h3>📅 Aggiungi Uscita Ricorrente / Scadenza</h3>
             <div class="form-group"><label>Nome Scadenza</label><input type="text" id="scad-nome" class="form-control" placeholder="Es. Assicurazione, Bolletta..."></div>
             <div class="form-group"><label>Importo Stimato (€)</label><input type="number" id="scad-importo" class="form-control" inputmode="decimal"></div>
-            <div class="form-group"><label>Associa al Comparto</label><select id="scad-cassetto" class="form-control"></select></div>
+            <div class="form-group"><label>Associa alla Categoria</label><select id="scad-cassetto" class="form-control"></select></div>
             <button class="btn" onclick="aggiungiScadenza()">Imposta Scadenza</button>
         </div>
     </div>
@@ -349,11 +351,12 @@
     <!-- MODALE PAGAMENTO SCADENZA -->
     <div id="modal-paga-scadenza" class="modal" onclick="closeModalOnBackdrop(event)">
         <div class="modal-content">
-            <h3>Regola Importo Effettivo Scadenza</h3>
+            <!-- MODIFICATO: Titolo e label più chiari -->
+            <h3>La scadenza è stata pagata?</h3>
             <input type="hidden" id="paga-scad-id">
             <input type="hidden" id="paga-scad-cassetto">
             <div class="form-group"><label>Nome Scadenza</label><input type="text" id="paga-scad-nome" class="form-control" readonly></div>
-            <div class="form-group"><label>Importo Finale Effettivo da Scalare (€)</label><input type="number" id="paga-scad-importo-reale" class="form-control" step="0.01" inputmode="decimal"></div>
+            <div class="form-group"><label>Quanto hai pagato davvero? (€)</label><input type="number" id="paga-scad-importo-reale" class="form-control" step="0.01" inputmode="decimal"></div>
             <button class="btn" onclick="confermaPagamentoScadenzaRealizzato()">Registra Pagamento</button>
         </div>
     </div>
@@ -363,7 +366,8 @@
         <div class="modal-content">
             <h3>🐷 Nuovo Obiettivo Risparmio / Scadenza Futura</h3>
             <div class="form-group"><label>Nome Obiettivo</label><input type="text" id="salva-nome" class="form-control" placeholder="Es. Saldo T-Cross"></div>
-            <div class="form-group"><label>Cifra Totale da Raggiungere (€)</label><input type="number" id="salva-target" class="form-control" inputmode="decimal"></div>
+            <!-- MODIFICATO: Label più chiara -->
+            <div class="form-group"><label>Quanto vuoi mettere da parte? (€)</label><input type="number" id="salva-target" class="form-control" inputmode="decimal"></div>
             <div class="form-group"><label>Data di Scadenza Obiettivo</label><input type="month" id="salva-data-target" class="form-control"></div>
             <button class="btn" onclick="creaSalvadanaio()">Inizia Piano</button>
         </div>
@@ -371,763 +375,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
-            authDomain: "budget-casa-7eead.firebaseapp.com",
-            databaseURL: "https://budget-casa-7eead-default-rtdb.firebaseio.com/",
-            projectId: "budget-casa-7eead",
-            storageBucket: "budget-casa-7eead.firebasestorage.app",
-            messagingSenderId: "529644674685",
-            appId: "1:529644674685:web:93438c7393631bc7d4db14"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
-
-        let isLoginMode = true;
-        let utenteCorrente = null;
-        let budgetRef = null;
-        let storicoRef = null;
-
-        let appData = { entrate: 0, cassetti: {}, spese: {}, salvadanai: {}, scadenze: {} };
-        let listaCompartiTemporanea = {};
-        let myChart = null;
-        let cassettoFiltratoDaGrafico = null;
-
-        // --- SISTEMA DI AUTENTICAZIONE ---
-        window.gestisciAutenticazione = async () => {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value;
-            const errorEl = document.getElementById('auth-error');
-            errorEl.textContent = "";
-
-            if(!email || !password) {
-                errorEl.textContent = "Inserisci sia l'email che la password.";
-                return;
-            }
-
-            try {
-                if(isLoginMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
-            } catch (error) {
-                errorEl.textContent = "Errore: " + traduciErroreFirebase(error.code);
-            }
-        };
-
-        window.toggleModalitaAuth = () => {
-            isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').textContent = isLoginMode ? "Accedi al tuo Budget" : "Crea un nuovo account";
-            document.getElementById('btn-auth-primary').textContent = isLoginMode ? "Accedi" : "Registrati";
-            document.getElementById('btn-auth-toggle').textContent = isLoginMode ? "Non hai un account? Registrati" : "Hai già un account? Accedi";
-        };
-
-        window.eseguiLogout = () => {
-            signOut(auth).then(() => {
-                window.location.reload();
-            });
-        };
-
-        function traduciErroreFirebase(code) {
-            switch(code) {
-                case 'auth/invalid-credential': return 'Credenziali non valide o errate.';
-                case 'auth/weak-password': return 'La password deve avere almeno 6 caratteri.';
-                case 'auth/email-already-in-use': return 'Questa email è già associata ad un account.';
-                case 'auth/invalid-email': return 'Formato dell\'email non valido.';
-                default: return 'Impossibile completare l\'operazione.';
-            }
-        }
-
-        // Monitoraggio dello stato utente
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                utenteCorrente = user;
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-nav').style.display = 'flex';
-                document.getElementById('user-header-info').classList.remove('hidden');
-                document.getElementById('user-header-info').textContent = "Connesso come: " + user.email;
-
-                // Configura i percorsi del database in base all'utente isolato
-                budgetRef = ref(db, 'utenti/' + user.uid + '/budget_familiare');
-                storicoRef = ref(db, 'utenti/' + user.uid + '/budget_storico');
-
-                avviaAscoltoDati();
-            } else {
-                utenteCorrente = null;
-                document.getElementById('auth-screen').classList.remove('hidden');
-                document.getElementById('app-nav').style.display = 'none';
-                document.getElementById('user-header-info').classList.add('hidden');
-                disattivaViste();
-            }
-        });
-
-        function disattivaViste() {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        }
-
-        function avviaAscoltoDati() {
-            onValue(budgetRef, (snapshot) => {
-                const data = snapshot.val();
-                if(!data) {
-                    switchViewWithoutBtn('setup');
-                    document.getElementById('btn-annulla-setup').style.display = 'none';
-                    appData = { entrate: 0, cassetti: {}, spese: {}, salvadanai: {}, scadenze: {} };
-                } else {
-                    appData = {
-                        entrate: data.entrate || 0,
-                        cassetti: data.cassetti || {},
-                        spese: data.spese || {},
-                        salvadanai: data.salvadanai || {},
-                        scadenze: data.scadenze || {}
-                    };
-                    if(document.getElementById('view-setup').classList.contains('active')) {
-                        switchViewWithoutBtn('home');
-                    } else if (!document.querySelector('.view.active')) {
-                        switchViewWithoutBtn('home');
-                    }
-                    calcolaERenderizzaUI();
-                }
-            });
-
-            onValue(storicoRef, (snapshot) => {
-                renderizzaStorico(snapshot.val());
-            });
-        }
-
-        // --- GESTIONE LOGICA E VECCHIE FUNZIONI INTERFACCIA ---
-        window.aggiungiCompartoLista = function() {
-            const nome = document.getElementById('add-comp-nome').value.trim();
-            const budget = parseFloat(document.getElementById('add-comp-budget').value) || 0;
-            if(nome && budget > 0) {
-                const id = nome.toLowerCase().replace(/\s+/g, '_');
-                listaCompartiTemporanea[id] = { nome: nome, budget: budget };
-                document.getElementById('add-comp-nome').value = '';
-                document.getElementById('add-comp-budget').value = '';
-                aggiornaAnteprimaListaSetup();
-            }
-        };
-
-        window.rimuoviCompartoListaTemporanea = function(id) {
-            delete listaCompartiTemporanea[id];
-            aggiornaAnteprimaListaSetup();
-        };
-
-        function aggiornaAnteprimaListaSetup() {
-            const container = document.getElementById('lista-comparti-setup');
-            container.innerHTML = '';
-            let somma = 0;
-            Object.keys(listaCompartiTemporanea).forEach(id => {
-                const c = listaCompartiTemporanea[id];
-                somma += c.budget;
-                container.innerHTML += `
-                    <div class="setup-comparto-item">
-                        <span><b>${c.nome}</b>: ${c.budget.toFixed(2)} €</span>
-                        <button class="btn-delete" onclick="rimuoviCompartoListaTemporanea('${id}')"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                `;
-            });
-            document.getElementById('setup-somma-comparti').textContent = somma.toFixed(2) + " €";
-        }
-
-        window.salvaConfigurazioneComparti = function() {
-            const budgetTotale = parseFloat(document.getElementById('setup-budget-totale-input').value) || 0;
-            if(budgetTotale <= 0) {
-                alert("Inserisci un budget mensile totale valido.");
-                return;
-            }
-
-            let sommaComp = 0;
-            Object.keys(listaCompartiTemporanea).forEach(k => sommaComp += listaCompartiTemporanea[k].budget);
-            if(sommaComp > budgetTotale) {
-                alert("La somma dei comparti (" + sommaComp.toFixed(2) + "€) supera il budget totale impostato (" + budgetTotale.toFixed(2) + "€).");
-                return;
-            }
-
-            const rimasuglioFondoOpzionale = budgetTotale - sommaComp;
-            if(rimasuglioFondoOpzionale > 0) {
-                listaCompartiTemporanea['libero_restante'] = { nome: 'Fondo Libero', budget: rimasuglioFondoOpzionale };
-            }
-
-            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/entrate'), budgetTotale);
-            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/cassetti'), listaCompartiTemporanea);
-            
-            switchViewWithoutBtn('home');
-        };
-
-        window.apriModificaBudget = function() {
-            document.getElementById('setup-budget-totale-input').value = appData.entrate;
-            listaCompartiTemporanea = JSON.parse(JSON.stringify(appData.cassetti));
-            if(listaCompartiTemporanea['libero_restante']) delete listaCompartiTemporanea['libero_restante'];
-            aggiornaAnteprimaListaSetup();
-            document.getElementById('btn-annulla-setup').style.display = 'block';
-            switchViewWithoutBtn('setup');
-        };
-
-        window.chiudiModificaBudget = function() {
-            switchViewWithoutBtn('home');
-        };
-
-        window.calcolaERenderizzaUI = function() {
-            let totaleSpeso = 0;
-            let spesoPerCassetto = {};
-
-            Object.keys(appData.cassetti).forEach(k => spesoPerCassetto[k] = 0);
-            Object.keys(appData.spese).forEach(k => {
-                const s = appData.spese[k];
-                totaleSpeso += s.importo;
-                if(spesoPerCassetto[s.cassetto] !== undefined) {
-                    spesoPerCassetto[s.cassetto] += s.importo;
-                } else {
-                    if(!appData.cassetti[s.cassetto]) {
-                        spesoPerCassetto['libero_restante'] = (spesoPerCassetto['libero_restante'] || 0) + s.importo;
-                    }
-                }
-            });
-
-            const totaleDisponibile = appData.entrate - totaleSpeso;
-            document.getElementById('dash-entrate').textContent = appData.entrate.toFixed(2) + " €";
-            document.getElementById('dash-speso').textContent = totaleSpeso.toFixed(2) + " €";
-            document.getElementById('dash-disponibile').textContent = totaleDisponibile.toFixed(2) + " €";
-
-            const lbl = document.getElementById('status-label');
-            if(totaleDisponibile < 0) {
-                lbl.className = "status-banner status-alert"; labelText("🔴 Budget in Negativo!");
-            } else if(totaleDisponibile < (appData.entrate * 0.15)) {
-                lbl.className = "status-banner status-warn"; labelText("🟡 Attenzione, fondi quasi esauriti");
-            } else {
-                lbl.className = "status-banner status-ok"; labelText("🟢 Tutto sotto controllo");
-            }
-
-            renderizzaSezioneCassetti(spesoPerCassetto);
-            renderizzaSezioneScadenze();
-            renderizzaSezioneSpese(spesoPerCassetto);
-            renderizzaSezioneSalvadanai();
-            aggiornaSelectMenuModali();
-            renderizzaGraficoQuota(spesoPerCassetto);
-        };
-
-        function labelText(t) { document.getElementById('status-label').textContent = t; }
-
-        function renderizzaSezioneCassetti(spesoPerCassetto) {
-            const container = document.getElementById('cassetti-container');
-            container.innerHTML = '';
-            Object.keys(appData.cassetti).forEach(id => {
-                const cas = appData.cassetti[id];
-                const speso = spesoPerCassetto[id] || 0;
-                const rimasto = cas.budget - speso;
-                let percent = cas.budget > 0 ? (speso / cas.budget) * 100 : 0;
-                if(percent > 100) percent = 100;
-
-                let color = "var(--success)";
-                if(percent > 85) color = "var(--danger)";
-                else if(percent > 60) color = "var(--warning)";
-
-                container.innerHTML += `
-                    <div class="cassetto-row">
-                        <div class="cassetto-header">
-                            <span class="cassetto-name"><i class="fa-solid fa-folder-open" style="color:var(--accent)"></i> ${cas.nome}</span>
-                            <span class="cassetto-dispo" style="color:${rimasto < 0 ? 'var(--danger)': 'var(--text-main)'}">
-                                ${rimasto.toFixed(2)} € <span style="font-size:10px; font-weight:normal; color:var(--text-muted);">rimasti di ${cas.budget}€</span>
-                                <button class="badge-btn" style="padding:2px 6px; font-size:10px;" onclick="event.stopPropagation(); avviaRicalibrazioneVeloceCassetto('${id}', ${cas.budget})">✏️</button>
-                            </span>
-                        </div>
-                        <div class="cassetto-progress"><div class="cassetto-progress-bar" style="width: ${percent}%; background: ${color};"></div></div>
-                    </div>
-                `;
-            });
-        }
-
-        window.avviaRicalibrazioneVeloceCassetto = function(id, budgetAttuale) {
-            if(id === 'libero_restante') {
-                alert("Il Fondo Libero si ricalcola da solo in base alle modifiche degli altri comparti o del budget totale.");
-                return;
-            }
-            const nuovoB = parseFloat(prompt("Modifica budget per questo comparto (€):", budgetAttuale));
-            if(!isNaN(nuovoB) && nuovoB >= 0) {
-                let sommaAltri = 0;
-                Object.keys(appData.cassetti).forEach(k => {
-                    if(k !== id && k !== 'libero_restante') sommaAltri += appData.cassetti[k].budget;
-                });
-                if((sommaAltri + nuovoB) > appData.entrate) {
-                    alert("Impossibile. La somma supererebbe il budget mensile totale impostato.");
-                    return;
-                }
-                
-                let copiaCassetti = JSON.parse(JSON.stringify(appData.cassetti));
-                copiaCassetti[id].budget = nuovoB;
-                if(copiaCassetti['libero_restante']) delete copiaCassetti['libero_restante'];
-                
-                let nuovaSomma = 0;
-                Object.keys(copiaCassetti).forEach(k => nuovaSomma += copiaCassetti[k].budget);
-                const avanzo = appData.entrate - nuovaSomma;
-                if(avanzo > 0) copiaCassetti['libero_restante'] = { nome: 'Fondo Libero', budget: avanzo };
-
-                set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/cassetti'), copiaCassetti);
-            }
-        };
-
-        function renderizzaSezioneScadenze() {
-            const container = document.getElementById('scadenze-container');
-            container.innerHTML = '';
-            const chiavi = Object.keys(appData.scadenze);
-            if(chiavi.length === 0) {
-                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Nessuna uscita programmata impostata.</p>';
-                return;
-            }
-            chiavi.forEach(k => {
-                const sc = appData.scadenze[k];
-                const nomeComparto = appData.cassetti[sc.cassetto] ? appData.cassetti[sc.cassetto].nome : 'Generale';
-                container.innerHTML += `
-                    <div class="spesa-item" style="border-left: 4px solid ${sc.pagata ? 'var(--success)': 'var(--warning)'};" onclick="apriModalePagamentoScadenza('${k}')">
-                        <div class="spesa-info">
-                            <h4>${sc.nome} ${sc.pagata ? '✅ (Registrata)': '⏳'}</h4>
-                            <span>Assegnata a: ${nomeComparto} | Previsti: ${sc.importo.toFixed(2)} €</span>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="font-weight:700; font-size:13px;">${sc.importo.toFixed(2)} €</span>
-                            <button class="btn-delete" onclick="event.stopPropagation(); eliminaScadenza('${k}')"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function renderizzaSezioneSpese(spesoPerCassetto) {
-            const container = document.getElementById('spese-container');
-            container.innerHTML = '';
-            
-            const filtroCat = document.getElementById('filtro-categoria').value;
-            let speseArray = [];
-            Object.keys(appData.spese).forEach(k => {
-                speseArray.push({ id: k, ...appData.spese[k] });
-            });
-            
-            speseArray.sort((a,b) => b.timestamp - a.timestamp);
-
-            if(filtroCat !== 'tutte') {
-                speseArray = speseArray.filter(s => s.cassetto === filtroCat);
-            }
-
-            if(speseArray.length === 0) {
-                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Nessuna spesa trovata.</p>';
-                return;
-            }
-
-            speseArray.forEach(s => {
-                const nomeCas = appData.cassetti[s.cassetto] ? appData.cassetti[s.cassetto].nome : 'Generale';
-                const dataStr = new Date(s.timestamp).toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
-                container.innerHTML += `
-                    <div class="spesa-item" onclick="apriModificaSpesaEsistente('${s.id}')">
-                        <div class="spesa-info">
-                            <h4>${s.descrizione}</h4>
-                            <span>${dataStr} • Comparto: <b>${nomeCas}</b></span>
-                        </div>
-                        <span style="font-weight:700; color:var(--danger);">${s.importo.toFixed(2)} €</span>
-                    </div>
-                `;
-            });
-        }
-
-        function renderizzaSezioneSalvadanai() {
-            const container = document.getElementById('view-salvadanai');
-            const targetDiv = document.getElementById('salvadanai-container');
-            targetDiv.innerHTML = '';
-
-            const chiavi = Object.keys(appData.salvadanai);
-            if(chiavi.length === 0) {
-                targetDiv.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">Nessun obiettivo di risparmio attivo.</p>';
-                return;
-            }
-
-            const oggi = new Date();
-            const annoCorrente = oggi.getFullYear();
-            const meseCorrente = oggi.getMonth() + 1;
-
-            chiavi.forEach(k => {
-                const sal = appData.salvadanai[k];
-                const accumulato = sal.accumulato || 0;
-                const manca = sal.target - accumulato;
-                
-                let infoPianoRata = "";
-                if(manca > 0 && sal.dataTarget) {
-                    const parti = sal.dataTarget.split('-');
-                    const tAnno = parseInt(parti[0]);
-                    const tMese = parseInt(parti[1]);
-                    
-                    const mesiMancanti = (tAnno - annoCorrente) * 12 + (tMese - meseCorrente);
-                    if(mesiMancanti > 0) {
-                        const quotaMese = manca / mesiMancanti;
-                        infoPianoRata = `<div class="info-piano">Mancano ${mesiMancanti} mesi: metti da parte <b>${quotaMese.toFixed(2)} € / mese</b></div>`;
-                    } else {
-                        infoPianoRata = `<div class="info-piano" style="background:#fee2e2; color:var(--danger)">Scadenza questo mese! Rimanente: <b>${manca.toFixed(2)} €</b></div>`;
-                    }
-                }
-
-                let per = sal.target > 0 ? (accumulato / sal.target) * 100 : 0;
-                if(per > 100) per = 100;
-
-                targetDiv.innerHTML += `
-                    <div class="cassetto-row" style="border-left:5px solid var(--accent);">
-                        <div class="cassetto-header">
-                            <span class="cassetto-name" style="font-size:15px;"><i class="fa-solid fa-piggy-bank" style="color:#ec4899"></i> ${sal.nome}</span>
-                            <button class="btn-delete" onclick="eliminaSalvadanaio('${k}')"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
-                            <span>Accumulato: <b>${accumulato.toFixed(2)} €</b> di ${sal.target.toFixed(2)} €</span>
-                            <span style="font-weight:700; color:var(--accent);">${per.toFixed(0)}%</span>
-                        </div>
-                        <div class="cassetto-progress" style="margin-bottom:8px;"><div class="cassetto-progress-bar" style="width: ${per}%; background:var(--accent);"></div></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                            <button class="badge-btn" style="background:#dcfce7; color:#15803d;" onclick="versaNelSalvadanaio('${k}')">+ Versa fondi</button>
-                            <button class="badge-btn" style="background:#fee2e2; color:var(--danger);" onclick="prelevaDalSalvadanaio('${k}')">➖ Preleva</button>
-                        </div>
-                        ${infoPianoRata}
-                    </div>
-                `;
-            });
-        }
-
-        function aggiornaSelectMenuModali() {
-            const menuFiltro = document.getElementById('filtro-categoria');
-            const vecchioFiltroVal = menuFiltro.value;
-            
-            menuFiltro.innerHTML = '<option value="tutte">Tutti i Comparti</option>';
-            
-            const selectSpesa = document.getElementById('spesa-cassetto');
-            selectSpesa.innerHTML = '';
-            
-            const selectScadenza = document.getElementById('scad-cassetto');
-            selectScadenza.innerHTML = '<option value="generale">Generale (Nessuno)</option>';
-
-            Object.keys(appData.cassetti).forEach(id => {
-                const c = appData.cassetti[id];
-                menuFiltro.innerHTML += `<option value="${id}">${c.nome}</option>`;
-                selectSpesa.innerHTML += `<option value="${id}">${c.nome}</option>`;
-                selectScadenza.innerHTML += `<option value="${id}">${c.nome}</option>`;
-            });
-
-            menuFiltro.value = vecchioFiltroVal;
-            if(!menuFiltro.value) menuFiltro.value = 'tutte';
-        }
-
-        window.apriModalNuovaSpesa = function() {
-            document.getElementById('spesa-modal-titolo').textContent = "💸 Inserisci Spesa";
-            document.getElementById('spesa-edit-id').value = '';
-            document.getElementById('spesa-importo').value = '';
-            document.getElementById('spesa-desc').value = '';
-            document.getElementById('btn-elimina-spesa-diretto').style.display = 'none';
-            openModal('modal-spesa');
-        };
-
-        window.apriModificaSpesaEsistente = function(id) {
-            const s = appData.spese[id];
-            if(!s) return;
-            document.getElementById('spesa-modal-titolo').textContent = "✏️ Modifica Spesa";
-            document.getElementById('spesa-edit-id').value = id;
-            document.getElementById('spesa-importo').value = s.importo;
-            document.getElementById('spesa-desc').value = s.descrizione;
-            document.getElementById('spesa-cassetto').value = s.cassetto;
-            document.getElementById('btn-elimina-spesa-diretto').style.display = 'block';
-            openModal('modal-spesa');
-        };
-
-        window.salvaSpesa = function() {
-            const id = document.getElementById('spesa-edit-id').value;
-            const importo = parseFloat(document.getElementById('spesa-importo').value) || 0;
-            const descrizione = document.getElementById('spesa-desc').value.trim() || 'Spesa';
-            const cassetto = document.getElementById('spesa-cassetto').value;
-
-            if(importo <= 0) { alert("Inserisci un importo valido."); return; }
-
-            if(id) {
-                set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese/' + id), {
-                    importo: importo, descrizione: descrizione, cassetto: cassetto, timestamp: appData.spese[id].timestamp
-                });
-            } else {
-                const nuovaSpesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
-                set(nuovaSpesaRef, {
-                    importo: importo, descrizione: descrizione, cassetto: cassetto, timestamp: Date.now()
-                });
-            }
-            closeModal('modal-spesa');
-        };
-
-        window.clickEliminaSpesaInModifica = function() {
-            const id = document.getElementById('spesa-edit-id').value;
-            if(id && confirm("Eliminare definitivamente questa spesa?")) {
-                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese/' + id));
-                closeModal('modal-spesa');
-            }
-        };
-
-        window.aggiungiScadenza = function() {
-            const nome = document.getElementById('scad-nome').value.trim();
-            const importo = parseFloat(document.getElementById('scad-importo').value) || 0;
-            const cassetto = document.getElementById('scad-cassetto').value;
-
-            if(!nome || importo <= 0) { alert("Compila correttamente i campi."); return; }
-
-            const nuovaScadRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze'));
-            set(nuovaScadRef, { nome: nome, importo: importo, cassetto: cassetto, pagata: false });
-            
-            document.getElementById('scad-nome').value = '';
-            document.getElementById('scad-importo').value = '';
-            closeModal('modal-scadenza');
-        };
-
-        window.apriModalePagamentoScadenza = function(id) {
-            const sc = appData.scadenze[id];
-            if(sc.pagata) {
-                if(confirm("Questa scadenza risulta pagata. Vuoi contrassegnarla nuovamente come DA PAGARE?")) {
-                    set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id + '/pagata'), false);
-                }
-                return;
-            }
-            document.getElementById('paga-scad-id').value = id;
-            document.getElementById('paga-scad-nome').value = sc.nome;
-            document.getElementById('paga-scad-cassetto').value = sc.cassetto;
-            document.getElementById('paga-scad-importo-reale').value = sc.importo;
-            openModal('modal-paga-scadenza');
-        };
-
-        window.confermaPagamentoScadenzaRealizzato = function() {
-            const id = document.getElementById('paga-scad-id').value;
-            const cassetto = document.getElementById('paga-scad-cassetto').value;
-            const nome = document.getElementById('paga-scad-nome').value;
-            const importoReale = parseFloat(document.getElementById('paga-scad-importo-reale').value) || 0;
-
-            if(importoReale <= 0) { alert("Cifra non valida."); return; }
-
-            const nuovaSpesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
-            set(nuovaSpesaRef, {
-                importo: importoReale, descrizione: "Scadenza: " + nome, cassetto: cassetto, timestamp: Date.now()
-            });
-
-            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id + '/pagata'), true);
-            closeModal('modal-paga-scadenza');
-        };
-
-        window.eliminaScadenza = function(id) {
-            if(confirm("Eliminare questa scadenza pianificata?")) {
-                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id));
-            }
-        };
-
-        window.creaSalvadanaio = function() {
-            const nome = document.getElementById('salva-nome').value.trim();
-            const target = parseFloat(document.getElementById('salva-target').value) || 0;
-            const dataTarget = document.getElementById('salva-data-target').value;
-
-            if(!nome || target <= 0) { alert("Inserisci dati corretti."); return; }
-
-            const nuovoSalvRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai'));
-            set(nuovoSalvRef, { nome: nome, target: target, dataTarget: dataTarget, accumulato: 0 });
-
-            document.getElementById('salva-nome').value = '';
-            document.getElementById('salva-target').value = '';
-            document.getElementById('salva-data-target').value = '';
-            closeModal('modal-salvadanaio');
-        };
-
-        window.versaNelSalvadanaio = function(id) {
-            const cifra = parseFloat(prompt("Quanto vuoi versare in questo piano? \n(Verrà inserita una spesa nel mese attuale per scalare la cifra)"));
-            if(isNaN(cifra) || cifra <= 0) return;
-
-            const nuovoAccumulo = (appData.salvadanai[id].accumulato || 0) + cifra;
-            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai/' + id + '/accumulato'), nuovoAccumulo);
-
-            const spesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
-            set(spesaRef, {
-                importo: cifra, descrizione: "Accantonamento: " + appData.salvadanai[id].nome, cassetto: "libero_restante", timestamp: Date.now()
-            });
-        };
-
-        window.prelevaDalSalvadanaio = function(id) {
-            const cifra = parseFloat(prompt("Quanto vuoi prelevare da questo fondo? \n(Verranno riaccreditati sul fondo libero)"));
-            if(isNaN(cifra) || cifra <= 0) return;
-            if(cifra > appData.salvadanai[id].accumulato) { alert("Fondi insufficienti nel piano."); return; }
-
-            const nuovoAccumulo = appData.salvadanai[id].accumulato - cifra;
-            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai/' + id + '/accumulato'), nuovoAccumulo);
-
-            const spesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
-            set(spesaRef, {
-                importo: -cifra, descrizione: "Prelievo da: " + appData.salvadanai[id].nome, cassetto: "libero_restante", timestamp: Date.now()
-            });
-        };
-
-        window.eliminaSalvadanaio = function(id) {
-            if(confirm("Eliminare questo piano? I fondi accumulati rimarranno tracciati nello storico passato ma il piano sparirà.")) {
-                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai/' + id));
-            }
-        };
-
-        window.chiudiEMeseArchivia = function() {
-            const nomeMese = prompt("Inserisci il nome del mese da archiviare (es: Gennaio 2024, Febbraio 2024...):");
-            if(!nomeMese) return;
-
-            if(confirm("Sei sicuro di voler chiudere il mese? Tutte le spese attuali verranno salvate nell'archivio storico e svuotate dalla home per iniziare il mese nuovo.")){
-                const datiDaArchiviare = {
-                    nomeMese: nomeMese,
-                    entrate: appData.entrate,
-                    cassetti: appData.cassetti,
-                    spese: appData.spese,
-                    timestamp: Date.now()
-                };
-                
-                push(storicoRef, datiDaArchiviare);
-
-                // Svuota le spese correnti
-                set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'), {});
-                
-                // Ripristina lo stato delle scadenze mensili su "non pagate"
-                Object.keys(appData.scadenze).forEach(k => {
-                    set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + k + '/pagata'), false);
-                });
-
-                alert("Mese archiviato con successo!");
-            }
-        };
-
-        function renderizzaStorico(datiStorici) {
-            const container = document.getElementById('storico-container');
-            container.innerHTML = '';
-            if(!datiStorici) {
-                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">L\'archivio storico è vuoto.</p>';
-                return;
-            }
-            Object.keys(datiStorici).forEach(k => {
-                const mese = datiStorici[k];
-                let tSpeso = 0;
-                if(mese.spese) {
-                    Object.keys(mese.spese).forEach(sk => tSpeso += mese.spese[sk].importo);
-                }
-                const risp = mese.entrate - tSpeso;
-
-                container.innerHTML += `
-                    <div class="cassetto-row" style="border-left:4px solid #64748b;">
-                        <div class="cassetto-header">
-                            <span class="cassetto-name" style="font-size:14px; font-weight:700;"><i class="fa-solid fa-calendar-check"></i> ${mese.nomeMese}</span>
-                            <button class="btn-delete" onclick="eliminaSingoloMeseStorico('${k}')"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                        <div style="font-size:12px; color:var(--text-muted); margin-top:4px; display:grid; grid-template-columns:1fr 1fr; gap:4px;">
-                            <span>Budget Iniziale: <b>${mese.entrate.toFixed(2)} €</b></span>
-                            <span>Totale Speso: <b style="color:var(--danger)">${tSpeso.toFixed(2)} €</b></span>
-                            <span style="grid-column:span 2; font-weight:600; color:${risp >= 0 ? 'var(--success)': 'var(--danger)'}">Risparmio/Avanzo: ${risp.toFixed(2)} €</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        window.eliminaSingoloMeseStorico = function(id) {
-            if(confirm("Eliminare definitivamente questo mese dall'archivio?")) {
-                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_storico/' + id));
-            }
-        };
-
-        window.svuotaInteroStorico = function() {
-            if(confirm("ATTENZIONE! Vuoi svuotare permanentemente l'intero archivio storico dei mesi passati? L'operazione non è reversibile.")) {
-                remove(storicoRef);
-            }
-        };
-
-        window.esportaInCSV = function() {
-            let csv = 'Data,Descrizione,Comparto,Importo (€)\r\n';
-            let cont = 0;
-            Object.keys(appData.spese).forEach(k => {
-                const s = appData.spese[k];
-                const nomeC = appData.cassetti[s.cassetto] ? appData.cassetti[s.cassetto].nome : 'Generale';
-                const d = new Date(s.timestamp).toLocaleDateString('it-IT');
-                csv += `"${d}","${s.descrizione.replace(/"/g, '""')}","${nomeC}",${s.importo}\r\n`;
-                cont++;
-            });
-            if(cont === 0) { alert("Nessuna spesa da esportare."); return; }
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", "report_spese_budget.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        };
-
-        window.resetCompleto = function() {
-            if(confirm("Sei veramente sicuro? Questo comando cancellerà TUTTI i dati correnti (Spese, Comparti, Budget, Piani e Scadenze) del tuo utente.")) {
-                remove(budgetRef);
-            }
-        };
-
-        function renderizzaGraficoQuota(spesoPerCassetto) {
-            const ctx = document.getElementById('budgetChart').getContext('2d');
-            
-            let etichette = [];
-            let cifreData = [];
-            let coloriBackground = [ '#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#8b5cf6', '#64748b' ];
-
-            Object.keys(appData.cassetti).forEach(id => {
-                etichette.push(appData.cassetti[id].nome);
-                cifreData.push(spesoPerCassetto[id] || 0);
-            });
-
-            if(myChart) myChart.destroy();
-
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: etichette,
-                    datasets: [{
-                        data: cifreData,
-                        backgroundColor: coloriBackground.slice(0, etichette.length),
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
-                    },
-                    onClick: (evt, item) => {
-                        if(item && item.length > 0) {
-                            const index = item[0].index;
-                            const nomeCompSelezionato = etichette[index];
-                            let trovatoId = 'tutte';
-                            Object.keys(appData.cassetti).forEach(id => {
-                                if(appData.cassetti[id].nome === nomeCompSelezionato) trovatoId = id;
-                            });
-                            document.getElementById('filtro-categoria').value = trovatoId;
-                            calcolaERenderizzaUI();
-                        }
-                    }
-                }
-            });
-        }
-
-        // --- SISTEMA APERTURA MODALI E INTERFACCIA VISIVA ---
-        window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
-        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
-        window.closeModalOnBackdrop = function(e) { if(e.target.classList.contains('modal')) e.target.classList.remove('active'); };
-
-        window.switchView = function(viewId, btn) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-        };
-
-        function switchViewWithoutBtn(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if(viewId === 'home') document.getElementById('nav-btn-home').classList.add('active');
-        }
+        import { getDatabase, ref, get, set, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     </script>
 </body>
 </html>
