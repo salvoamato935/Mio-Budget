@@ -2,145 +2,373 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mio-Budget</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mio Budget Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f1f5f9">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --accent: #4f46e5;
+            --accent-gradient: linear-gradient(135deg, #4f46e5, #6366f1);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 100px;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 { font-size: 18px; font-weight: 700; }
+
+        .status-banner {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .status-ok { background: #dcfce7; color: #15803d; }
+        .status-warn { background: #fef3c7; color: #b45309; }
+        .status-alert { background: #fee2e2; color: #b91c1c; }
+
+        .container { padding: 16px; max-width: 480px; margin: 0 auto; }
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* SCHERMATA DI ACCESSO / REGISTRAZIONE */
+        #auth-screen {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-top: 40px;
+            text-align: center;
+        }
+        #auth-screen h2 { margin-bottom: 20px; font-size: 20px; font-weight: 700; }
+
+        .main-card {
+            background: var(--accent-gradient);
+            color: white;
+            border-radius: 24px;
+            padding: 22px;
+            text-align: center;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.1);
+        }
+        .main-card h2 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+
+        .chart-box {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--card-border);
+            display: flex;
+            justify-content: center;
+            max-height: 220px;
+        }
+
+        .budget-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .mini-card { background: var(--card-bg); border-radius: 18px; padding: 14px; border: 1px solid var(--card-border); position: relative;}
+        .mini-card span { font-size: 11px; color: var(--text-muted); display: block; }
+        .mini-card p { font-size: 16px; font-weight: 700; }
+
+        .section-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cassetto-row {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 8px;
+            border: 1px solid var(--card-border);
+        }
+        .cassetto-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .cassetto-name { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+        .cassetto-dispo { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px;}
+        .cassetto-progress { height: 5px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .cassetto-progress-bar { height: 100%; width: 0%; transition: width 0.4s; }
+
+        .spesa-item {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+        }
+        .spesa-info h4 { font-size: 13px; font-weight: 600; }
+        .spesa-info span { font-size: 10px; color: var(--text-muted); }
+
+        .btn-delete { background: none; border: none; color: var(--danger); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        
+        .btn {
+            background: var(--accent-gradient); color: white; border: none; padding: 12px;
+            border-radius: 12px; font-weight: 600; font-size: 14px; width: 100%; cursor: pointer;
+            transition: transform 0.1s ease; margin-bottom: 8px;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-secondary { background: #ffffff; color: var(--text-main); border: 1px solid var(--card-border); }
+        .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid #fca5a5; }
+
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-control { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--card-border); font-size: 14px; background: #fff;}
+
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+        }
+        .nav-item { background: none; border: none; color: var(--text-muted); font-size: 9px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; width: 60px;}
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { font-size: 16px; }
+        .nav-center-btn {
+            width: 46px; height: 46px; background: var(--accent-gradient); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;
+            transform: translateY(-10px); border: none; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(4px); z-index: 2000; align-items: flex-end;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--card-bg); width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px;
+            padding: 20px; animation: slideUp 0.2s ease-out; max-height: 85vh; overflow-y: auto;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .badge-btn { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--accent); font-weight: 600; border: none; cursor: pointer; }
+        .setup-comparto-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 13px;}
+        
+        .filter-select { background: transparent; border: 1px solid var(--card-border); border-radius: 8px; padding: 4px 8px; font-size: 12px; color: var(--text-main); }
+        .info-piano { font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 6px 10px; border-radius: 8px; margin-top: 6px; font-weight: 600;}
+        .hidden { display: none !important; }
+        .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; font-weight: 500; }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen">
+<body>
 
-    <!-- SCHERMATA DI BENVENUTO / ACCESSO -->
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
-            <div class="text-center mb-8">
-                <div class="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-lg">
-                    <i class="fa-solid fa-wallet"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-gray-900" id="auth-title">Bentornato!</h1>
-                <p class="text-sm text-gray-500 mt-1" id="auth-subtitle">Accedi per dare un'occhiata ai tuoi conti</p>
+    <header>
+        <h1 id="header-title">Mio Budget 📊</h1>
+        <div id="status-label" class="status-banner status-ok">🟢 Tutto sotto controllo</div>
+        <div id="user-header-info" style="font-size:11px; color:var(--text-muted); margin-top:4px;" class="hidden"></div>
+    </header>
+
+    <div class="container">
+        
+        <!-- SCHERMATA ACCESSO / REGISTRAZIONE -->
+        <div id="auth-screen">
+            <h2 id="auth-title">Bentornato!</h2>
+            <div class="form-group">
+                <label>La tua email</label>
+                <input type="email" id="auth-email" class="form-control" placeholder="nome@esempio.it">
             </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="auth-password" class="form-control" placeholder="••••••••">
+            </div>
+            <button class="btn" id="btn-auth-primary" onclick="gestisciAutenticazione()">Entra nel tuo Budget</button>
+            <button class="btn btn-secondary" id="btn-auth-toggle" onclick="toggleModalitaAuth()" style="font-size:12px;">Prima volta qui? Crea un profilo</button>
+            <p id="auth-error" class="error-msg"></p>
+        </div>
 
-            <form id="auth-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">La tua email</label>
-                    <input type="email" id="auth-email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="nome@esempio.it">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Parola chiave (Password)</label>
-                    <input type="password" id="auth-password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="••••••••">
-                </div>
+        <!-- SCHERMATA CONFIGURAZIONE COMPARTI E BUDGET TOTALE -->
+        <div id="view-setup" class="view">
+            <div class="mini-card" style="padding: 20px;">
+                <h3 style="margin-bottom: 12px; text-align:center;">Organizza il tuo Mese</h3>
                 
-                <p id="auth-error" class="text-red-500 text-xs font-semibold mt-1 hidden"></p>
+                <div class="form-group" style="margin-bottom: 20px; background: #e0f2fe; padding: 12px; border-radius: 12px; border: 1px solid #bae6fd;">
+                    <label style="color:#0369a1; font-weight:700;">1. QUANTO VUOI SPENDERE QUESTO MESE? (€)</label>
+                    <input type="number" id="setup-budget-totale-input" class="form-control" placeholder="Es. 1500" inputmode="decimal" style="border-color:#7dd3fc; font-size:16px; font-weight:700;">
+                </div>
 
-                <button type="submit" id="auth-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
-                    <span id="auth-btn-text">Entra nell'app</span>
-                    <i class="fa-solid fa-arrow-right text-sm"></i>
-                </button>
-            </form>
+                <hr style="border: 0; height: 1px; background: var(--card-border); margin: 20px 0;">
 
-            <div class="mt-6 text-center text-sm text-gray-600">
-                <span id="auth-toggle-text">Prima volta qui?</span>
-                <button type="button" id="auth-toggle-btn" class="text-blue-600 font-semibold hover:underline ml-1">Crea un profilo</button>
+                <h4 style="margin-bottom: 10px; font-size:13px; color:var(--text-main);">2. DIVIDI IL BUDGET IN CASSETTI (Opzionale)</h4>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--card-border);">
+                    <div class="form-group">
+                        <label>Nome Cassetto (es. Auto, Casa, Pizzeria...)</label>
+                        <input type="text" id="add-comp-nome" class="form-control" placeholder="Es. Spesa Casa">
+                    </div>
+                    <div class="form-group">
+                        <label>Quanto assegni a questo Cassetto? (€)</label>
+                        <input type="number" id="add-comp-budget" class="form-control" placeholder="Es. 400" inputmode="decimal">
+                    </div>
+                    <button class="btn btn-secondary" style="font-size:12px; padding:6px;" onclick="aggiungiCompartoLista()">+ Aggiungi Cassetto</button>
+                </div>
+
+                <div id="lista-comparti-setup" style="margin-bottom:16px;"></div>
+                
+                <div style="background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; text-align:center; font-weight:600; margin-bottom:16px;">
+                    Assegnato ai Cassetti: <span id="setup-somma-comparti" style="color:var(--accent)">0,00 €</span>
+                </div>
+
+                <button class="btn" onclick="salvaConfigurazioneComparti()">Salva ed Entra</button>
+                <button class="btn btn-secondary" id="btn-annulla-setup" style="display:none;" onclick="chiudiModificaBudget()">Annulla</button>
             </div>
+        </div>
+
+        <!-- DASHBOARD PRINCIPALE -->
+        <div id="view-home" class="view">
+            <div class="main-card">
+                <p style="font-size:12px; opacity:0.9;">Quanto ti resta ancora</p>
+                <h2 id="dash-disponibile">0,00 €</h2>
+                <button class="badge-btn" style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;" onclick="apriModificaBudget()"><i class="fa-solid fa-sliders"></i> Regola Budget e Cassetti</button>
+            </div>
+
+            <div class="chart-box">
+                <canvas id="budgetChart"></canvas>
+            </div>
+
+            <div class="budget-details">
+                <div class="mini-card"><span>Budget Iniziale</span><p id="dash-entrate" style="color:var(--success);">0 €</p></div>
+                <div class="mini-card"><span>Gia Speso</span><p id="dash-speso" style="color:var(--danger);">0 €</p></div>
+            </div>
+
+            <h3 class="section-title">📊 I Tuoi Cassetti <span style="font-size:10px; text-transform:none;">(Premi ✏️ per modificare)</span></h3>
+            <div id="cassetti-container"></div>
+
+            <h3 class="section-title">📅 Prossime Scadenze <button class="badge-btn" onclick="openModal('modal-scadenza')">+ Aggiungi</button></h3>
+            <div id="scadenze-container"></div>
+
+            <h3 class="section-title">
+                🕒 Ultime Spese
+                <select id="filtro-categoria" class="filter-select" onchange="calcolaERenderizzaUI()">
+                    <option value="tutte">Tutte</option>
+                </select>
+            </h3>
+            <div id="spese-container"></div>
+            
+            <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <button class="btn btn-secondary" style="color:var(--accent); border-color:var(--accent);" onclick="esportaInCSV()"><i class="fa-solid fa-file-csv"></i> Scarica Mese</button>
+                <button class="btn btn-secondary" style="color:var(--accent); border-color:var(--accent);" onclick="chiudiEMeseArchivia()"><i class="fa-solid fa-box-archive"></i> Concludi Mese</button>
+            </div>
+        </div>
+
+        <!-- OBIETTIVI E RISPARMI (SALVADANAI) -->
+        <div id="view-salvadanai" class="view">
+            <h3 class="section-title">I tuoi Obiettivi & Risparmi</h3>
+            <div id="salvadanai-container"></div>
+            <button class="btn" onclick="openModal('modal-salvadanaio')" style="margin-top:10px;"><i class="fa-solid fa-plus"></i> Nuovo Obiettivo a Lungo Termine</button>
+        </div>
+
+        <!-- ARCHIVIO STORICO -->
+        <div id="view-storico" class="view">
+            <div class="section-title">
+                <span>Passato & Mesi Archiviati</span>
+                <button class="badge-btn" style="color:var(--danger); background:#fee2e2;" onclick="svuotaInteroStorico()"><i class="fa-solid fa-trash-can"></i> Svuota Tutto</button>
+            </div>
+            <div id="storico-container"></div>
+        </div>
+
+    </div>
+
+    <!-- NAVBAR IN BASSO -->
+    <nav class="nav-bar" id="app-nav" style="display:none;">
+        <button class="nav-item active" id="nav-btn-home" onclick="switchView('home', this)"><i class="fa-solid fa-wallet"></i><span>Home</span></button>
+        <button class="nav-item" onclick="switchView('salvadanai', this)"><i class="fa-solid fa-piggy-bank"></i><span>Obiettivi</span></button>
+        <button class="nav-center-btn" onclick="apriModalNuovaSpesa()"><i class="fa-solid fa-plus"></i></button>
+        <button class="nav-item" onclick="switchView('storico', this)"><i class="fa-solid fa-clock-rotate-left"></i><span>Storico</span></button>
+        <button class="nav-item" style="color:var(--danger);" onclick="eseguiLogout()"><i class="fa-solid fa-right-from-bracket"></i><span>Esci</span></button>
+    </nav>
+
+    <!-- MODALE INSERIMENTO / MODIFICA SPESA -->
+    <div id="modal-spesa" class="modal" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-content">
+            <h3 id="spesa-modal-titolo">💸 Annota una Spesa</h3>
+            <input type="hidden" id="spesa-edit-id">
+            <div class="form-group"><label>Quanto hai speso? (€)</label><input type="number" id="spesa-importo" class="form-control" step="0.01" inputmode="decimal"></div>
+            <div class="form-group"><label>Per cosa?</label><input type="text" id="spesa-desc" class="form-control" placeholder="Es. Spesa Conad, Carburante..."></div>
+            <div class="form-group"><label>Scegli il Cassetto</label><select id="spesa-cassetto" class="form-control"></select></div>
+            <button class="btn" onclick="salvaSpesa()">Salva Spesa</button>
+            <button class="btn btn-danger" id="btn-elimina-spesa-diretto" style="display:none;" onclick="clickEliminaSpesaInModifica()">Cancella Spesa</button>
         </div>
     </div>
 
-    <!-- LA TUA DASHBOARD -->
-    <div id="app-screen" class="hidden min-h-screen flex flex-col">
-        <!-- Testata -->
-        <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-2 rounded-lg">
-                    <i class="fa-solid fa-wallet text-xl"></i>
-                </div>
-                <h2 class="text-xl font-bold text-gray-800">Mio-Budget</h2>
-            </div>
-            <div class="flex items-center gap-4">
-                <span id="user-display" class="text-sm font-medium text-gray-600 hidden md:inline"></span>
-                <button id="logout-btn" class="text-gray-500 hover:text-red-600 p-2 rounded-lg hover:bg-gray-100 transition" title="Esci">
-                    <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Contenuto -->
-        <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
-            <!-- Schede di riepilogo -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Soldi entrati</p>
-                        <h3 id="total-income" class="text-2xl font-bold text-green-600 mt-1">€ 0,00</h3>
-                    </div>
-                    <div class="bg-green-100 text-green-600 p-3 rounded-full">
-                        <i class="fa-solid fa-arrow-down text-xl"></i>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Spese fatte</p>
-                        <h3 id="total-expense" class="text-2xl font-bold text-red-600 mt-1">€ 0,00</h3>
-                    </div>
-                    <div class="bg-red-100 text-red-600 p-3 rounded-full">
-                        <i class="fa-solid fa-arrow-up text-xl"></i>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Quanto ti resta</p>
-                        <h3 id="total-balance" class="text-2xl font-bold text-blue-600 mt-1">€ 0,00</h3>
-                    </div>
-                    <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
-                        <i class="fa-solid fa-scale-balanced text-xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Inserimento e Storia Spese -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Aggiungi una spesa o un guadagno -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Annota una spesa o un'entrata</h3>
-                    <form id="transaction-form" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Cosa è successo?</label>
-                            <select id="trans-type" class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                                <option value="expense">Ho speso dei soldi (Uscita)</option>
-                                <option value="income">Ho ricevuto dei soldi (Entrata)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Per cosa?</label>
-                            <input type="text" id="trans-desc" required placeholder="Es. Spesa al supermercato, Pizzeria..." class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Quanto? (€)</label>
-                            <input type="number" step="0.01" id="trans-amount" required placeholder="0.00" class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition shadow">
-                            Annota subito
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Lista Storico -->
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">La tua storia delle spese</h3>
-                    <div class="overflow-x-auto">
-                        <ul id="transactions-list" class="divide-y divide-gray-100">
-                            <li class="py-4 text-center text-gray-400 text-sm">Non hai ancora annotato nulla</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </main>
+    <!-- MODALE AGGIUNTA SCADENZA -->
+    <div id="modal-scadenza" class="modal" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-content">
+            <h3>📅 Ricorda una Scadenza Imminente</h3>
+            <div class="form-group"><label>Nome della scadenza</label><input type="text" id="scad-nome" class="form-control" placeholder="Es. Assicurazione, Bolletta Luce..."></div>
+            <div class="form-group"><label>Importo stimato (€)</label><input type="number" id="scad-importo" class="form-control" inputmode="decimal"></div>
+            <div class="form-group"><label>Collega al Cassetto</label><select id="scad-cassetto" class="form-control"></select></div>
+            <button class="btn" onclick="aggiungiScadenza()">Salva Scadenza</button>
+        </div>
     </div>
 
-    <!-- Script Firebase -->
+    <!-- MODALE PAGAMENTO SCADENZA -->
+    <div id="modal-paga-scadenza" class="modal" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-content">
+            <h3>Conferma Pagamento Scadenza</h3>
+            <input type="hidden" id="paga-scad-id">
+            <input type="hidden" id="paga-scad-cassetto">
+            <div class="form-group"><label>Nome Scadenza</label><input type="text" id="paga-scad-nome" class="form-control" readonly></div>
+            <div class="form-group"><label>Importo effettivo pagato (€)</label><input type="number" id="paga-scad-importo-reale" class="form-control" step="0.01" inputmode="decimal"></div>
+            <button class="btn" onclick="confermaPagamentoScadenzaRealizzato()">Registra Pagamento</button>
+        </div>
+    </div>
+
+    <!-- MODALE NUOVO PIANO DI RISPARMIO -->
+    <div id="modal-salvadanaio" class="modal" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-content">
+            <h3>🐷 Crea un nuovo Obiettivo</h3>
+            <div class="form-group"><label>Cosa vuoi raggiungere?</label><input type="text" id="salva-nome" class="form-control" placeholder="Es. Saldo T-Cross"></div>
+            <div class="form-group"><label>Cifra finale da raggiungere (€)</label><input type="number" id="salva-target" class="form-control" inputmode="decimal"></div>
+            <div class="form-group"><label>Mese e Anno entro cui completare</label><input type="month" id="salva-data-target" class="form-control"></div>
+            <button class="btn" onclick="creaSalvadanaio()">Inizia a Risparmiare</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
@@ -155,10 +383,11 @@
             ref, 
             push, 
             onValue, 
-            remove 
+            remove, 
+            set 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIGURAZIONE FIREBASE REALE
+        // CONFIGURAZIONE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
             authDomain: "budget-casa-7eead.firebaseapp.com",
@@ -173,170 +402,73 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Elementi Schermata
-        const authScreen = document.getElementById('auth-screen');
-        const appScreen = document.getElementById('app-screen');
-        const authForm = document.getElementById('auth-form');
-        const authEmail = document.getElementById('auth-email');
-        const authPassword = document.getElementById('auth-password');
-        const authTitle = document.getElementById('auth-title');
-        const authSubtitle = document.getElementById('auth-subtitle');
-        const authBtnText = document.getElementById('auth-btn-text');
-        const authToggleBtn = document.getElementById('auth-toggle-btn');
-        const authToggleText = document.getElementById('auth-toggle-text');
-        const authError = document.getElementById('auth-error');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userDisplay = document.getElementById('user-display');
+        let isLogin = true;
 
-        let isLoginMode = true;
+        window.toggleModalitaAuth = function() {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Bentornato!" : "Crea il tuo profilo";
+            document.getElementById('btn-auth-primary').innerText = isLogin ? "Entra nel tuo Budget" : "Registrati subito";
+            document.getElementById('btn-auth-toggle').innerText = isLogin ? "Prima volta qui? Crea un profilo" : "Hai già un profilo? Accedi";
+            document.getElementById('auth-error').innerText = "";
+        };
 
-        // Cambio Login / Registrazione con testi semplici
-        authToggleBtn.addEventListener('click', () => {
-            isLoginMode = !isLoginMode;
-            authTitle.innerText = isLoginMode ? "Bentornato!" : "Iniziamo!";
-            authSubtitle.innerText = isLoginMode ? "Accedi per dare un'occhiata ai tuoi conti" : "Crea il tuo profilo personale in pochi secondi";
-            authBtnText.innerText = isLoginMode ? "Entra nell'app" : "Crea profilo";
-            authToggleText.innerText = isLoginMode ? "Prima volta qui?" : "Hai già un profilo?";
-            authToggleBtn.innerText = isLoginMode ? "Crea un profilo" : "Accedi qui";
-            authError.classList.add('hidden');
-        });
+        window.gestisciAutenticazione = function() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const errEl = document.getElementById('auth-error');
+            errEl.innerText = "";
 
-        // Gestione Accesso
-        authForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = authEmail.value.trim();
-            const password = authPassword.value;
-            authError.classList.add('hidden');
+            if(!email || !password) {
+                errEl.innerText = "Per favore, compila tutti i campi.";
+                return;
+            }
 
-            if (isLoginMode) {
+            if(isLogin) {
                 signInWithEmailAndPassword(auth, email, password)
-                    .catch((err) => {
-                        authError.innerText = "Ops! Email o password non corrette.";
-                        authError.classList.remove('hidden');
+                    .catch(err => {
+                        errEl.innerText = "Email o password non corrette.";
                     });
             } else {
                 createUserWithEmailAndPassword(auth, email, password)
-                    .then(() => {
-                        alert("Profilo creato con successo! Entriamo...");
-                    })
-                    .catch((err) => {
-                        authError.innerText = "Non siamo riusciti a creare il profilo: " + err.message;
-                        authError.classList.remove('hidden');
+                    .catch(err => {
+                        errEl.innerText = "Impossibile registrarsi: " + err.message;
                     });
             }
-        });
+        };
 
-        // Cambio Schermata in automatico quando sei collegato
+        window.eseguiLogout = function() {
+            signOut(auth);
+        };
+
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                authScreen.classList.add('hidden');
-                appScreen.classList.remove('hidden');
-                userDisplay.innerText = user.email;
-                loadTransactions(user.uid);
+            if(user) {
+                document.getElementById('auth-screen').style.display = "none";
+                document.getElementById('app-nav').style.display = "flex";
+                document.getElementById('user-header-info').innerText = user.email;
+                document.getElementById('user-header-info').classList.remove('hidden');
+                document.getElementById('view-home').classList.add('active');
             } else {
-                appScreen.classList.add('hidden');
-                authScreen.classList.remove('hidden');
+                document.getElementById('auth-screen').style.display = "block";
+                document.getElementById('app-nav').style.display = "none";
+                document.getElementById('user-header-info').classList.add('hidden');
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             }
         });
 
-        // Tasto Esci
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth);
-        });
+        window.switchView = function(viewId, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            if(btn) btn.classList.add('active');
+        };
 
-        // Gestione annotazioni
-        const transactionForm = document.getElementById('transaction-form');
-        const transType = document.getElementById('trans-type');
-        const transDesc = document.getElementById('trans-desc');
-        const transAmount = document.getElementById('trans-amount');
-        const transactionsList = document.getElementById('transactions-list');
-        const totalIncomeEl = document.getElementById('total-income');
-        const totalExpenseEl = document.getElementById('total-expense');
-        const totalBalanceEl = document.getElementById('total-balance');
+        window.openModal = function(id) {
+            document.getElementById(id).classList.add('active');
+        };
 
-        transactionForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const user = auth.currentUser;
-            if (!user) return;
-
-            const newTrans = {
-                type: transType.value,
-                desc: transDesc.value,
-                amount: parseFloat(transAmount.value),
-                date: new Date().toISOString()
-            };
-
-            push(ref(db, `users/${user.uid}/transactions`), newTrans)
-                .then(() => {
-                    transactionForm.reset();
-                })
-                .catch((err) => {
-                    alert("Errore nel salvataggio: " + err.message);
-                });
-        });
-
-        function loadTransactions(userId) {
-            const transRef = ref(db, `users/${userId}/transactions`);
-            onValue(transRef, (snapshot) => {
-                const data = snapshot.val();
-                transactionsList.innerHTML = '';
-
-                if (!data) {
-                    transactionsList.innerHTML = '<li class="py-4 text-center text-gray-400 text-sm">Non hai ancora annotato nulla</li>';
-                    totalIncomeEl.innerText = '€ 0,00';
-                    totalExpenseEl.innerText = '€ 0,00';
-                    totalBalanceEl.innerText = '€ 0,00';
-                    return;
-                }
-
-                let totalIncome = 0;
-                let totalExpense = 0;
-
-                Object.keys(data).forEach((key) => {
-                    const item = data[key];
-                    const isIncome = item.type === 'income';
-
-                    if (isIncome) {
-                        totalIncome += item.amount;
-                    } else {
-                        totalExpense += item.amount;
-                    }
-
-                    const li = document.createElement('li');
-                    li.className = 'py-3 flex justify-between items-center border-b border-gray-50 last:border-0';
-                    li.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 rounded-lg ${isIncome ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
-                                <i class="fa-solid ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'} text-sm"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-800 text-sm">${item.desc}</p>
-                                <p class="text-xs text-gray-400">${new Date(item.date).toLocaleDateString('it-IT')}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="font-bold text-sm ${isIncome ? 'text-green-600' : 'text-red-600'}">
-                                ${isIncome ? '+' : '-'} € ${item.amount.toFixed(2)}
-                            </span>
-                            <button onclick="deleteTrans('${key}')" class="text-gray-300 hover:text-red-500 transition">
-                                <i class="fa-solid fa-trash-can text-sm"></i>
-                            </button>
-                        </div>
-                    `;
-                    transactionsList.prepend(li);
-                });
-
-                const balance = totalIncome - totalExpense;
-                totalIncomeEl.innerText = `€ ${totalIncome.toFixed(2)}`;
-                totalExpenseEl.innerText = `€ ${totalExpense.toFixed(2)}`;
-                totalBalanceEl.innerText = `€ ${balance.toFixed(2)}`;
-            });
-        }
-
-        window.deleteTrans = (key) => {
-            const user = auth.currentUser;
-            if (user) {
-                remove(ref(db, `users/${user.uid}/transactions/${key}`));
+        window.closeModalOnBackdrop = function(e) {
+            if(e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
             }
         };
     </script>
