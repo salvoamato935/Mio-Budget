@@ -796,6 +796,7 @@ window.versaNelSalvadanaio = function(k) {
   const sal = appData.salvadanai[k];
   if (!sal) return;
 
+  // 1. Chiede l'importo
   const importoStr = prompt(`Quanto vuoi versare in "${sal.nome || 'questo salvadanaio'}"?`);
   if (!importoStr) return;
   const importo = parseFloat(importoStr);
@@ -804,56 +805,22 @@ window.versaNelSalvadanaio = function(k) {
     return;
   }
 
-  // Rimuove eventuali finestre precedenti se presenti
-  const modalVecchia = document.getElementById('modalSceltaVersamento');
-  if (modalVecchia) modalVecchia.remove();
+  // 2. Chiede la provenienza dei soldi
+  const risposta = confirm("Vuoi prelevare dal Budget mensile?\n\n- Premi 'OK' per PRELEVARE DAL BUDGET.\n- Premi 'Annulla' per segnarlo come EXTRA BUDGET.");
 
-  // Crea la finestra con i pulsanti personalizzati
-  const modalHTML = `
-    <div id="modalSceltaVersamento" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:99999;">
-      <div style="background:#fff; padding:20px; border-radius:12px; max-width:320px; width:90%; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.3); font-family:sans-serif;">
-        <h4 style="margin-top:0; color:#2c3e50;">Tipo di Versamento</h4>
-        <p style="font-size:0.9em; color:#555;">Stai versando <strong>€${importo.toFixed(2)}</strong> in "${sal.nome || 'Salvadanaio'}".<br>Scegli la provenienza:</p>
-        
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
-          <button id="btnPrelevaBudget" style="background:#27ae60; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">
-            Preleva dal Budget
-          </button>
-          <button id="btnExtraBudget" style="background:#2980b9; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">
-            Extra Budget
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
+  if (!sal.accumulato) sal.accumulato = 0;
+  sal.accumulato += importo;
 
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-  // Azione: Preleva dal Budget
-  document.getElementById('btnPrelevaBudget').onclick = function() {
-    eseguiVersamento(sal, importo, false);
-  };
-
-  // Azione: Extra Budget
-  document.getElementById('btnExtraBudget').onclick = function() {
-    eseguiVersamento(sal, importo, true);
-  };
-
-  function eseguiVersamento(sal, importo, isExtra) {
-    if (!sal.accumulato) sal.accumulato = 0;
-    sal.accumulato += importo;
-
-    if (isExtra) {
-      sal.extra = (sal.extra || 0) + importo;
-    } else {
-      sal.versatoBudget = (sal.versatoBudget || 0) + importo;
-    }
-
-    document.getElementById('modalSceltaVersamento').remove();
-
-    if (typeof salvaDati === "function") salvaDati();
-    if (typeof renderizzaSezioneSalvadanai === "function") renderizzaSezioneSalvadanai();
+  if (risposta) {
+    // Premi OK -> Preleva dal Budget
+    sal.versatoBudget = (sal.versatoBudget || 0) + importo;
+  } else {
+    // Premi Annulla -> Extra Budget
+    sal.extra = (sal.extra || 0) + importo;
   }
+
+  if (typeof salvaDati === "function") salvaDati();
+  if (typeof renderizzaSezioneSalvadanai === "function") renderizzaSezioneSalvadanai();
 };
         function aggiornaSelectMenuModali() {
             const menuFiltro = document.getElementById('filtro-categoria');
