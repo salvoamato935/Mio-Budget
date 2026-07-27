@@ -3,24 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>Mio Budget Pro</title>
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f1f5f9">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+
         :root {
             --bg-color: #f1f5f9;
             --card-bg: #ffffff;
             --card-border: #e2e8f0;
+
             --accent: #4f46e5;
+            --accent-light: #eef2ff;
             --accent-gradient: linear-gradient(135deg, #4f46e5, #6366f1);
+
             --text-main: #0f172a;
             --text-muted: #64748b;
+
             --danger: #ef4444;
             --warning: #f59e0b;
             --success: #10b981;
+            --info: #0284c7;
+
+            --shadow: 0 4px 12px rgba(15,23,42,0.06);
         }
 
         * {
@@ -32,10 +45,20 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background: var(--bg-color);
             color: var(--text-main);
             padding-bottom: 100px;
             overflow-x: hidden;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
         }
 
         header {
@@ -91,19 +114,22 @@
             display: block;
         }
 
-        #auth-screen {
+        .hidden {
+            display: none !important;
+        }
+
+        .auth-card {
             background: var(--card-bg);
             padding: 24px;
             border-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            box-shadow: var(--shadow);
             margin-top: 40px;
             text-align: center;
         }
 
-        #auth-screen h2 {
+        .auth-card h2 {
             margin-bottom: 20px;
             font-size: 20px;
-            font-weight: 700;
         }
 
         .main-card {
@@ -113,7 +139,7 @@
             padding: 22px;
             text-align: center;
             margin-bottom: 16px;
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 10px 20px rgba(79,70,229,0.1);
         }
 
         .main-card h2 {
@@ -122,15 +148,19 @@
             margin-bottom: 8px;
         }
 
+        .main-card .cycle-info {
+            font-size: 11px;
+            opacity: .85;
+            margin-top: 8px;
+        }
+
         .chart-box {
             background: var(--card-bg);
             border-radius: 20px;
             padding: 16px;
             margin-bottom: 16px;
             border: 1px solid var(--card-border);
-            display: flex;
-            justify-content: center;
-            max-height: 220px;
+            height: 230px;
         }
 
         .budget-details {
@@ -145,7 +175,7 @@
             border-radius: 18px;
             padding: 14px;
             border: 1px solid var(--card-border);
-            position: relative;
+            box-shadow: var(--shadow);
         }
 
         .mini-card span {
@@ -157,18 +187,24 @@
         .mini-card p {
             font-size: 16px;
             font-weight: 700;
+            margin-top: 3px;
         }
 
         .section-title {
             font-size: 13px;
             color: var(--text-muted);
-            margin: 20px 0 10px 0;
+            margin: 20px 0 10px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: .5px;
             font-weight: 700;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
+        }
+
+        .section-title button {
+            flex-shrink: 0;
         }
 
         .cassetto-row {
@@ -177,12 +213,14 @@
             padding: 14px;
             margin-bottom: 8px;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
         }
 
         .cassetto-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             margin-bottom: 6px;
         }
 
@@ -199,7 +237,8 @@
             font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            text-align: right;
         }
 
         .cassetto-progress {
@@ -211,8 +250,7 @@
 
         .cassetto-progress-bar {
             height: 100%;
-            width: 0%;
-            transition: width 0.4s;
+            transition: width .4s;
         }
 
         .spesa-item {
@@ -223,13 +261,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             border: 1px solid var(--card-border);
             cursor: pointer;
+        }
+
+        .spesa-info {
+            min-width: 0;
         }
 
         .spesa-info h4 {
             font-size: 13px;
             font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .spesa-info span {
@@ -246,7 +292,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
         }
 
         .btn {
@@ -258,17 +303,16 @@
             font-weight: 600;
             font-size: 14px;
             width: 100%;
-            cursor: pointer;
-            transition: transform 0.1s ease;
+            transition: transform .1s ease;
             margin-bottom: 8px;
         }
 
         .btn:active {
-            transform: scale(0.98);
+            transform: scale(.98);
         }
 
         .btn-secondary {
-            background: #ffffff;
+            background: #fff;
             color: var(--text-main);
             border: 1px solid var(--card-border);
         }
@@ -277,6 +321,18 @@
             background: #fee2e2;
             color: var(--danger);
             border: 1px solid #fca5a5;
+        }
+
+        .btn-success {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .btn-info {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #7dd3fc;
         }
 
         .form-group {
@@ -299,6 +355,13 @@
             border: 1px solid var(--card-border);
             font-size: 14px;
             background: #fff;
+            color: var(--text-main);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,70,229,.1);
         }
 
         .nav-bar {
@@ -307,7 +370,7 @@
             left: 0;
             right: 0;
             height: 65px;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255,255,255,.95);
             backdrop-filter: blur(10px);
             border-top: 1px solid var(--card-border);
             display: flex;
@@ -325,7 +388,6 @@
             flex-direction: column;
             align-items: center;
             gap: 2px;
-            cursor: pointer;
             width: 60px;
         }
 
@@ -349,17 +411,14 @@
             font-size: 18px;
             transform: translateY(-10px);
             border: none;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 4px 10px rgba(79,70,229,.3);
         }
 
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 23, 42, 0.3);
+            inset: 0;
+            background: rgba(15,23,42,.3);
             backdrop-filter: blur(4px);
             z-index: 2000;
             align-items: flex-end;
@@ -375,8 +434,8 @@
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
             padding: 20px;
-            animation: slideUp 0.2s ease-out;
-            max-height: 85vh;
+            animation: slideUp .2s ease-out;
+            max-height: 88vh;
             overflow-y: auto;
         }
 
@@ -398,18 +457,6 @@
             color: var(--accent);
             font-weight: 600;
             border: none;
-            cursor: pointer;
-        }
-
-        .setup-comparto-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8fafc;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            font-size: 13px;
         }
 
         .filter-select {
@@ -431,3573 +478,4716 @@
             font-weight: 600;
         }
 
-        .hidden {
-            display: none !important;
-        }
-
         .error-msg {
-            color: #ef4444;
+            color: var(--danger);
             font-size: 13px;
             margin-top: 8px;
             font-weight: 500;
         }
+
+        .success-box {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .insight-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .insight-card h4 {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .insight-card p {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        .insight-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            float: left;
+            margin-right: 10px;
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .setup-comparto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .empty-state {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .movement-type {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 7px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .movement-spesa {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .movement-budget {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .movement-extra {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .movement-prelievo {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
     </style>
 </head>
 
 <body>
 
-    <header>
-        <h1 id="header-title">Mio Budget 📊</h1>
-        <div id="status-label" class="status-banner status-ok">
-            🟢 Tutto sotto controllo
+<header>
+
+    <h1 id="header-title">
+        Mio Budget 📊
+    </h1>
+
+    <div id="status-label"
+         class="status-banner status-ok">
+        🟢 Tutto sotto controllo
+    </div>
+
+    <div id="user-header-info"
+         style="font-size:11px;color:var(--text-muted);margin-top:4px;"
+         class="hidden">
+    </div>
+
+</header>
+
+<div class="container">
+
+    <!-- AUTENTICAZIONE -->
+
+    <div id="auth-screen"
+         class="auth-card">
+
+        <h2 id="auth-title">
+            Accedi al tuo Budget
+        </h2>
+
+        <div class="form-group">
+            <label>Email</label>
+
+            <input
+                type="email"
+                id="auth-email"
+                class="form-control"
+                placeholder="esempio@email.com">
         </div>
 
-        <div id="user-header-info"
-            style="font-size:11px; color:var(--text-muted); margin-top:4px;"
-            class="hidden">
+        <div class="form-group">
+            <label>Password</label>
+
+            <input
+                type="password"
+                id="auth-password"
+                class="form-control"
+                placeholder="Inserisci la tua password">
         </div>
-    </header>
 
-    <div class="container">
+        <button
+            class="btn"
+            id="btn-auth-primary"
+            onclick="gestisciAutenticazione()">
 
-        <!-- SCHERMATA ACCESSO / REGISTRAZIONE -->
-        <div id="auth-screen">
+            Accedi
 
-            <h2 id="auth-title">Accedi al tuo Budget</h2>
+        </button>
 
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email"
-                    id="auth-email"
+        <button
+            class="btn btn-secondary"
+            id="btn-auth-toggle"
+            onclick="toggleModalitaAuth()"
+            style="font-size:12px;">
+
+            Non hai un account? Registrati
+
+        </button>
+
+        <p
+            id="auth-error"
+            class="error-msg">
+        </p>
+
+    </div>
+
+
+    <!-- SETUP -->
+
+    <div id="view-setup"
+         class="view">
+
+        <div class="mini-card"
+             style="padding:20px;">
+
+            <h3
+                style="margin-bottom:12px;text-align:center;">
+
+                Configurazione del ciclo
+
+            </h3>
+
+            <div class="form-group"
+                 style="background:#e0f2fe;padding:12px;border-radius:12px;border:1px solid #bae6fd;">
+
+                <label
+                    style="color:#0369a1;font-weight:700;">
+
+                    BUDGET INIZIALE DEL CICLO (€)
+
+                </label>
+
+                <input
+                    type="number"
+                    id="setup-budget-totale-input"
                     class="form-control"
-                    placeholder="esempio@email.com">
+                    placeholder="Es. 1500"
+                    inputmode="decimal"
+                    style="border-color:#7dd3fc;font-size:16px;font-weight:700;">
+
             </div>
 
             <div class="form-group">
-                <label>Password</label>
-                <input type="password"
-                    id="auth-password"
-                    class="form-control"
-                    placeholder="Inserisci la tua password">
+
+                <label>
+                    Data di inizio ciclo
+                </label>
+
+                <input
+                    type="date"
+                    id="setup-data-inizio"
+                    class="form-control">
+
             </div>
 
-            <button class="btn"
-                id="btn-auth-primary"
-                onclick="gestisciAutenticazione()">
-                Accedi
-            </button>
+            <hr
+                style="border:0;height:1px;background:var(--card-border);margin:20px 0;">
 
-            <button class="btn btn-secondary"
-                id="btn-auth-toggle"
-                onclick="toggleModalitaAuth()"
-                style="font-size:12px;">
-                Non hai un account? Registrati
-            </button>
+            <h4
+                style="margin-bottom:10px;font-size:13px;">
 
-            <p id="auth-error" class="error-msg"></p>
-        </div>
+                COMPARTI
 
-        <!-- CONFIGURAZIONE -->
-        <div id="view-setup" class="view">
+            </h4>
 
-            <div class="mini-card" style="padding: 20px;">
+            <div
+                style="background:#f8fafc;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid var(--card-border);">
 
-                <h3 style="margin-bottom: 12px; text-align:center;">
-                    Configurazione Iniziale
-                </h3>
+                <div class="form-group">
 
-                <div class="form-group"
-                    style="margin-bottom: 20px; background: #e0f2fe; padding: 12px; border-radius: 12px; border: 1px solid #bae6fd;">
-
-                    <label style="color:#0369a1; font-weight:700;">
-                        1. INSERISCI IL BUDGET MENSILE TOTALE (€)
+                    <label>
+                        Nome Comparto
                     </label>
 
-                    <input type="number"
-                        id="setup-budget-totale-input"
+                    <input
+                        type="text"
+                        id="add-comp-nome"
                         class="form-control"
-                        placeholder="Es. 1500"
-                        inputmode="decimal"
-                        style="border-color:#7dd3fc; font-size:16px; font-weight:700;">
+                        placeholder="Es. Casa">
+
                 </div>
 
-                <hr style="border: 0; height: 1px; background: var(--card-border); margin: 20px 0;">
+                <div class="form-group">
 
-                <h4 style="margin-bottom: 10px; font-size:13px; color:var(--text-main);">
-                    2. AGGIUNGI I TUOI COMPARTI (Opzionale)
-                </h4>
+                    <label>
+                        Budget assegnato (€)
+                    </label>
 
-                <div style="background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--card-border);">
+                    <input
+                        type="number"
+                        id="add-comp-budget"
+                        class="form-control"
+                        placeholder="Es. 400"
+                        inputmode="decimal">
 
-                    <div class="form-group">
-                        <label>
-                            Nome Comparto (es. Auto, Casa, Pizzeria...)
-                        </label>
-
-                        <input type="text"
-                            id="add-comp-nome"
-                            class="form-control"
-                            placeholder="Es. Auto">
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            Somma Assegnata a questo Comparto (€)
-                        </label>
-
-                        <input type="number"
-                            id="add-comp-budget"
-                            class="form-control"
-                            placeholder="Es. 400"
-                            inputmode="decimal">
-                    </div>
-
-                    <button class="btn btn-secondary"
-                        style="font-size:12px; padding:6px;"
-                        onclick="aggiungiCompartoLista()">
-                        + Aggiungi Comparto
-                    </button>
                 </div>
 
-                <div id="lista-comparti-setup" style="margin-bottom:16px;"></div>
+                <button
+                    class="btn btn-secondary"
+                    style="font-size:12px;padding:6px;"
+                    onclick="aggiungiCompartoLista()">
 
-                <div style="background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; text-align:center; font-weight:600; margin-bottom:16px;">
+                    + Aggiungi Comparto
 
-                    Assegnato ai Comparti:
-
-                    <span id="setup-somma-comparti"
-                        style="color:var(--accent)">
-                        0,00 €
-                    </span>
-                </div>
-
-                <button class="btn"
-                    onclick="salvaConfigurazioneComparti()">
-                    Salva ed Entra
                 </button>
 
-                <button class="btn btn-secondary"
-                    id="btn-annulla-setup"
-                    style="display:none;"
-                    onclick="chiudiModificaBudget()">
-                    Annulla
-                </button>
             </div>
-        </div>
 
-        <!-- DASHBOARD -->
-        <div id="view-home" class="view">
+            <div
+                id="lista-comparti-setup"
+                style="margin-bottom:16px;">
+            </div>
 
-            <div class="main-card">
+            <div
+                style="background:#f1f5f9;padding:10px;border-radius:8px;font-size:12px;text-align:center;font-weight:600;margin-bottom:16px;">
 
-                <p style="font-size:12px; opacity:0.9;">
-                    Disponibilità Totale Rimasta
-                </p>
+                Assegnato ai comparti:
 
-                <h2 id="dash-disponibile">
+                <span
+                    id="setup-somma-comparti"
+                    style="color:var(--accent);">
+
                     0,00 €
-                </h2>
 
-                <button class="badge-btn"
-                    style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;"
-                    onclick="apriModificaBudget()">
-
-                    <i class="fa-solid fa-sliders"></i>
-                    Gestisci Budget e Comparti
-                </button>
-            </div>
-
-            <div class="chart-box">
-                <canvas id="budgetChart"></canvas>
-            </div>
-
-            <div class="budget-details">
-
-                <div class="mini-card">
-                    <span>Budget Totale</span>
-                    <p id="dash-entrate" style="color:var(--success);">
-                        0 €
-                    </p>
-                </div>
-
-                <div class="mini-card">
-                    <span>Speso Totale</span>
-                    <p id="dash-speso" style="color:var(--danger);">
-                        0 €
-                    </p>
-                </div>
-
-            </div>
-
-            <h3 class="section-title">
-                📊 I Tuoi Comparti
-
-                <span style="font-size:10px; text-transform:none;">
-                    (Clicca ✏️ per modificare il budget)
                 </span>
-            </h3>
-
-            <div id="cassetti-container"></div>
-
-            <h3 class="section-title">
-
-                📅 Scadenze del Mese
-
-                <button class="badge-btn"
-                    onclick="openModal('modal-scadenza')">
-                    + Aggiungi
-                </button>
-
-            </h3>
-
-            <div id="scadenze-container"></div>
-
-            <h3 class="section-title">
-
-                🕒 Ultime Spese
-
-                <select id="filtro-categoria"
-                    class="filter-select"
-                    onchange="calcolaERenderizzaUI()">
-
-                    <option value="tutte">
-                        Tutte
-                    </option>
-
-                </select>
-
-            </h3>
-
-            <div id="spese-container"></div>
-
-            <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-
-                <button class="btn btn-secondary"
-                    style="color:var(--accent); border-color:var(--accent);"
-                    onclick="esportaInCSV()">
-
-                    <i class="fa-solid fa-file-csv"></i>
-                    Esporta Mese
-                </button>
-
-                <button class="btn btn-secondary"
-                    style="color:var(--accent); border-color:var(--accent);"
-                    onclick="chiudiEMeseArchivia()">
-
-                    <i class="fa-solid fa-box-archive"></i>
-                    Chiudi Mese
-                </button>
 
             </div>
 
-        </div>
+            <button
+                class="btn"
+                onclick="salvaConfigurazioneComparti()">
 
-        <!-- SALVADANAI -->
-        <div id="view-salvadanai" class="view">
+                Salva ed entra
 
-            <h3 class="section-title">
-                Piani di Risparmio & Scadenze Future
-            </h3>
+            </button>
 
-            <div id="salvadanai-container"></div>
+            <button
+                class="btn btn-secondary"
+                id="btn-annulla-setup"
+                style="display:none;"
+                onclick="chiudiModificaBudget()">
 
-            <button class="btn"
-                onclick="openModal('modal-salvadanaio')"
-                style="margin-top:10px;">
+                Annulla
 
-                <i class="fa-solid fa-plus"></i>
-                Nuovo Piano Lungo Termine
             </button>
 
         </div>
 
-        <!-- STORICO -->
-        <div id="view-storico" class="view">
+    </div>
 
-            <div class="section-title">
+
+    <!-- HOME -->
+
+    <div id="view-home"
+         class="view">
+
+        <div class="main-card">
+
+            <p style="font-size:12px;opacity:.9;">
+                Disponibilità totale rimasta
+            </p>
+
+            <h2 id="dash-disponibile">
+                0,00 €
+            </h2>
+
+            <div
+                id="dash-ciclo-info"
+                class="cycle-info">
+            </div>
+
+            <button
+                class="badge-btn"
+                style="color:white;background:rgba(255,255,255,.2);margin-top:6px;"
+                onclick="apriModificaBudget()">
+
+                <i class="fa-solid fa-sliders"></i>
+                Gestisci budget e ciclo
+
+            </button>
+
+        </div>
+
+
+        <div class="chart-box">
+
+            <canvas id="budgetChart"></canvas>
+
+        </div>
+
+
+        <div class="budget-details">
+
+            <div class="mini-card">
 
                 <span>
-                    Archivio Mesi Precedenti
+                    Budget iniziale
                 </span>
 
-                <button class="badge-btn"
-                    style="color:var(--danger); background:#fee2e2;"
-                    onclick="svuotaInteroStorico()">
+                <p
+                    id="dash-entrate"
+                    style="color:var(--success);">
 
-                    <i class="fa-solid fa-trash-can"></i>
-                    Svuota Archivio
-                </button>
+                    0 €
+
+                </p>
 
             </div>
 
-            <div id="storico-container"></div>
+            <div class="mini-card">
+
+                <span>
+                    Uscite ciclo
+                </span>
+
+                <p
+                    id="dash-speso"
+                    style="color:var(--danger);">
+
+                    0 €
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <h3 class="section-title">
+
+            📊 Comparti
+
+            <span
+                style="font-size:10px;text-transform:none;">
+
+                Budget disponibile per comparto
+
+            </span>
+
+        </h3>
+
+        <div id="cassetti-container">
+        </div>
+
+
+        <h3 class="section-title">
+
+            📅 Scadenze
+
+            <button
+                class="badge-btn"
+                onclick="openModal('modal-scadenza')">
+
+                + Aggiungi
+
+            </button>
+
+        </h3>
+
+        <div id="scadenze-container">
+        </div>
+
+
+        <h3 class="section-title">
+
+            🕒 Movimenti
+
+            <select
+                id="filtro-categoria"
+                class="filter-select"
+                onchange="calcolaERenderizzaUI()">
+
+                <option value="tutte">
+                    Tutti
+                </option>
+
+            </select>
+
+        </h3>
+
+        <div id="spese-container">
+        </div>
+
+
+        <div
+            style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+            <button
+                class="btn btn-secondary"
+                style="color:var(--accent);border-color:var(--accent);"
+                onclick="esportaInCSV()">
+
+                <i class="fa-solid fa-file-csv"></i>
+                Esporta
+
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                style="color:var(--danger);border-color:var(--danger);"
+                onclick="chiudiECiclo()">
+
+                <i class="fa-solid fa-box-archive"></i>
+                Chiudi ciclo
+
+            </button>
 
         </div>
 
     </div>
 
-    <!-- NAVBAR -->
-    <nav class="nav-bar"
-        id="app-nav"
-        style="display:none;">
 
-        <button class="nav-item active"
-            id="nav-btn-home"
-            onclick="switchView('home', this)">
+    <!-- SALVADANAI -->
 
-            <i class="fa-solid fa-wallet"></i>
-            <span>Home</span>
-        </button>
+    <div id="view-salvadanai"
+         class="view">
 
-        <button class="nav-item"
-            onclick="switchView('salvadanai', this)">
+        <h3 class="section-title">
 
-            <i class="fa-solid fa-piggy-bank"></i>
-            <span>Piani</span>
-        </button>
+            🐷 Obiettivi e salvadanai
 
-        <button class="nav-center-btn"
-            onclick="apriModalNuovaSpesa()">
+        </h3>
+
+        <div
+            id="salvadanai-container">
+        </div>
+
+        <button
+            class="btn"
+            onclick="openModal('modal-salvadanaio')">
 
             <i class="fa-solid fa-plus"></i>
+            Nuovo obiettivo
+
         </button>
 
-        <button class="nav-item"
-            onclick="switchView('storico', this)">
+    </div>
 
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>Storico</span>
+
+    <!-- INSIGHT -->
+
+    <div id="view-insight"
+         class="view">
+
+        <h3 class="section-title">
+
+            💡 Insight
+
+        </h3>
+
+        <div
+            id="insight-container">
+        </div>
+
+    </div>
+
+
+    <!-- STORICO -->
+
+    <div id="view-storico"
+         class="view">
+
+        <div class="section-title">
+
+            <span>
+                Cicli precedenti
+            </span>
+
+            <button
+                class="badge-btn"
+                style="color:var(--danger);background:#fee2e2;"
+                onclick="svuotaInteroStorico()">
+
+                <i class="fa-solid fa-trash-can"></i>
+
+            </button>
+
+        </div>
+
+        <div
+            id="storico-container">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- NAVBAR -->
+
+<nav
+    class="nav-bar"
+    id="app-nav"
+    style="display:none;">
+
+    <button
+        class="nav-item active"
+        id="nav-btn-home"
+        onclick="switchView('home',this)">
+
+        <i class="fa-solid fa-wallet"></i>
+        <span>Home</span>
+
+    </button>
+
+    <button
+        class="nav-item"
+        onclick="switchView('salvadanai',this)">
+
+        <i class="fa-solid fa-piggy-bank"></i>
+        <span>Piani</span>
+
+    </button>
+
+    <button
+        class="nav-center-btn"
+        onclick="apriModalNuovaSpesa()">
+
+        <i class="fa-solid fa-plus"></i>
+
+    </button>
+
+    <button
+        class="nav-item"
+        onclick="switchView('insight',this)">
+
+        <i class="fa-solid fa-lightbulb"></i>
+        <span>Insight</span>
+
+    </button>
+
+    <button
+        class="nav-item"
+        onclick="switchView('storico',this)">
+
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Storico</span>
+
+    </button>
+
+</nav>
+
+
+<!-- MODALE MOVIMENTO -->
+
+<div
+    id="modal-spesa"
+    class="modal"
+    onclick="closeModalOnBackdrop(event)">
+
+    <div class="modal-content">
+
+        <h3
+            id="spesa-modal-titolo">
+
+            💸 Nuovo movimento
+
+        </h3>
+
+        <input
+            type="hidden"
+            id="spesa-edit-id">
+
+        <div class="form-group">
+
+            <label>
+                Tipo di movimento
+            </label>
+
+            <select
+                id="spesa-tipo"
+                class="form-control">
+
+                <option value="spesa">
+                    Spesa
+                </option>
+
+                <option value="accantonamento_budget">
+                    Accantonamento dal budget
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Importo (€)
+            </label>
+
+            <input
+                type="number"
+                id="spesa-importo"
+                class="form-control"
+                step="0.01"
+                inputmode="decimal">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Descrizione
+            </label>
+
+            <input
+                type="text"
+                id="spesa-desc"
+                class="form-control"
+                placeholder="Es. Spesa supermercato">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Comparto
+            </label>
+
+            <select
+                id="spesa-cassetto"
+                class="form-control">
+            </select>
+
+        </div>
+
+        <div
+            id="spesa-salvadanaio-group"
+            class="form-group hidden">
+
+            <label>
+                Salvadanaio di destinazione
+            </label>
+
+            <select
+                id="spesa-salvadanaio"
+                class="form-control">
+            </select>
+
+        </div>
+
+        <button
+            class="btn"
+            onclick="salvaMovimento()">
+
+            Conferma
+
         </button>
 
-        <button class="nav-item"
-            style="color:var(--danger);"
-            onclick="eseguiLogout()">
+        <button
+            class="btn btn-danger"
+            id="btn-elimina-spesa-diretto"
+            style="display:none;"
+            onclick="clickEliminaSpesaInModifica()">
 
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Esci</span>
+            Elimina
+
         </button>
 
-    </nav>
-
-    <!-- MODALE SPESA -->
-    <div id="modal-spesa"
-        class="modal"
-        onclick="closeModalOnBackdrop(event)">
-
-        <div class="modal-content">
-
-            <h3 id="spesa-modal-titolo">
-                💸 Inserisci Spesa
-            </h3>
-
-            <input type="hidden"
-                id="spesa-edit-id">
-
-            <div class="form-group">
-
-                <label>
-                    Importo (€)
-                </label>
-
-                <input type="number"
-                    id="spesa-importo"
-                    class="form-control"
-                    step="0.01"
-                    inputmode="decimal">
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Descrizione
-                </label>
-
-                <input type="text"
-                    id="spesa-desc"
-                    class="form-control"
-                    placeholder="Es. Spesa Conad, Rifornimento...">
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Comparto di Riferimento
-                </label>
-
-                <select id="spesa-cassetto"
-                    class="form-control">
-                </select>
-            </div>
-
-            <button class="btn"
-                onclick="salvaSpesa()">
-
-                Conferma Spesa
-            </button>
-
-            <button class="btn btn-danger"
-                id="btn-elimina-spesa-diretto"
-                style="display:none;"
-                onclick="clickEliminaSpesaInModifica()">
-
-                Elimina Spesa
-            </button>
-
-        </div>
     </div>
 
-    <!-- MODALE SCADENZA -->
-    <div id="modal-scadenza"
-        class="modal"
-        onclick="closeModalOnBackdrop(event)">
+</div>
 
-        <div class="modal-content">
 
-            <h3>
-                📅 Aggiungi Uscita Ricorrente / Scadenza
-            </h3>
+<!-- MODALE VERSAMENTO EXTRA -->
 
-            <div class="form-group">
+<div
+    id="modal-extra"
+    class="modal"
+    onclick="closeModalOnBackdrop(event)">
 
-                <label>
-                    Nome Scadenza
-                </label>
+    <div class="modal-content">
 
-                <input type="text"
-                    id="scad-nome"
-                    class="form-control"
-                    placeholder="Es. Assicurazione, Bolletta...">
-            </div>
+        <h3>
+            💰 Versamento extra
+        </h3>
 
-            <div class="form-group">
+        <div class="success-box">
 
-                <label>
-                    Importo Stimato (€)
-                </label>
-
-                <input type="number"
-                    id="scad-importo"
-                    class="form-control"
-                    inputmode="decimal">
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Associa al Comparto
-                </label>
-
-                <select id="scad-cassetto"
-                    class="form-control">
-                </select>
-            </div>
-
-            <button class="btn"
-                onclick="aggiungiScadenza()">
-
-                Imposta Scadenza
-            </button>
+            Questo versamento aumenta il salvadanaio ma
+            <b>non viene sottratto dal budget del ciclo corrente</b>.
 
         </div>
-    </div>
 
-    <!-- MODALE PAGAMENTO SCADENZA -->
-    <div id="modal-paga-scadenza"
-        class="modal"
-        onclick="closeModalOnBackdrop(event)">
+        <div class="form-group">
 
-        <div class="modal-content">
+            <label>
+                Importo (€)
+            </label>
 
-            <h3>
-                Regola Importo Effettivo Scadenza
-            </h3>
-
-            <input type="hidden"
-                id="paga-scad-id">
-
-            <input type="hidden"
-                id="paga-scad-cassetto">
-
-            <div class="form-group">
-
-                <label>
-                    Nome Scadenza
-                </label>
-
-                <input type="text"
-                    id="paga-scad-nome"
-                    class="form-control"
-                    readonly>
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Importo Finale Effettivo da Scalare (€)
-                </label>
-
-                <input type="number"
-                    id="paga-scad-importo-reale"
-                    class="form-control"
-                    step="0.01"
-                    inputmode="decimal">
-            </div>
-
-            <button class="btn"
-                onclick="confermaPagamentoScadenzaRealizzato()">
-
-                Registra Pagamento
-            </button>
+            <input
+                type="number"
+                id="extra-importo"
+                class="form-control"
+                step="0.01"
+                inputmode="decimal">
 
         </div>
-    </div>
 
-    <!-- MODALE NUOVO PIANO -->
-    <div id="modal-salvadanaio"
-        class="modal"
-        onclick="closeModalOnBackdrop(event)">
+        <div class="form-group">
 
-        <div class="modal-content">
+            <label>
+                Descrizione
+            </label>
 
-            <h3>
-                🐷 Nuovo Obiettivo Risparmio / Scadenza Futura
-            </h3>
-
-            <div class="form-group">
-
-                <label>
-                    Nome Obiettivo
-                </label>
-
-                <input type="text"
-                    id="salva-nome"
-                    class="form-control"
-                    placeholder="Es. Saldo T-Cross">
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Cifra Totale da Raggiungere (€)
-                </label>
-
-                <input type="number"
-                    id="salva-target"
-                    class="form-control"
-                    inputmode="decimal">
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Data di Scadenza Obiettivo
-                </label>
-
-                <input type="month"
-                    id="salva-data-target"
-                    class="form-control">
-            </div>
-
-            <button class="btn"
-                onclick="creaSalvadanaio()">
-
-                Inizia Piano
-            </button>
+            <input
+                type="text"
+                id="extra-descrizione"
+                class="form-control"
+                placeholder="Es. Regalo di compleanno">
 
         </div>
+
+        <div class="form-group">
+
+            <label>
+                Salvadanaio
+            </label>
+
+            <select
+                id="extra-salvadanaio"
+                class="form-control">
+            </select>
+
+        </div>
+
+        <button
+            class="btn btn-success"
+            onclick="eseguiVersamentoExtra()">
+
+            Effettua versamento extra
+
+        </button>
+
     </div>
 
-    <script type="module">
+</div>
 
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
-        import {
-            getDatabase,
-            ref,
-            set,
-            onValue,
-            push,
-            remove
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+<!-- MODALE PRELIEVO -->
 
-        import {
-            getAuth,
-            signInWithEmailAndPassword,
-            createUserWithEmailAndPassword,
-            signOut,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<div
+    id="modal-prelievo"
+    class="modal"
+    onclick="closeModalOnBackdrop(event)">
 
+    <div class="modal-content">
 
-        const firebaseConfig = {
+        <h3>
+            ↩️ Preleva dal salvadanaio
+        </h3>
 
-            apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
+        <input
+            type="hidden"
+            id="prelievo-salvadanaio-id">
 
-            authDomain:
-                "budget-casa-7eead.firebaseapp.com",
+        <div class="form-group">
 
-            databaseURL:
-                "https://budget-casa-7eead-default-rtdb.firebaseio.com/",
+            <label>
+                Importo (€)
+            </label>
 
-            projectId:
-                "budget-casa-7eead",
+            <input
+                type="number"
+                id="prelievo-importo"
+                class="form-control"
+                step="0.01"
+                inputmode="decimal">
 
-            storageBucket:
-                "budget-casa-7eead.firebasestorage.app",
+        </div>
 
-            messagingSenderId:
-                "529644674685",
+        <button
+            class="btn btn-info"
+            onclick="eseguiPrelievoSalvadanaio()">
 
-            appId:
-                "1:529644674685:web:93438c7393631bc7d4db14"
-        };
+            Preleva e riaccredita al budget
 
+        </button>
 
-        const app = initializeApp(firebaseConfig);
+    </div>
 
-        const db = getDatabase(app);
+</div>
 
-        const auth = getAuth(app);
 
+<!-- MODALE SCADENZA -->
 
-        let isLoginMode = true;
+<div
+    id="modal-scadenza"
+    class="modal"
+    onclick="closeModalOnBackdrop(event)">
 
-        let utenteCorrente = null;
+    <div class="modal-content">
 
-        let budgetRef = null;
+        <h3>
+            📅 Nuova scadenza
+        </h3>
 
-        let storicoRef = null;
+        <div class="form-group">
 
+            <label>
+                Nome
+            </label>
 
-        let appData = {
+            <input
+                type="text"
+                id="scad-nome"
+                class="form-control"
+                placeholder="Es. Assicurazione">
 
-            entrate: 0,
+        </div>
 
-            cassetti: {},
+        <div class="form-group">
 
-            spese: {},
+            <label>
+                Importo previsto (€)
+            </label>
 
-            salvadanai: {},
+            <input
+                type="number"
+                id="scad-importo"
+                class="form-control"
+                inputmode="decimal">
 
-            scadenze: {}
+        </div>
 
-        };
+        <div class="form-group">
 
+            <label>
+                Frequenza
+            </label>
 
-        let listaCompartiTemporanea = {};
+            <select
+                id="scad-frequenza"
+                class="form-control">
 
-        let myChart = null;
+                <option value="mensile">
+                    Mensile
+                </option>
 
+                <option value="bimestrale">
+                    Bimestrale
+                </option>
 
-        window.gestisciAutenticazione = async () => {
+                <option value="trimestrale">
+                    Trimestrale
+                </option>
 
-            const email =
-                document.getElementById('auth-email').value.trim();
+                <option value="semestrale">
+                    Semestrale
+                </option>
 
-            const password =
-                document.getElementById('auth-password').value;
+                <option value="annuale">
+                    Annuale
+                </option>
 
-            const errorEl =
-                document.getElementById('auth-error');
+                <option value="una_tantum">
+                    Una tantum
+                </option>
 
-            errorEl.textContent = "";
+            </select>
 
+        </div>
 
-            if (!email || !password) {
+        <div class="form-group">
 
-                errorEl.textContent =
-                    "Inserisci sia l'email che la password.";
+            <label>
+                Comparto
+            </label>
 
-                return;
-            }
+            <select
+                id="scad-cassetto"
+                class="form-control">
+            </select>
 
+        </div>
 
-            try {
+        <button
+            class="btn"
+            onclick="aggiungiScadenza()">
 
-                if (isLoginMode) {
+            Salva scadenza
 
-                    await signInWithEmailAndPassword(
-                        auth,
-                        email,
-                        password
-                    );
+        </button>
 
-                } else {
+    </div>
 
-                    await createUserWithEmailAndPassword(
-                        auth,
-                        email,
-                        password
-                    );
-                }
+</div>
 
-            } catch (error) {
 
-                errorEl.textContent =
-                    "Errore: " +
-                    traduciErroreFirebase(error.code);
-            }
+<!-- MODALE SALVADANAIO -->
 
-        };
+<div
+    id="modal-salvadanaio"
+    class="modal"
+    onclick="closeModalOnBackdrop(event)">
 
+    <div class="modal-content">
 
-        window.toggleModalitaAuth = () => {
+        <h3>
+            🐷 Nuovo obiettivo
+        </h3>
 
-            isLoginMode = !isLoginMode;
+        <div class="form-group">
 
-            document.getElementById('auth-title').textContent =
-                isLoginMode
-                    ? "Accedi al tuo Budget"
-                    : "Crea un nuovo account";
+            <label>
+                Nome obiettivo
+            </label>
 
-            document.getElementById('btn-auth-primary').textContent =
-                isLoginMode
-                    ? "Accedi"
-                    : "Registrati";
+            <input
+                type="text"
+                id="salva-nome"
+                class="form-control"
+                placeholder="Es. Vacanza">
 
-            document.getElementById('btn-auth-toggle').textContent =
-                isLoginMode
-                    ? "Non hai un account? Registrati"
-                    : "Hai già un account? Accedi";
-        };
+        </div>
 
+        <div class="form-group">
 
-        window.eseguiLogout = () => {
+            <label>
+                Obiettivo totale (€)
+            </label>
 
-            signOut(auth).then(() => {
+            <input
+                type="number"
+                id="salva-target"
+                class="form-control"
+                inputmode="decimal">
 
-                window.location.reload();
+        </div>
 
-            });
+        <div class="form-group">
 
-        };
+            <label>
+                Data obiettivo
+            </label>
 
+            <input
+                type="month"
+                id="salva-data-target"
+                class="form-control">
 
-        function traduciErroreFirebase(code) {
+        </div>
 
-            switch (code) {
+        <button
+            class="btn"
+            onclick="creaSalvadanaio()">
 
-                case 'auth/invalid-credential':
-                    return 'Credenziali non valide o errate.';
+            Crea obiettivo
 
-                case 'auth/weak-password':
-                    return 'La password deve avere almeno 6 caratteri.';
+        </button>
 
-                case 'auth/email-already-in-use':
-                    return 'Questa email è già associata ad un account.';
+    </div>
 
-                case 'auth/invalid-email':
-                    return 'Formato dell\'email non valido.';
+</div>
 
-                default:
-                    return 'Impossibile completare l\'operazione.';
-            }
+
+<script type="module">
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    set,
+    update,
+    onValue,
+    push,
+    remove
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
+
+    authDomain: "budget-casa-7eead.firebaseapp.com",
+
+    databaseURL:
+        "https://budget-casa-7eead-default-rtdb.firebaseio.com/",
+
+    projectId:
+        "budget-casa-7eead",
+
+    storageBucket:
+        "budget-casa-7eead.firebasestorage.app",
+
+    messagingSenderId:
+        "529644674685",
+
+    appId:
+        "1:529644674685:web:93438c7393631bc7d4db14"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+const auth = getAuth(app);
+
+
+/* =========================
+   STATO APP
+========================= */
+
+let isLoginMode = true;
+
+let utenteCorrente = null;
+
+let budgetRef = null;
+
+let storicoRef = null;
+
+let appData = {
+
+    entrate: 0,
+
+    cassetti: {},
+
+    spese: {},
+
+    salvadanai: {},
+
+    scadenze: {},
+
+    ciclo: null
+
+};
+
+let listaCompartiTemporanea = {};
+
+let myChart = null;
+
+
+/* =========================
+   UTILITY
+========================= */
+
+function valuta(numero) {
+
+    return Number(numero || 0)
+        .toLocaleString("it-IT", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }) + " €";
+
+}
+
+
+function numeroValido(value) {
+
+    const n = Number(value);
+
+    return Number.isFinite(n) && n > 0;
+
+}
+
+
+function oggiISO() {
+
+    const oggi = new Date();
+
+    const offset =
+        oggi.getTimezoneOffset();
+
+    const data =
+        new Date(
+            oggi.getTime() -
+            offset * 60000
+        );
+
+    return data
+        .toISOString()
+        .split("T")[0];
+
+}
+
+
+function formattaData(data) {
+
+    if (!data) return "-";
+
+    return new Date(data + "T00:00:00")
+        .toLocaleDateString("it-IT");
+
+}
+
+
+function mostraErrore(messaggio) {
+
+    alert(messaggio);
+
+}
+
+
+/* =========================
+   AUTENTICAZIONE
+========================= */
+
+window.gestisciAutenticazione = async function() {
+
+    const email =
+        document.getElementById("auth-email")
+        .value
+        .trim();
+
+    const password =
+        document.getElementById("auth-password")
+        .value;
+
+    const errorEl =
+        document.getElementById("auth-error");
+
+    errorEl.textContent = "";
+
+    if (!email || !password) {
+
+        errorEl.textContent =
+            "Inserisci email e password.";
+
+        return;
+
+    }
+
+    try {
+
+        if (isLoginMode) {
+
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+        } else {
+
+            await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+        }
+
+    } catch (error) {
+
+        errorEl.textContent =
+            traduciErroreFirebase(error.code);
+
+    }
+
+};
+
+
+window.toggleModalitaAuth = function() {
+
+    isLoginMode = !isLoginMode;
+
+    document.getElementById("auth-title")
+        .textContent =
+        isLoginMode
+            ? "Accedi al tuo Budget"
+            : "Crea un nuovo account";
+
+    document.getElementById("btn-auth-primary")
+        .textContent =
+        isLoginMode
+            ? "Accedi"
+            : "Registrati";
+
+    document.getElementById("btn-auth-toggle")
+        .textContent =
+        isLoginMode
+            ? "Non hai un account? Registrati"
+            : "Hai già un account? Accedi";
+
+};
+
+
+window.eseguiLogout = function() {
+
+    signOut(auth)
+        .then(() => window.location.reload());
+
+};
+
+
+function traduciErroreFirebase(code) {
+
+    switch (code) {
+
+        case "auth/invalid-credential":
+            return "Credenziali non valide.";
+
+        case "auth/weak-password":
+            return "La password deve avere almeno 6 caratteri.";
+
+        case "auth/email-already-in-use":
+            return "Email già associata a un account.";
+
+        case "auth/invalid-email":
+            return "Email non valida.";
+
+        default:
+            return "Impossibile completare l'operazione.";
+
+    }
+
+}
+
+
+/* =========================
+   AUTENTICAZIONE UTENTE
+========================= */
+
+onAuthStateChanged(auth, user => {
+
+    if (user) {
+
+        utenteCorrente = user;
+
+        document
+            .getElementById("auth-screen")
+            .classList
+            .add("hidden");
+
+        document
+            .getElementById("app-nav")
+            .style
+            .display = "flex";
+
+        document
+            .getElementById("user-header-info")
+            .classList
+            .remove("hidden");
+
+        document
+            .getElementById("user-header-info")
+            .textContent =
+            "Connesso come: " + user.email;
+
+        budgetRef =
+            ref(
+                db,
+                "utenti/" +
+                user.uid +
+                "/budget_familiare"
+            );
+
+        storicoRef =
+            ref(
+                db,
+                "utenti/" +
+                user.uid +
+                "/budget_storico"
+            );
+
+        avviaAscoltoDati();
+
+    } else {
+
+        utenteCorrente = null;
+
+        document
+            .getElementById("auth-screen")
+            .classList
+            .remove("hidden");
+
+        document
+            .getElementById("app-nav")
+            .style
+            .display = "none";
+
+        document
+            .querySelectorAll(".view")
+            .forEach(v =>
+                v.classList.remove("active")
+            );
+
+    }
+
+});
+
+
+/* =========================
+   CARICAMENTO DATI
+========================= */
+
+function avviaAscoltoDati() {
+
+    onValue(budgetRef, snapshot => {
+
+        const data = snapshot.val();
+
+        if (!data) {
+
+            appData = {
+
+                entrate: 0,
+
+                cassetti: {},
+
+                spese: {},
+
+                salvadanai: {},
+
+                scadenze: {},
+
+                ciclo: null
+
+            };
+
+            document
+                .getElementById("setup-budget-totale-input")
+                .value = "";
+
+            document
+                .getElementById("setup-data-inizio")
+                .value = oggiISO();
+
+            switchViewWithoutBtn("setup");
+
+            return;
+
         }
 
 
-        onAuthStateChanged(auth, (user) => {
+        appData = {
 
-            if (user) {
+            entrate:
+                Number(data.entrate || 0),
 
-                utenteCorrente = user;
+            cassetti:
+                data.cassetti || {},
 
-                document
-                    .getElementById('auth-screen')
-                    .classList
-                    .add('hidden');
+            spese:
+                data.spese || {},
 
-                document
-                    .getElementById('app-nav')
-                    .style
-                    .display = 'flex';
+            salvadanai:
+                data.salvadanai || {},
 
-                document
-                    .getElementById('user-header-info')
-                    .classList
-                    .remove('hidden');
+            scadenze:
+                data.scadenze || {},
 
-                document
-                    .getElementById('user-header-info')
-                    .textContent =
-                    "Connesso come: " + user.email;
+            ciclo:
+                data.ciclo || null
+
+        };
 
 
-                budgetRef =
-                    ref(
-                        db,
-                        'utenti/' +
-                        user.uid +
-                        '/budget_familiare'
-                    );
+        if (!appData.ciclo) {
+
+            appData.ciclo = {
+
+                dataInizio:
+                    oggiISO(),
+
+                timestamp:
+                    Date.now()
+
+            };
+
+        }
 
 
-                storicoRef =
-                    ref(
-                        db,
-                        'utenti/' +
-                        user.uid +
-                        '/budget_storico'
-                    );
+        if (
+            document
+                .getElementById("view-setup")
+                .classList
+                .contains("active")
+        ) {
+
+            switchViewWithoutBtn("home");
+
+        }
 
 
-                avviaAscoltoDati();
+        calcolaERenderizzaUI();
 
-            } else {
+    });
 
-                utenteCorrente = null;
 
-                document
-                    .getElementById('auth-screen')
-                    .classList
-                    .remove('hidden');
+    onValue(storicoRef, snapshot => {
 
-                document
-                    .getElementById('app-nav')
-                    .style
-                    .display = 'none';
+        renderizzaStorico(snapshot.val());
 
-                document
-                    .getElementById('user-header-info')
-                    .classList
-                    .add('hidden');
+    });
 
-                disattivaViste();
+}
+
+
+/* =========================
+   CONFIGURAZIONE CICLO
+========================= */
+
+window.aggiungiCompartoLista = function() {
+
+    const nome =
+        document
+            .getElementById("add-comp-nome")
+            .value
+            .trim();
+
+    const budget =
+        Number(
+            document
+                .getElementById("add-comp-budget")
+                .value
+        );
+
+    if (!nome || !numeroValido(budget)) {
+
+        mostraErrore(
+            "Inserisci nome e budget validi."
+        );
+
+        return;
+
+    }
+
+
+    const id =
+        nome
+            .toLowerCase()
+            .replace(/[^a-z0-9àèéìòù]+/gi, "_")
+            + "_" +
+            Date.now();
+
+
+    listaCompartiTemporanea[id] = {
+
+        nome,
+
+        budget
+
+    };
+
+
+    document
+        .getElementById("add-comp-nome")
+        .value = "";
+
+    document
+        .getElementById("add-comp-budget")
+        .value = "";
+
+    aggiornaAnteprimaListaSetup();
+
+};
+
+
+window.rimuoviCompartoListaTemporanea = function(id) {
+
+    delete listaCompartiTemporanea[id];
+
+    aggiornaAnteprimaListaSetup();
+
+};
+
+
+function aggiornaAnteprimaListaSetup() {
+
+    const container =
+        document
+            .getElementById("lista-comparti-setup");
+
+    container.innerHTML = "";
+
+    let somma = 0;
+
+    Object
+        .keys(listaCompartiTemporanea)
+        .forEach(id => {
+
+            const c =
+                listaCompartiTemporanea[id];
+
+            somma += Number(c.budget);
+
+            container.innerHTML += `
+
+                <div class="setup-comparto-item">
+
+                    <span>
+                        <b>${c.nome}</b>:
+                        ${valuta(c.budget)}
+                    </span>
+
+                    <button
+                        class="btn-delete"
+                        onclick="rimuoviCompartoListaTemporanea('${id}')">
+
+                        <i class="fa-solid fa-trash-can"></i>
+
+                    </button>
+
+                </div>
+
+            `;
+
+        });
+
+
+    document
+        .getElementById("setup-somma-comparti")
+        .textContent =
+        valuta(somma);
+
+}
+
+
+window.salvaConfigurazioneComparti = function() {
+
+    const budgetTotale =
+        Number(
+            document
+                .getElementById("setup-budget-totale-input")
+                .value
+        );
+
+    const dataInizio =
+        document
+            .getElementById("setup-data-inizio")
+            .value;
+
+
+    if (!numeroValido(budgetTotale)) {
+
+        mostraErrore(
+            "Inserisci un budget valido."
+        );
+
+        return;
+
+    }
+
+
+    if (!dataInizio) {
+
+        mostraErrore(
+            "Inserisci la data di inizio del ciclo."
+        );
+
+        return;
+
+    }
+
+
+    let sommaComparti = 0;
+
+    Object
+        .keys(listaCompartiTemporanea)
+        .forEach(id => {
+
+            sommaComparti +=
+                Number(
+                    listaCompartiTemporanea[id].budget
+                );
+
+        });
+
+
+    if (sommaComparti > budgetTotale) {
+
+        mostraErrore(
+            "La somma dei comparti supera il budget."
+        );
+
+        return;
+
+    }
+
+
+    const nuoviComparti =
+        JSON.parse(
+            JSON.stringify(
+                listaCompartiTemporanea
+            )
+        );
+
+
+    const budgetNonAssegnato =
+        budgetTotale -
+        sommaComparti;
+
+
+    if (budgetNonAssegnato > 0) {
+
+        nuoviComparti.non_assegnato = {
+
+            nome: "Non assegnato",
+
+            budget: budgetNonAssegnato,
+
+            sistema: true
+
+        };
+
+    }
+
+
+    const nuovoCiclo = {
+
+        dataInizio,
+
+        timestamp:
+
+            appData.ciclo?.timestamp ||
+            Date.now()
+
+    };
+
+
+    const dati = {
+
+        entrate: budgetTotale,
+
+        cassetti: nuoviComparti,
+
+        ciclo: nuovoCiclo
+
+    };
+
+
+    update(
+
+        ref(
+            db,
+            "utenti/" +
+            utenteCorrente.uid +
+            "/budget_familiare"
+        ),
+
+        dati
+
+    );
+
+
+    switchViewWithoutBtn("home");
+
+};
+
+
+window.apriModificaBudget = function() {
+
+    document
+        .getElementById("setup-budget-totale-input")
+        .value =
+        appData.entrate;
+
+
+    document
+        .getElementById("setup-data-inizio")
+        .value =
+        appData.ciclo?.dataInizio ||
+        oggiISO();
+
+
+    listaCompartiTemporanea =
+        JSON.parse(
+            JSON.stringify(
+                appData.cassetti
+            )
+        );
+
+
+    delete listaCompartiTemporanea.non_assegnato;
+
+    aggiornaAnteprimaListaSetup();
+
+    document
+        .getElementById("btn-annulla-setup")
+        .style
+        .display = "block";
+
+    switchViewWithoutBtn("setup");
+
+};
+
+
+window.chiudiModificaBudget = function() {
+
+    switchViewWithoutBtn("home");
+
+};
+
+
+/* =========================
+   CALCOLO MOTORE FINANZIARIO
+========================= */
+
+function calcolaDatiFinanziari() {
+
+    let totaleUscite = 0;
+
+    let spesoPerCassetto = {};
+
+    Object
+        .keys(appData.cassetti)
+        .forEach(id => {
+
+            spesoPerCassetto[id] = 0;
+
+        });
+
+
+    Object
+        .keys(appData.spese)
+        .forEach(id => {
+
+            const movimento =
+                appData.spese[id];
+
+            const importo =
+                Number(
+                    movimento.importo || 0
+                );
+
+
+            if (
+                movimento.tipo ===
+                "versamento_extra"
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                movimento.tipo ===
+                "prelievo_salvadanaio"
+            ) {
+
+                totaleUscite -=
+                    Math.abs(importo);
+
+                return;
+
+            }
+
+
+            totaleUscite +=
+                Math.abs(importo);
+
+
+            const comparto =
+                movimento.cassetto;
+
+
+            if (
+                spesoPerCassetto[comparto]
+                !== undefined
+            ) {
+
+                spesoPerCassetto[comparto] +=
+                    Math.abs(importo);
+
             }
 
         });
 
 
-        function disattivaViste() {
+    const disponibile =
+        appData.entrate -
+        totaleUscite;
 
-            document
-                .querySelectorAll('.view')
-                .forEach(v => v.classList.remove('active'));
-        }
 
+    return {
 
-        function avviaAscoltoDati() {
+        totaleUscite,
 
-            onValue(budgetRef, (snapshot) => {
+        disponibile,
 
-                const data = snapshot.val();
+        spesoPerCassetto
 
+    };
 
-                if (!data) {
+}
 
-                    switchViewWithoutBtn('setup');
 
-                    document
-                        .getElementById('btn-annulla-setup')
-                        .style
-                        .display = 'none';
+window.calcolaERenderizzaUI = function() {
 
+    const dati =
+        calcolaDatiFinanziari();
 
-                    appData = {
 
-                        entrate: 0,
+    document
+        .getElementById("dash-entrate")
+        .textContent =
+        valuta(appData.entrate);
 
-                        cassetti: {},
 
-                        spese: {},
+    document
+        .getElementById("dash-speso")
+        .textContent =
+        valuta(dati.totaleUscite);
 
-                        salvadanai: {},
 
-                        scadenze: {}
-                    };
+    document
+        .getElementById("dash-disponibile")
+        .textContent =
+        valuta(dati.disponibile);
 
-                } else {
 
-                    appData = {
+    const ciclo =
+        appData.ciclo;
 
-                        entrate: data.entrate || 0,
 
-                        cassetti: data.cassetti || {},
+    document
+        .getElementById("dash-ciclo-info")
+        .textContent =
+        ciclo
+            ? "Ciclo iniziato il " +
+              formattaData(ciclo.dataInizio)
+            : "";
 
-                        spese: data.spese || {},
 
-                        salvadanai: data.salvadanai || {},
+    const percentualeDisponibile =
+        appData.entrate > 0
+            ? dati.disponibile /
+              appData.entrate
+            : 0;
 
-                        scadenze: data.scadenze || {}
-                    };
 
+    const label =
+        document
+            .getElementById("status-label");
 
-                    if (
-                        document
-                            .getElementById('view-setup')
-                            .classList
-                            .contains('active')
-                    ) {
 
-                        switchViewWithoutBtn('home');
+    if (dati.disponibile < 0) {
 
-                    } else if (
-                        !document.querySelector('.view.active')
-                    ) {
+        label.className =
+            "status-banner status-alert";
 
-                        switchViewWithoutBtn('home');
-                    }
+        label.textContent =
+            "🔴 Budget in negativo";
 
+    } else if (
+        percentualeDisponibile < .15
+    ) {
 
-                    calcolaERenderizzaUI();
-                }
+        label.className =
+            "status-banner status-warn";
 
-            });
+        label.textContent =
+            "🟡 Fondi quasi esauriti";
 
+    } else {
 
-            onValue(storicoRef, (snapshot) => {
+        label.className =
+            "status-banner status-ok";
 
-                renderizzaStorico(snapshot.val());
+        label.textContent =
+            "🟢 Tutto sotto controllo";
 
-            });
+    }
 
-        }
 
+    renderizzaSezioneCassetti(
+        dati.spesoPerCassetto
+    );
 
-        window.aggiungiCompartoLista = function() {
+    renderizzaSezioneScadenze();
 
-            const nome =
-                document
-                    .getElementById('add-comp-nome')
-                    .value
-                    .trim();
+    renderizzaSezioneSpese();
 
+    renderizzaSezioneSalvadanai();
 
-            const budget =
-                parseFloat(
-                    document
-                        .getElementById('add-comp-budget')
-                        .value
-                ) || 0;
+    renderizzaInsight();
 
+    aggiornaSelectMenuModali();
 
-            if (nome && budget > 0) {
+    renderizzaGraficoQuota(
+        dati.spesoPerCassetto
+    );
 
-                const id =
-                    nome
-                        .toLowerCase()
-                        .replace(/\s+/g, '_');
+};
 
 
-                listaCompartiTemporanea[id] = {
+/* =========================
+   COMPARTI
+========================= */
 
-                    nome: nome,
+function renderizzaSezioneCassetti(
+    spesoPerCassetto
+) {
 
-                    budget: budget
+    const container =
+        document
+            .getElementById("cassetti-container");
 
-                };
+    container.innerHTML = "";
 
 
-                document
-                    .getElementById('add-comp-nome')
-                    .value = '';
+    Object
+        .keys(appData.cassetti)
+        .forEach(id => {
 
-                document
-                    .getElementById('add-comp-budget')
-                    .value = '';
+            const comparto =
+                appData.cassetti[id];
 
+            const speso =
+                spesoPerCassetto[id] || 0;
 
-                aggiornaAnteprimaListaSetup();
-            }
+            const rimasto =
+                Number(comparto.budget) -
+                speso;
 
-        };
 
+            let percentuale =
+                comparto.budget > 0
+                    ? speso /
+                      comparto.budget *
+                      100
+                    : 0;
 
-        window.rimuoviCompartoListaTemporanea = function(id) {
 
-            delete listaCompartiTemporanea[id];
-
-            aggiornaAnteprimaListaSetup();
-
-        };
-
-
-        function aggiornaAnteprimaListaSetup() {
-
-            const container =
-                document
-                    .getElementById('lista-comparti-setup');
-
-
-            container.innerHTML = '';
-
-            let somma = 0;
-
-
-            Object
-                .keys(listaCompartiTemporanea)
-                .forEach(id => {
-
-                    const c =
-                        listaCompartiTemporanea[id];
-
-                    somma += c.budget;
-
-
-                    container.innerHTML += `
-
-                        <div class="setup-comparto-item">
-
-                            <span>
-                                <b>${c.nome}</b>:
-                                ${c.budget.toFixed(2)} €
-                            </span>
-
-                            <button
-                                class="btn-delete"
-                                onclick="rimuoviCompartoListaTemporanea('${id}')">
-
-                                <i class="fa-solid fa-trash-can"></i>
-
-                            </button>
-
-                        </div>
-
-                    `;
-                });
-
-
-            document
-                .getElementById('setup-somma-comparti')
-                .textContent =
-                somma.toFixed(2) + " €";
-        }
-
-
-        window.salvaConfigurazioneComparti = function() {
-
-            const budgetTotale =
-                parseFloat(
-                    document
-                        .getElementById('setup-budget-totale-input')
-                        .value
-                ) || 0;
-
-
-            if (budgetTotale <= 0) {
-
-                alert(
-                    "Inserisci un budget mensile totale valido."
+            const percentualeBarra =
+                Math.min(
+                    Math.max(
+                        percentuale,
+                        0
+                    ),
+                    100
                 );
 
-                return;
-            }
 
-
-            let sommaComp = 0;
-
-
-            Object
-                .keys(listaCompartiTemporanea)
-                .forEach(k => {
-
-                    sommaComp +=
-                        listaCompartiTemporanea[k].budget;
-                });
-
-
-            if (sommaComp > budgetTotale) {
-
-                alert(
-                    "La somma dei comparti (" +
-                    sommaComp.toFixed(2) +
-                    "€) supera il budget totale impostato (" +
-                    budgetTotale.toFixed(2) +
-                    "€)."
-                );
-
-                return;
-            }
-
-
-            const rimasuglioFondoOpzionale =
-                budgetTotale - sommaComp;
-
-
-            if (rimasuglioFondoOpzionale > 0) {
-
-                listaCompartiTemporanea['libero_restante'] = {
-
-                    nome: 'Fondo Libero',
-
-                    budget: rimasuglioFondoOpzionale
-                };
-            }
-
-
-            set(
-                ref(
-                    db,
-                    'utenti/' +
-                    utenteCorrente.uid +
-                    '/budget_familiare/entrate'
-                ),
-                budgetTotale
-            );
-
-
-            set(
-                ref(
-                    db,
-                    'utenti/' +
-                    utenteCorrente.uid +
-                    '/budget_familiare/cassetti'
-                ),
-                listaCompartiTemporanea
-            );
-
-
-            switchViewWithoutBtn('home');
-
-        };
-
-
-        window.apriModificaBudget = function() {
-
-            document
-                .getElementById('setup-budget-totale-input')
-                .value =
-                appData.entrate;
-
-
-            listaCompartiTemporanea =
-                JSON.parse(
-                    JSON.stringify(
-                        appData.cassetti
-                    )
-                );
+            let colore =
+                "var(--success)";
 
 
             if (
-                listaCompartiTemporanea['libero_restante']
+                percentuale > 85
             ) {
 
-                delete listaCompartiTemporanea['libero_restante'];
-            }
-
-
-            aggiornaAnteprimaListaSetup();
-
-
-            document
-                .getElementById('btn-annulla-setup')
-                .style
-                .display = 'block';
-
-
-            switchViewWithoutBtn('setup');
-
-        };
-
-
-        window.chiudiModificaBudget = function() {
-
-            switchViewWithoutBtn('home');
-
-        };
-
-
-        window.calcolaERenderizzaUI = function() {
-
-            let totaleSpeso = 0;
-
-            let spesoPerCassetto = {};
-
-
-            Object
-                .keys(appData.cassetti)
-                .forEach(k => {
-
-                    spesoPerCassetto[k] = 0;
-
-                });
-
-
-            Object
-                .keys(appData.spese)
-                .forEach(k => {
-
-                    const s =
-                        appData.spese[k];
-
-                    totaleSpeso += s.importo;
-
-
-                    if (
-                        spesoPerCassetto[s.cassetto] !== undefined
-                    ) {
-
-                        spesoPerCassetto[s.cassetto] +=
-                            s.importo;
-
-                    } else {
-
-                        if (
-                            !appData.cassetti[s.cassetto]
-                        ) {
-
-                            spesoPerCassetto['libero_restante'] =
-                                (
-                                    spesoPerCassetto['libero_restante'] ||
-                                    0
-                                ) + s.importo;
-                        }
-                    }
-                });
-
-
-            const totaleDisponibile =
-                appData.entrate -
-                totaleSpeso;
-
-
-            document
-                .getElementById('dash-entrate')
-                .textContent =
-                appData.entrate.toFixed(2) +
-                " €";
-
-
-            document
-                .getElementById('dash-speso')
-                .textContent =
-                totaleSpeso.toFixed(2) +
-                " €";
-
-
-            document
-                .getElementById('dash-disponibile')
-                .textContent =
-                totaleDisponibile.toFixed(2) +
-                " €";
-
-
-            const lbl =
-                document
-                    .getElementById('status-label');
-
-
-            if (
-                totaleDisponibile < 0
-            ) {
-
-                lbl.className =
-                    "status-banner status-alert";
-
-                labelText(
-                    "🔴 Budget in Negativo!"
-                );
+                colore =
+                    "var(--danger)";
 
             } else if (
-                totaleDisponibile <
-                (
-                    appData.entrate *
-                    0.15
-                )
+                percentuale > 60
             ) {
 
-                lbl.className =
-                    "status-banner status-warn";
+                colore =
+                    "var(--warning)";
 
-                labelText(
-                    "🟡 Attenzione, fondi quasi esauriti"
-                );
-
-            } else {
-
-                lbl.className =
-                    "status-banner status-ok";
-
-                labelText(
-                    "🟢 Tutto sotto controllo"
-                );
             }
 
 
-            renderizzaSezioneCassetti(
-                spesoPerCassetto
-            );
+            const sistema =
+                id === "non_assegnato";
 
-            renderizzaSezioneScadenze();
 
-            renderizzaSezioneSpese(
-                spesoPerCassetto
-            );
+            container.innerHTML += `
 
-            renderizzaSezioneSalvadanai();
+                <div class="cassetto-row">
 
-            aggiornaSelectMenuModali();
+                    <div class="cassetto-header">
 
-            renderizzaGraficoQuota(
-                spesoPerCassetto
-            );
+                        <span class="cassetto-name">
 
-        };
+                            <i
+                                class="fa-solid fa-folder-open"
+                                style="color:var(--accent)">
 
+                            </i>
 
-        function labelText(t) {
+                            ${comparto.nome}
 
-            document
-                .getElementById('status-label')
-                .textContent = t;
-        }
-
-
-        function renderizzaSezioneCassetti(
-            spesoPerCassetto
-        ) {
-
-            const container =
-                document
-                    .getElementById('cassetti-container');
-
-
-            container.innerHTML = '';
-
-
-            Object
-                .keys(appData.cassetti)
-                .forEach(id => {
-
-                    const cas =
-                        appData.cassetti[id];
-
-
-                    const speso =
-                        spesoPerCassetto[id] ||
-                        0;
-
-
-                    const rimasto =
-                        cas.budget -
-                        speso;
-
-
-                    let percent =
-                        cas.budget > 0
-                            ? (
-                                speso /
-                                cas.budget
-                            ) * 100
-                            : 0;
-
-
-                    if (
-                        percent > 100
-                    ) {
-
-                        percent = 100;
-                    }
-
-
-                    let color =
-                        "var(--success)";
-
-
-                    if (
-                        percent > 85
-                    ) {
-
-                        color =
-                            "var(--danger)";
-
-                    } else if (
-                        percent > 60
-                    ) {
-
-                        color =
-                            "var(--warning)";
-                    }
-
-
-                    container.innerHTML += `
-
-                        <div class="cassetto-row">
-
-                            <div class="cassetto-header">
-
-                                <span class="cassetto-name">
-
-                                    <i
-                                        class="fa-solid fa-folder-open"
-                                        style="color:var(--accent)">
-                                    </i>
-
-                                    ${cas.nome}
-
-                                </span>
-
-
-                                <span
-                                    class="cassetto-dispo"
-                                    style="color:${rimasto < 0
-                                        ? 'var(--danger)'
-                                        : 'var(--text-main)'}">
-
-                                    ${rimasto.toFixed(2)} €
-
-                                    <span
-                                        style="font-size:10px; font-weight:normal; color:var(--text-muted);">
-
-                                        rimasti di
-                                        ${cas.budget}€
-
-                                    </span>
-
-
-                                    <button
-                                        class="badge-btn"
-                                        style="padding:2px 6px; font-size:10px;"
-                                        onclick="event.stopPropagation(); avviaRicalibrazioneVeloceCassetto('${id}', ${cas.budget})">
-
-                                        ✏️
-
-                                    </button>
-
-                                </span>
-
-                            </div>
-
-
-                            <div class="cassetto-progress">
-
-                                <div
-                                    class="cassetto-progress-bar"
-                                    style="width: ${percent}%; background: ${color};">
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    `;
-                });
-
-        }
-
-
-        window.avviaRicalibrazioneVeloceCassetto =
-            function(id, budgetAttuale) {
-
-                if (
-                    id === 'libero_restante'
-                ) {
-
-                    alert(
-                        "Il Fondo Libero si ricalcola da solo in base alle modifiche degli altri comparti o del budget totale."
-                    );
-
-                    return;
-                }
-
-
-                const nuovoB =
-                    parseFloat(
-                        prompt(
-                            "Modifica budget per questo comparto (€):",
-                            budgetAttuale
-                        )
-                    );
-
-
-                if (
-                    !isNaN(nuovoB) &&
-                    nuovoB >= 0
-                ) {
-
-                    let sommaAltri = 0;
-
-
-                    Object
-                        .keys(appData.cassetti)
-                        .forEach(k => {
-
-                            if (
-                                k !== id &&
-                                k !== 'libero_restante'
-                            ) {
-
-                                sommaAltri +=
-                                    appData.cassetti[k].budget;
-                            }
-                        });
-
-
-                    if (
-                        (
-                            sommaAltri +
-                            nuovoB
-                        ) > appData.entrate
-                    ) {
-
-                        alert(
-                            "Impossibile. La somma supererebbe il budget mensile totale impostato."
-                        );
-
-                        return;
-                    }
-
-
-                    let copiaCassetti =
-                        JSON.parse(
-                            JSON.stringify(
-                                appData.cassetti
-                            )
-                        );
-
-
-                    copiaCassetti[id].budget =
-                        nuovoB;
-
-
-                    if (
-                        copiaCassetti['libero_restante']
-                    ) {
-
-                        delete copiaCassetti[
-                            'libero_restante'
-                        ];
-                    }
-
-
-                    let nuovaSomma = 0;
-
-
-                    Object
-                        .keys(copiaCassetti)
-                        .forEach(k => {
-
-                            nuovaSomma +=
-                                copiaCassetti[k].budget;
-                        });
-
-
-                    const avanzo =
-                        appData.entrate -
-                        nuovaSomma;
-
-
-                    if (
-                        avanzo > 0
-                    ) {
-
-                        copiaCassetti[
-                            'libero_restante'
-                        ] = {
-
-                            nome: 'Fondo Libero',
-
-                            budget: avanzo
-                        };
-                    }
-
-
-                    set(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/cassetti'
-                        ),
-                        copiaCassetti
-                    );
-                }
-
-            };
-
-
-        function renderizzaSezioneScadenze() {
-
-            const container =
-                document
-                    .getElementById('scadenze-container');
-
-
-            container.innerHTML = '';
-
-
-            const chiavi =
-                Object
-                    .keys(
-                        appData.scadenze
-                    );
-
-
-            if (
-                chiavi.length === 0
-            ) {
-
-                container.innerHTML =
-                    '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Nessuna uscita programmata impostata.</p>';
-
-                return;
-            }
-
-
-            chiavi.forEach(k => {
-
-                const sc =
-                    appData.scadenze[k];
-
-
-                const nomeComparto =
-                    appData.cassetti[
-                        sc.cassetto
-                    ]
-                        ? appData.cassetti[
-                            sc.cassetto
-                        ].nome
-                        : 'Generale';
-
-
-                container.innerHTML += `
-
-                    <div
-                        class="spesa-item"
-                        style="border-left: 4px solid ${sc.pagata
-                            ? 'var(--success)'
-                            : 'var(--warning)'};"
-                        onclick="apriModalePagamentoScadenza('${k}')">
-
-                        <div class="spesa-info">
-
-                            <h4>
-                                ${sc.nome}
-
-                                ${sc.pagata
-                                    ? '✅ (Registrata)'
-                                    : '⏳'}
-
-                            </h4>
-
-                            <span>
-
-                                Assegnata a:
-                                ${nomeComparto}
-
-                                |
-                                Previsti:
-                                ${sc.importo.toFixed(2)} €
-
-                            </span>
-
-                        </div>
-
-
-                        <div
-                            style="display:flex; align-items:center; gap:10px;">
-
-                            <span
-                                style="font-weight:700; font-size:13px;">
-
-                                ${sc.importo.toFixed(2)} €
-
-                            </span>
-
-
-                            <button
-                                class="btn-delete"
-                                onclick="event.stopPropagation(); eliminaScadenza('${k}')">
-
-                                <i
-                                    class="fa-solid fa-trash-can">
-                                </i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `;
-            });
-
-        }
-
-
-        function renderizzaSezioneSpese(
-            spesoPerCassetto
-        ) {
-
-            const container =
-                document
-                    .getElementById('spese-container');
-
-
-            container.innerHTML = '';
-
-
-            const filtroCat =
-                document
-                    .getElementById('filtro-categoria')
-                    .value;
-
-
-            let speseArray = [];
-
-
-            Object
-                .keys(appData.spese)
-                .forEach(k => {
-
-                    speseArray.push({
-
-                        id: k,
-
-                        ...appData.spese[k]
-
-                    });
-                });
-
-
-            speseArray.sort(
-                (a, b) =>
-                    b.timestamp -
-                    a.timestamp
-            );
-
-
-            if (
-                filtroCat !== 'tutte'
-            ) {
-
-                speseArray =
-                    speseArray.filter(
-                        s =>
-                            s.cassetto ===
-                            filtroCat
-                    );
-            }
-
-
-            if (
-                speseArray.length === 0
-            ) {
-
-                container.innerHTML =
-                    '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Nessuna spesa trovata.</p>';
-
-                return;
-            }
-
-
-            speseArray.forEach(s => {
-
-                const nomeCas =
-                    appData.cassetti[
-                        s.cassetto
-                    ]
-                        ? appData.cassetti[
-                            s.cassetto
-                        ].nome
-                        : 'Generale';
-
-
-                const dataStr =
-                    new Date(
-                        s.timestamp
-                    ).toLocaleDateString(
-                        'it-IT',
-                        {
-                            day: '2-digit',
-                            month: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        }
-                    );
-
-
-                container.innerHTML += `
-
-                    <div
-                        class="spesa-item"
-                        onclick="apriModificaSpesaEsistente('${s.id}')">
-
-                        <div class="spesa-info">
-
-                            <h4>
-                                ${s.descrizione}
-                            </h4>
-
-                            <span>
-
-                                ${dataStr}
-
-                                •
-
-                                Comparto:
-                                <b>
-                                    ${nomeCas}
-                                </b>
-
-                            </span>
-
-                        </div>
-
+                        </span>
 
                         <span
-                            style="font-weight:700; color:var(--danger);">
+                            class="cassetto-dispo"
+                            style="color:${rimasto < 0 ? "var(--danger)" : "var(--text-main)"}">
 
-                            ${s.importo.toFixed(2)} €
+                            ${valuta(rimasto)}
+
+                            <span
+                                style="font-size:10px;font-weight:normal;color:var(--text-muted)">
+
+                                di ${valuta(comparto.budget)}
+
+                            </span>
 
                         </span>
 
                     </div>
 
-                `;
-            });
+                    <div class="cassetto-progress">
+
+                        <div
+                            class="cassetto-progress-bar"
+                            style="
+                                width:${percentualeBarra}%;
+                                background:${colore};
+                            ">
+
+                        </div>
+
+                    </div>
+
+                    ${
+                        sistema
+                            ? `
+                                <div
+                                    style="
+                                        font-size:10px;
+                                        color:var(--text-muted);
+                                        margin-top:6px;
+                                    ">
+
+                                    Budget non ancora assegnato
+
+                                </div>
+                              `
+                            : ""
+                    }
+
+                </div>
+
+            `;
+
+        });
+
+}
+
+
+/* =========================
+   MOVIMENTI
+========================= */
+
+window.apriModalNuovaSpesa = function() {
+
+    document
+        .getElementById("spesa-modal-titolo")
+        .textContent =
+        "💸 Nuovo movimento";
+
+
+    document
+        .getElementById("spesa-edit-id")
+        .value = "";
+
+
+    document
+        .getElementById("spesa-importo")
+        .value = "";
+
+
+    document
+        .getElementById("spesa-desc")
+        .value = "";
+
+
+    document
+        .getElementById("spesa-tipo")
+        .value = "spesa";
+
+
+    document
+        .getElementById("btn-elimina-spesa-diretto")
+        .style
+        .display = "none";
+
+
+    aggiornaVisibilitaSalvadanaioMovimento();
+
+    openModal("modal-spesa");
+
+};
+
+
+document
+    .getElementById("spesa-tipo")
+    .addEventListener(
+        "change",
+        aggiornaVisibilitaSalvadanaioMovimento
+    );
+
+
+function aggiornaVisibilitaSalvadanaioMovimento() {
+
+    const tipo =
+        document
+            .getElementById("spesa-tipo")
+            .value;
+
+
+    const gruppo =
+        document
+            .getElementById("spesa-salvadanaio-group");
+
+
+    if (
+        tipo ===
+        "accantonamento_budget"
+    ) {
+
+        gruppo.classList.remove("hidden");
+
+    } else {
+
+        gruppo.classList.add("hidden");
+
+    }
+
+}
+
+
+window.salvaMovimento = function() {
+
+    const id =
+        document
+            .getElementById("spesa-edit-id")
+            .value;
+
+
+    const tipo =
+        document
+            .getElementById("spesa-tipo")
+            .value;
+
+
+    const importo =
+        Number(
+            document
+                .getElementById("spesa-importo")
+                .value
+        );
+
+
+    const descrizione =
+        document
+            .getElementById("spesa-desc")
+            .value
+            .trim() ||
+        "Movimento";
+
+
+    const cassetto =
+        document
+            .getElementById("spesa-cassetto")
+            .value;
+
+
+    const salvadanaio =
+        document
+            .getElementById("spesa-salvadanaio")
+            .value;
+
+
+    if (!numeroValido(importo)) {
+
+        mostraErrore(
+            "Inserisci un importo valido."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        tipo ===
+        "accantonamento_budget"
+        &&
+        !salvadanaio
+    ) {
+
+        mostraErrore(
+            "Seleziona un salvadanaio."
+        );
+
+        return;
+
+    }
+
+
+    const percorso =
+        "utenti/" +
+        utenteCorrente.uid +
+        "/budget_familiare";
+
+
+    if (id) {
+
+        update(
+            ref(
+                db,
+                percorso +
+                "/spese/" +
+                id
+            ),
+
+            {
+
+                importo,
+
+                descrizione,
+
+                cassetto,
+
+                tipo,
+
+                salvadanaioId:
+                    salvadanaio || null,
+
+                timestamp:
+                    appData.spese[id]
+                        ?.timestamp ||
+                    Date.now()
+
+            }
+
+        );
+
+    } else {
+
+        const nuovaRef =
+            push(
+                ref(
+                    db,
+                    percorso +
+                    "/spese"
+                )
+            );
+
+
+        const movimento = {
+
+            importo,
+
+            descrizione,
+
+            cassetto,
+
+            tipo,
+
+            salvadanaioId:
+                salvadanaio || null,
+
+            timestamp:
+                Date.now()
+
+        };
+
+
+        const aggiornamenti = {};
+
+
+        aggiornamenti[
+            "spese/" +
+            nuovaRef.key
+        ] = movimento;
+
+
+        if (
+            tipo ===
+            "accantonamento_budget"
+        ) {
+
+            const salvadanaioAttuale =
+                appData
+                    .salvadanai
+                    [salvadanaio];
+
+
+            const nuovoAccumulo =
+                Number(
+                    salvadanaioAttuale
+                        ?.accumulato ||
+                    0
+                ) +
+                importo;
+
+
+            aggiornamenti[
+                "salvadanai/" +
+                salvadanaio +
+                "/accumulato"
+            ] =
+                nuovoAccumulo;
 
         }
 
 
-        function renderizzaSezioneSalvadanai() {
+        update(
+            ref(db, percorso),
+            aggiornamenti
+        );
 
-            const targetDiv =
-                document
-                    .getElementById('salvadanai-container');
-
-
-            targetDiv.innerHTML = '';
+    }
 
 
-            const chiavi =
-                Object
-                    .keys(
-                        appData.salvadanai
-                    );
+    closeModal("modal-spesa");
+
+};
 
 
-            if (
-                chiavi.length === 0
-            ) {
+window.apriModificaSpesaEsistente = function(id) {
 
-                targetDiv.innerHTML =
-                    '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">Nessun obiettivo di risparmio attivo.</p>';
+    const movimento =
+        appData.spese[id];
 
-                return;
-            }
 
+    if (!movimento) return;
+
+
+    document
+        .getElementById("spesa-modal-titolo")
+        .textContent =
+        "✏️ Modifica movimento";
+
+
+    document
+        .getElementById("spesa-edit-id")
+        .value = id;
+
+
+    document
+        .getElementById("spesa-importo")
+        .value =
+        Math.abs(
+            movimento.importo
+        );
+
+
+    document
+        .getElementById("spesa-desc")
+        .value =
+        movimento.descrizione;
+
+
+    document
+        .getElementById("spesa-tipo")
+        .value =
+        movimento.tipo ||
+        "spesa";
+
+
+    document
+        .getElementById("spesa-cassetto")
+        .value =
+        movimento.cassetto;
+
+
+    document
+        .getElementById("spesa-salvadanaio")
+        .value =
+        movimento.salvadanaioId ||
+        "";
+
+
+    document
+        .getElementById("btn-elimina-spesa-diretto")
+        .style
+        .display = "block";
+
+
+    aggiornaVisibilitaSalvadanaioMovimento();
+
+    openModal("modal-spesa");
+
+};
+
+
+window.clickEliminaSpesaInModifica = function() {
+
+    const id =
+        document
+            .getElementById("spesa-edit-id")
+            .value;
+
+
+    if (!id) return;
+
+
+    if (
+        !confirm(
+            "Eliminare definitivamente questo movimento?"
+        )
+    ) return;
+
+
+    const movimento =
+        appData.spese[id];
+
+
+    const aggiornamenti = {};
+
+
+    aggiornamenti[
+        "spese/" +
+        id
+    ] = null;
+
+
+    if (
+        movimento &&
+        movimento.tipo ===
+        "accantonamento_budget" &&
+        movimento.salvadanaioId
+    ) {
+
+        const salvadanaio =
+            appData
+                .salvadanai
+                [movimento.salvadanaioId];
+
+
+        const nuovoAccumulo =
+            Math.max(
+                0,
+                Number(
+                    salvadanaio?.accumulato ||
+                    0
+                ) -
+                Number(
+                    movimento.importo
+                )
+            );
+
+
+        aggiornamenti[
+            "salvadanai/" +
+            movimento.salvadanaioId +
+            "/accumulato"
+        ] =
+            nuovoAccumulo;
+
+    }
+
+
+    update(
+        ref(
+            db,
+            "utenti/" +
+            utenteCorrente.uid +
+            "/budget_familiare"
+        ),
+        aggiornamenti
+    );
+
+
+    closeModal("modal-spesa");
+
+};
+
+
+function renderizzaSezioneSpese() {
+
+    const container =
+        document
+            .getElementById("spese-container");
+
+    container.innerHTML = "";
+
+
+    const filtro =
+        document
+            .getElementById("filtro-categoria")
+            .value;
+
+
+    let movimenti =
+        Object
+            .keys(appData.spese)
+            .map(id => ({
+
+                id,
+
+                ...appData.spese[id]
+
+            }));
+
+
+    if (filtro !== "tutte") {
+
+        movimenti =
+            movimenti.filter(
+                movimento =>
+                    movimento.cassetto ===
+                    filtro
+            );
+
+    }
+
+
+    movimenti.sort(
+        (a, b) =>
+            b.timestamp -
+            a.timestamp
+    );
+
+
+    if (!movimenti.length) {
+
+        container.innerHTML =
+            `<div class="empty-state">
+                Nessun movimento trovato.
+             </div>`;
+
+        return;
+
+    }
+
+
+    movimenti.forEach(movimento => {
+
+        const nomeComparto =
+            appData
+                .cassetti
+                [movimento.cassetto]
+                ?.nome ||
+            "Generale";
+
+
+        let tipoLabel =
+            "Spesa";
+
+        let classe =
+            "movement-spesa";
+
+
+        if (
+            movimento.tipo ===
+            "accantonamento_budget"
+        ) {
+
+            tipoLabel =
+                "Da budget";
+
+            classe =
+                "movement-budget";
+
+        }
+
+
+        if (
+            movimento.tipo ===
+            "versamento_extra"
+        ) {
+
+            tipoLabel =
+                "Versamento extra";
+
+            classe =
+                "movement-extra";
+
+        }
+
+
+        if (
+            movimento.tipo ===
+            "prelievo_salvadanaio"
+        ) {
+
+            tipoLabel =
+                "Prelievo";
+
+            classe =
+                "movement-prelievo";
+
+        }
+
+
+        const data =
+            new Date(
+                movimento.timestamp
+            )
+            .toLocaleDateString(
+                "it-IT"
+            );
+
+
+        container.innerHTML += `
+
+            <div
+                class="spesa-item"
+                onclick="apriModificaSpesaEsistente('${movimento.id}')">
+
+                <div class="spesa-info">
+
+                    <h4>
+                        ${movimento.descrizione}
+                    </h4>
+
+                    <span>
+                        ${data}
+                        •
+                        ${nomeComparto}
+                    </span>
+
+                    <div
+                        class="movement-type ${classe}">
+
+                        ${tipoLabel}
+
+                    </div>
+
+                </div>
+
+                <span
+                    style="
+                        font-weight:700;
+                        color:${movimento.tipo === "prelievo_salvadanaio"
+                            ? "var(--success)"
+                            : "var(--danger)"};
+                    ">
+
+                    ${
+                        movimento.tipo ===
+                        "prelievo_salvadanaio"
+                            ? "+"
+                            : "-"
+                    }
+
+                    ${valuta(
+                        Math.abs(
+                            movimento.importo
+                        )
+                    )}
+
+                </span>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+/* =========================
+   SALVADANAI
+========================= */
+
+function renderizzaSezioneSalvadanai() {
+
+    const container =
+        document
+            .getElementById(
+                "salvadanai-container"
+            );
+
+    container.innerHTML = "";
+
+
+    const ids =
+        Object
+            .keys(
+                appData.salvadanai
+            );
+
+
+    if (!ids.length) {
+
+        container.innerHTML =
+            `<div class="empty-state">
+                Nessun obiettivo attivo.
+             </div>`;
+
+        return;
+
+    }
+
+
+    ids.forEach(id => {
+
+        const salvadanaio =
+            appData
+                .salvadanai
+                [id];
+
+
+        const accumulato =
+            Number(
+                salvadanaio.accumulato ||
+                0
+            );
+
+
+        const target =
+            Number(
+                salvadanaio.target ||
+                0
+            );
+
+
+        const mancante =
+            Math.max(
+                0,
+                target -
+                accumulato
+            );
+
+
+        const percentuale =
+            target > 0
+                ? Math.min(
+                    100,
+                    accumulato /
+                    target *
+                    100
+                )
+                : 0;
+
+
+        let suggerimento = "";
+
+
+        if (
+            mancante > 0 &&
+            salvadanaio.dataTarget
+        ) {
 
             const oggi =
                 new Date();
 
 
-            const annoCorrente =
-                oggi.getFullYear();
+            const parti =
+                salvadanaio
+                    .dataTarget
+                    .split("-");
 
 
-            const meseCorrente =
-                oggi.getMonth() + 1;
+            const annoTarget =
+                Number(parti[0]);
 
 
-            chiavi.forEach(k => {
-
-                const sal =
-                    appData.salvadanai[k];
+            const meseTarget =
+                Number(parti[1]);
 
 
-                const accumulato =
-                    sal.accumulato ||
-                    0;
+            const mesi =
+                (annoTarget -
+                    oggi.getFullYear())
+                *
+                12
+                +
+                (
+                    meseTarget -
+                    (
+                        oggi.getMonth()
+                        + 1
+                    )
+                );
 
 
-                const manca =
-                    sal.target -
-                    accumulato;
+            if (mesi > 0) {
+
+                suggerimento =
+                    `<div class="info-piano">
+                        Per raggiungere l'obiettivo:
+                        <b>
+                            ${valuta(
+                                mancante /
+                                mesi
+                            )}
+                            al mese
+                        </b>
+                     </div>`;
+
+            }
+
+        }
 
 
-                let infoPianoRata =
-                    "";
+        container.innerHTML += `
 
+            <div
+                class="cassetto-row"
+                style="border-left:5px solid var(--accent);">
 
-                if (
-                    manca > 0 &&
-                    sal.dataTarget
-                ) {
+                <div
+                    class="cassetto-header">
 
-                    const parti =
-                        sal.dataTarget
-                            .split('-');
+                    <span
+                        class="cassetto-name"
+                        style="font-size:15px;">
 
+                        <i
+                            class="fa-solid fa-piggy-bank"
+                            style="color:#ec4899;">
 
-                    const tAnno =
-                        parseInt(
-                            parti[0]
-                        );
+                        </i>
 
+                        ${salvadanaio.nome}
 
-                    const tMese =
-                        parseInt(
-                            parti[1]
-                        );
+                    </span>
 
+                    <button
+                        class="btn-delete"
+                        onclick="eliminaSalvadanaio('${id}')">
 
-                    const mesiMancanti =
-                        (
-                            tAnno -
-                            annoCorrente
-                        ) * 12 +
-                        (
-                            tMese -
-                            meseCorrente
-                        );
+                        <i
+                            class="fa-solid fa-trash-can">
 
+                        </i>
 
-                    if (
-                        mesiMancanti > 0
-                    ) {
+                    </button>
 
-                        const quotaMese =
-                            manca /
-                            mesiMancanti;
+                </div>
 
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        font-size:12px;
+                        margin-bottom:6px;
+                    ">
 
-                        infoPianoRata = `
+                    <span>
 
-                            <div class="info-piano">
+                        Accumulato:
+                        <b>
+                            ${valuta(accumulato)}
+                        </b>
 
-                                Mancano
-                                ${mesiMancanti}
-                                mesi:
+                        di
+                        ${valuta(target)}
 
-                                metti da parte
-                                <b>
-                                    ${quotaMese.toFixed(2)}
-                                    € / mese
-                                </b>
+                    </span>
 
-                            </div>
+                    <b
+                        style="color:var(--accent);">
 
-                        `;
+                        ${percentuale.toFixed(0)}%
 
-                    } else {
+                    </b>
 
-                        infoPianoRata = `
+                </div>
 
-                            <div
-                                class="info-piano"
-                                style="background:#fee2e2; color:var(--danger)">
-
-                                Scadenza questo mese!
-
-                                Rimanente:
-                                <b>
-                                    ${manca.toFixed(2)} €
-                                </b>
-
-                            </div>
-
-                        `;
-                    }
-
-                }
-
-
-                let per =
-                    sal.target > 0
-                        ? (
-                            accumulato /
-                            sal.target
-                        ) * 100
-                        : 0;
-
-
-                if (
-                    per > 100
-                ) {
-
-                    per = 100;
-                }
-
-
-                targetDiv.innerHTML += `
+                <div
+                    class="cassetto-progress"
+                    style="margin-bottom:8px;">
 
                     <div
-                        class="cassetto-row"
-                        style="border-left:5px solid var(--accent);">
-
-                        <div
-                            class="cassetto-header">
-
-                            <span
-                                class="cassetto-name"
-                                style="font-size:15px;">
-
-                                <i
-                                    class="fa-solid fa-piggy-bank"
-                                    style="color:#ec4899">
-                                </i>
-
-                                ${sal.nome}
-
-                            </span>
-
-
-                            <button
-                                class="btn-delete"
-                                onclick="eliminaSalvadanaio('${k}')">
-
-                                <i
-                                    class="fa-solid fa-trash-can">
-                                </i>
-
-                            </button>
-
-                        </div>
-
-
-                        <div
-                            style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
-
-                            <span>
-
-                                Accumulato:
-
-                                <b>
-                                    ${accumulato.toFixed(2)} €
-                                </b>
-
-                                di
-                                ${sal.target.toFixed(2)} €
-
-                            </span>
-
-
-                            <span
-                                style="font-weight:700; color:var(--accent);">
-
-                                ${per.toFixed(0)}%
-
-                            </span>
-
-                        </div>
-
-
-                        <div
-                            class="cassetto-progress"
-                            style="margin-bottom:8px;">
-
-                            <div
-                                class="cassetto-progress-bar"
-                                style="width: ${per}%; background:var(--accent);">
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-
-                            <button
-                                class="badge-btn"
-                                style="background:#dcfce7; color:#15803d;"
-                                onclick="versaNelSalvadanaio('${k}')">
-
-                                + Versa fondi
-
-                            </button>
-
-
-                            <button
-                                class="badge-btn"
-                                style="background:#fee2e2; color:var(--danger);"
-                                onclick="prelevaDalSalvadanaio('${k}')">
-
-                                ➖ Preleva
-
-                            </button>
-
-                        </div>
-
-
-                        ${infoPianoRata}
+                        class="cassetto-progress-bar"
+                        style="
+                            width:${percentuale}%;
+                            background:var(--accent);
+                        ">
 
                     </div>
 
-                `;
-            });
+                </div>
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:1fr 1fr;
+                        gap:6px;
+                    ">
+
+                    <button
+                        class="badge-btn"
+                        style="
+                            background:#dcfce7;
+                            color:#15803d;
+                        "
+                        onclick="apriVersamentoExtra('${id}')">
+
+                        + Extra
+
+                    </button>
+
+                    <button
+                        class="badge-btn"
+                        style="
+                            background:#e0f2fe;
+                            color:#0369a1;
+                        "
+                        onclick="apriPrelievoSalvadanaio('${id}')">
+
+                        ↩️ Preleva
+
+                    </button>
+
+                </div>
+
+                ${suggerimento}
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+window.creaSalvadanaio = function() {
+
+    const nome =
+        document
+            .getElementById("salva-nome")
+            .value
+            .trim();
+
+
+    const target =
+        Number(
+            document
+                .getElementById("salva-target")
+                .value
+        );
+
+
+    const dataTarget =
+        document
+            .getElementById("salva-data-target")
+            .value;
+
+
+    if (!nome || !numeroValido(target)) {
+
+        mostraErrore(
+            "Inserisci nome e obiettivo validi."
+        );
+
+        return;
+
+    }
+
+
+    const nuovaRef =
+        push(
+            ref(
+                db,
+                "utenti/" +
+                utenteCorrente.uid +
+                "/budget_familiare/salvadanai"
+            )
+        );
+
+
+    set(
+        nuovaRef,
+        {
+
+            nome,
+
+            target,
+
+            dataTarget,
+
+            accumulato: 0,
+
+            creatoIl:
+                Date.now()
 
         }
 
-
-        function aggiornaSelectMenuModali() {
-
-            const menuFiltro =
-                document
-                    .getElementById('filtro-categoria');
+    );
 
 
-            const vecchioFiltroVal =
-                menuFiltro.value;
+    document
+        .getElementById("salva-nome")
+        .value = "";
 
 
-            menuFiltro.innerHTML =
-                '<option value="tutte">Tutti i Comparti</option>';
+    document
+        .getElementById("salva-target")
+        .value = "";
 
 
-            const selectSpesa =
-                document
-                    .getElementById('spesa-cassetto');
+    document
+        .getElementById("salva-data-target")
+        .value = "";
 
 
-            selectSpesa.innerHTML =
-                '';
+    closeModal(
+        "modal-salvadanaio"
+    );
+
+};
 
 
-            const selectScadenza =
-                document
-                    .getElementById('scad-cassetto');
+window.apriVersamentoExtra = function(id) {
+
+    document
+        .getElementById("extra-salvadanaio")
+        .value = id;
 
 
-            selectScadenza.innerHTML =
-                '<option value="generale">Generale (Nessuno)</option>';
+    openModal(
+        "modal-extra"
+    );
+
+};
 
 
-            Object
-                .keys(appData.cassetti)
-                .forEach(id => {
+window.eseguiVersamentoExtra = function() {
 
-                    const c =
-                        appData.cassetti[id];
-
-
-                    menuFiltro.innerHTML += `
-
-                        <option value="${id}">
-                            ${c.nome}
-                        </option>
-
-                    `;
+    const importo =
+        Number(
+            document
+                .getElementById("extra-importo")
+                .value
+        );
 
 
-                    selectSpesa.innerHTML += `
-
-                        <option value="${id}">
-                            ${c.nome}
-                        </option>
-
-                    `;
-
-
-                    selectScadenza.innerHTML += `
-
-                        <option value="${id}">
-                            ${c.nome}
-                        </option>
-
-                    `;
-                });
+    const descrizione =
+        document
+            .getElementById("extra-descrizione")
+            .value
+            .trim()
+            ||
+            "Versamento extra";
 
 
-            menuFiltro.value =
-                vecchioFiltroVal;
+    const salvadanaioId =
+        document
+            .getElementById("extra-salvadanaio")
+            .value;
+
+
+    if (!numeroValido(importo)) {
+
+        mostraErrore(
+            "Inserisci un importo valido."
+        );
+
+        return;
+
+    }
+
+
+    if (!salvadanaioId) {
+
+        mostraErrore(
+            "Seleziona un salvadanaio."
+        );
+
+        return;
+
+    }
+
+
+    const salvadanaio =
+        appData
+            .salvadanai
+            [salvadanaioId];
+
+
+    if (!salvadanaio) return;
+
+
+    const nuovoAccumulo =
+        Number(
+            salvadanaio.accumulato ||
+            0
+        )
+        +
+        importo;
+
+
+    const movimentoRef =
+        push(
+            ref(
+                db,
+                "utenti/" +
+                utenteCorrente.uid +
+                "/budget_familiare/spese"
+            )
+        );
+
+
+    const aggiornamenti = {};
+
+
+    aggiornamenti[
+        "salvadanai/" +
+        salvadanaioId +
+        "/accumulato"
+    ] =
+        nuovoAccumulo;
+
+
+    aggiornamenti[
+        "spese/" +
+        movimentoRef.key
+    ] = {
+
+        importo,
+
+        descrizione,
+
+        tipo:
+            "versamento_extra",
+
+        salvadanaioId,
+
+        cassetto:
+            "non_assegnato",
+
+        timestamp:
+            Date.now()
+
+    };
+
+
+    update(
+
+        ref(
+            db,
+            "utenti/" +
+            utenteCorrente.uid +
+            "/budget_familiare"
+        ),
+
+        aggiornamenti
+
+    );
+
+
+    document
+        .getElementById("extra-importo")
+        .value = "";
+
+
+    document
+        .getElementById("extra-descrizione")
+        .value = "";
+
+
+    closeModal(
+        "modal-extra"
+    );
+
+};
+
+
+window.apriPrelievoSalvadanaio = function(id) {
+
+    document
+        .getElementById("prelievo-salvadanaio-id")
+        .value = id;
+
+
+    document
+        .getElementById("prelievo-importo")
+        .value = "";
+
+
+    openModal(
+        "modal-prelievo"
+    );
+
+};
+
+
+window.eseguiPrelievoSalvadanaio = function() {
+
+    const id =
+        document
+            .getElementById(
+                "prelievo-salvadanaio-id"
+            )
+            .value;
+
+
+    const importo =
+        Number(
+            document
+                .getElementById(
+                    "prelievo-importo"
+                )
+                .value
+        );
+
+
+    const salvadanaio =
+        appData
+            .salvadanai
+            [id];
+
+
+    if (!salvadanaio) return;
+
+
+    if (!numeroValido(importo)) {
+
+        mostraErrore(
+            "Inserisci un importo valido."
+        );
+
+        return;
+
+    }
+
+
+    const accumulato =
+        Number(
+            salvadanaio.accumulato ||
+            0
+        );
+
+
+    if (importo > accumulato) {
+
+        mostraErrore(
+            "Non puoi prelevare più di quanto accumulato."
+        );
+
+        return;
+
+    }
+
+
+    const nuovoAccumulo =
+        accumulato -
+        importo;
+
+
+    const movimentoRef =
+        push(
+            ref(
+                db,
+                "utenti/" +
+                utenteCorrente.uid +
+                "/budget_familiare/spese"
+            )
+        );
+
+
+    const aggiornamenti = {};
+
+
+    aggiornamenti[
+        "salvadanai/" +
+        id +
+        "/accumulato"
+    ] =
+        nuovoAccumulo;
+
+
+    aggiornamenti[
+        "spese/" +
+        movimentoRef.key
+    ] = {
+
+        importo:
+            -importo,
+
+        descrizione:
+            "Prelievo da: " +
+            salvadanaio.nome,
+
+        tipo:
+            "prelievo_salvadanaio",
+
+        salvadanaioId:
+            id,
+
+        cassetto:
+            "non_assegnato",
+
+        timestamp:
+            Date.now()
+
+    };
+
+
+    update(
+
+        ref(
+            db,
+            "utenti/" +
+            utenteCorrente.uid +
+            "/budget_familiare"
+        ),
+
+        aggiornamenti
+
+    );
+
+
+    closeModal(
+        "modal-prelievo"
+    );
+
+};
+
+
+window.eliminaSalvadanaio = function(id) {
+
+    if (
+        !confirm(
+            "Eliminare questo obiettivo?"
+        )
+    ) return;
+
+
+    remove(
+        ref(
+            db,
+            "utenti/" +
+            utenteCorrente.uid +
+            "/budget_familiare/salvadanai/" +
+            id
+        )
+    );
+
+};
+
+
+/* =========================
+   SCADENZE
+========================= */
+
+window.aggiungiScadenza = function() {
+
+    const nome =
+        document
+            .getElementById("scad-nome")
+            .value
+            .trim();
+
+
+    const importo =
+        Number(
+            document
+                .getElementById("scad-importo")
+                .value
+        );
+
+
+    const frequenza =
+        document
+            .getElementById("scad-frequenza")
+            .value;
+
+
+    const cassetto =
+        document
+            .getElementById("scad-cassetto")
+            .value;
+
+
+    if (!nome || !numeroValido(importo)) {
+
+        mostraErrore(
+            "Compila correttamente i campi."
+        );
+
+        return;
+
+    }
+
+
+    const nuovaRef =
+        push(
+            ref(
+                db,
+                "utenti/" +
+                utenteCorrente.uid +
+                "/budget_familiare/scadenze"
+            )
+        );
+
+
+    set(
+
+        nuovaRef,
+
+        {
+
+            nome,
+
+            importo,
+
+            frequenza,
+
+            cassetto,
+
+            pagata: false,
+
+            creataIl:
+                Date.now()
+
+        }
+
+    );
+
+
+    document
+        .getElementById("scad-nome")
+        .value = "";
+
+
+    document
+        .getElementById("scad-importo")
+        .value = "";
+
+
+    closeModal(
+        "modal-scadenza"
+    );
+
+};
+
+
+function renderizzaSezioneScadenze() {
+
+    const container =
+        document
+            .getElementById(
+                "scadenze-container"
+            );
+
+    container.innerHTML = "";
+
+
+    const ids =
+        Object
+            .keys(
+                appData.scadenze
+            );
+
+
+    if (!ids.length) {
+
+        container.innerHTML =
+            `<div class="empty-state">
+                Nessuna scadenza programmata.
+             </div>`;
+
+        return;
+
+    }
+
+
+    ids.forEach(id => {
+
+        const scadenza =
+            appData
+                .scadenze
+                [id];
+
+
+        const nomeComparto =
+            appData
+                .cassetti
+                [scadenza.cassetto]
+                ?.nome ||
+            "Generale";
+
+
+        container.innerHTML += `
+
+            <div
+                class="spesa-item"
+                style="
+                    border-left:4px solid
+                    ${scadenza.pagata
+                        ? "var(--success)"
+                        : "var(--warning)"};
+                ">
+
+                <div class="spesa-info">
+
+                    <h4>
+
+                        ${scadenza.nome}
+
+                        ${
+                            scadenza.pagata
+                                ? "✅"
+                                : "⏳"
+                        }
+
+                    </h4>
+
+                    <span>
+
+                        ${nomeComparto}
+                        •
+                        ${scadenza.frequenza}
+
+                    </span>
+
+                </div>
+
+                <div
+                    style="
+                        display:flex;
+                        align-items:center;
+                        gap:8px;
+                    ">
+
+                    <span
+                        style="font-weight:700;">
+
+                        ${valuta(
+                            scadenza.importo
+                        )}
+
+                    </span>
+
+                    <button
+                        class="badge-btn"
+                        onclick="registraPagamentoScadenza('${id}')">
+
+                        ${
+                            scadenza.pagata
+                                ? "↩️"
+                                : "✓"
+                        }
+
+                    </button>
+
+                    <button
+                        class="btn-delete"
+                        onclick="eliminaScadenza('${id}')">
+
+                        <i
+                            class="fa-solid fa-trash-can">
+
+                        </i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+window.registraPagamentoScadenza = function(id) {
+
+    const scadenza =
+        appData
+            .scadenze
+            [id];
+
+
+    if (!scadenza) return;
+
+
+    if (scadenza.pagata) {
+
+        set(
+
+            ref(
+                db,
+                "utenti/" +
+                utenteCorrente.uid +
+                "/budget_familiare/scadenze/" +
+                id +
+                "/pagata"
+            ),
+
+            false
+
+        );
+
+        return;
+
+    }
+
+
+    const movimentoRef =
+        push(
+            ref(
+                db,
+                "utenti/" +
+                utenteCorrente.uid +
+                "/budget_familiare/spese"
+            )
+        );
+
+
+    const aggiornamenti = {};
+
+
+    aggiornamenti[
+        "spese/" +
+        movimentoRef.key
+    ] = {
+
+        importo:
+            scadenza.importo,
+
+        descrizione:
+            "Scadenza: " +
+            scadenza.nome,
+
+        tipo:
+            "spesa",
+
+        cassetto:
+            scadenza.cassetto,
+
+        timestamp:
+            Date.now()
+
+    };
+
+
+    aggiornamenti[
+        "scadenze/" +
+        id +
+        "/pagata"
+    ] =
+        true;
+
+
+    update(
+
+        ref(
+            db,
+            "utenti/" +
+            utenteCorrente.uid +
+            "/budget_familiare"
+        ),
+
+        aggiornamenti
+
+    );
+
+};
+
+
+window.eliminaScadenza = function(id) {
+
+    if (
+        confirm(
+            "Eliminare questa scadenza?"
+        )
+    ) {
+
+        remove(
+
+            ref(
+                db,
+                "utenti/" +
+                utenteCorrente.uid +
+                "/budget_familiare/scadenze/" +
+                id
+            )
+
+        );
+
+    }
+
+};
+
+
+/* =========================
+   SELECT
+========================= */
+
+function aggiornaSelectMenuModali() {
+
+    const filtro =
+        document
+            .getElementById(
+                "filtro-categoria"
+            );
+
+
+    const vecchioValore =
+        filtro.value;
+
+
+    filtro.innerHTML =
+        `<option value="tutte">
+            Tutti
+         </option>`;
+
+
+    const selectSpesa =
+        document
+            .getElementById(
+                "spesa-cassetto"
+            );
+
+
+    const selectScadenza =
+        document
+            .getElementById(
+                "scad-cassetto"
+            );
+
+
+    selectSpesa.innerHTML = "";
+
+    selectScadenza.innerHTML = "";
+
+
+    Object
+        .keys(
+            appData.cassetti
+        )
+        .forEach(id => {
+
+            const comparto =
+                appData
+                    .cassetti
+                    [id];
+
+
+            filtro.innerHTML += `
+
+                <option value="${id}">
+
+                    ${comparto.nome}
+
+                </option>
+
+            `;
+
+
+            selectSpesa.innerHTML += `
+
+                <option value="${id}">
+
+                    ${comparto.nome}
+
+                </option>
+
+            `;
+
+
+            selectScadenza.innerHTML += `
+
+                <option value="${id}">
+
+                    ${comparto.nome}
+
+                </option>
+
+            `;
+
+        });
+
+
+    filtro.value =
+        vecchioValore;
+
+
+    if (!filtro.value) {
+
+        filtro.value =
+            "tutte";
+
+    }
+
+
+    const selectSalvadanaio =
+        document
+            .getElementById(
+                "spesa-salvadanaio"
+            );
+
+
+    const selectExtra =
+        document
+            .getElementById(
+                "extra-salvadanaio"
+            );
+
+
+    selectSalvadanaio.innerHTML = "";
+
+    selectExtra.innerHTML = "";
+
+
+    Object
+        .keys(
+            appData.salvadanai
+        )
+        .forEach(id => {
+
+            const s =
+                appData
+                    .salvadanai
+                    [id];
+
+
+            selectSalvadanaio.innerHTML += `
+
+                <option value="${id}">
+
+                    ${s.nome}
+
+                </option>
+
+            `;
+
+
+            selectExtra.innerHTML += `
+
+                <option value="${id}">
+
+                    ${s.nome}
+
+                </option>
+
+            `;
+
+        });
+
+}
+
+
+/* =========================
+   INSIGHT
+========================= */
+
+function renderizzaInsight() {
+
+    const container =
+        document
+            .getElementById(
+                "insight-container"
+            );
+
+
+    const dati =
+        calcolaDatiFinanziari();
+
+
+    container.innerHTML = "";
+
+
+    if (!appData.entrate) {
+
+        container.innerHTML =
+            `<div class="empty-state">
+                Inserisci un budget per generare gli Insight.
+             </div>`;
+
+        return;
+
+    }
+
+
+    const percentualeSpesa =
+        dati.totaleUscite /
+        appData.entrate *
+        100;
+
+
+    let messaggi = [];
+
+
+    if (
+        percentualeSpesa < 50
+    ) {
+
+        messaggi.push({
+
+            icona:
+                "fa-chart-line",
+
+            titolo:
+                "Stai gestendo bene il budget",
+
+            testo:
+                "Hai utilizzato meno della metà del budget disponibile nel ciclo corrente."
+
+        });
+
+    }
+
+
+    if (
+        percentualeSpesa > 85
+    ) {
+
+        messaggi.push({
+
+            icona:
+                "fa-triangle-exclamation",
+
+            titolo:
+                "Attenzione alla disponibilità",
+
+            testo:
+                "Hai già utilizzato oltre l'85% del budget iniziale del ciclo."
+
+        });
+
+    }
+
+
+    const numeroMovimenti =
+        Object
+            .keys(
+                appData.spese
+            )
+            .length;
+
+
+    if (
+        numeroMovimenti === 0
+    ) {
+
+        messaggi.push({
+
+            icona:
+                "fa-lightbulb",
+
+            titolo:
+                "Inizia a tracciare i movimenti",
+
+            testo:
+                "Più dati registri, più gli Insight potranno diventare utili e personalizzati."
+
+        });
+
+    }
+
+
+    const obiettivi =
+        Object
+            .values(
+                appData.salvadanai
+            );
+
+
+    if (
+        obiettivi.length
+    ) {
+
+        const totaleObiettivi =
+            obiettivi.reduce(
+                (somma, obiettivo) =>
+                    somma +
+                    Number(
+                        obiettivo.accumulato ||
+                        0
+                    ),
+                0
+            );
+
+
+        messaggi.push({
+
+            icona:
+                "fa-piggy-bank",
+
+            titolo:
+                "I tuoi obiettivi stanno crescendo",
+
+            testo:
+                "Hai attualmente " +
+                valuta(totaleObiettivi) +
+                " accumulati nei tuoi salvadanai."
+
+        });
+
+    }
+
+
+    if (
+        dati.disponibile > 0
+    ) {
+
+        messaggi.push({
+
+            icona:
+                "fa-coins",
+
+            titolo:
+                "Disponibilità residua",
+
+            testo:
+                "Al momento hai ancora " +
+                valuta(dati.disponibile) +
+                " disponibili nel ciclo corrente."
+
+        });
+
+    }
+
+
+    messaggi.forEach(insight => {
+
+        container.innerHTML += `
+
+            <div
+                class="insight-card">
+
+                <div
+                    class="insight-icon">
+
+                    <i
+                        class="fa-solid ${insight.icona}">
+
+                    </i>
+
+                </div>
+
+                <h4>
+
+                    ${insight.titolo}
+
+                </h4>
+
+                <p>
+
+                    ${insight.testo}
+
+                </p>
+
+                <div
+                    style="clear:both;">
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+/* =========================
+   CHIUSURA CICLO
+========================= */
+
+window.chiudiECiclo = function() {
+
+    if (
+        !appData.ciclo
+    ) {
+
+        mostraErrore(
+            "Nessun ciclo attivo."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            "Vuoi chiudere il ciclo corrente? Tutti i movimenti verranno archiviati."
+        )
+    ) return;
+
+
+    const datiCiclo = {
+
+        dataInizio:
+            appData.ciclo.dataInizio,
+
+        dataChiusura:
+            oggiISO(),
+
+        entrate:
+            appData.entrate,
+
+        cassetti:
+            appData.cassetti,
+
+        spese:
+            appData.spese,
+
+        salvadanai:
+            appData.salvadanai,
+
+        timestamp:
+            Date.now()
+
+    };
+
+
+    const nuovoStorico =
+        push(
+            storicoRef
+        );
+
+
+    const nuovoCiclo = {
+
+        dataInizio:
+            oggiISO(),
+
+        timestamp:
+            Date.now()
+
+    };
+
+
+    const aggiornamenti = {};
+
+
+    aggiornamenti[
+        "budget_storico/" +
+        nuovoStorico.key
+    ] =
+        datiCiclo;
+
+
+    aggiornamenti[
+        "budget_familiare/spese"
+    ] =
+        {};
+
+
+    aggiornamenti[
+        "budget_familiare/ciclo"
+    ] =
+        nuovoCiclo;
+
+
+    Object
+        .keys(
+            appData.scadenze
+        )
+        .forEach(id => {
+
+            const scadenza =
+                appData
+                    .scadenze
+                    [id];
 
 
             if (
-                !menuFiltro.value
+                scadenza.frequenza !==
+                "una_tantum"
             ) {
 
-                menuFiltro.value =
-                    'tutte';
+                aggiornamenti[
+                    "budget_familiare/scadenze/" +
+                    id +
+                    "/pagata"
+                ] =
+                    false;
+
             }
 
-        }
+        });
 
 
-        window.apriModalNuovaSpesa =
-            function() {
+    update(
+        ref(
+            db,
+            "utenti/" +
+            utenteCorrente.uid
+        ),
 
-                document
-                    .getElementById('spesa-modal-titolo')
-                    .textContent =
-                    "💸 Inserisci Spesa";
+        aggiornamenti
 
+    );
 
-                document
-                    .getElementById('spesa-edit-id')
-                    .value =
-                    '';
 
+    alert(
+        "Ciclo chiuso e archiviato."
+    );
 
-                document
-                    .getElementById('spesa-importo')
-                    .value =
-                    '';
+};
 
 
-                document
-                    .getElementById('spesa-desc')
-                    .value =
-                    '';
+/* =========================
+   STORICO
+========================= */
 
+function renderizzaStorico(dati) {
 
-                document
-                    .getElementById('btn-elimina-spesa-diretto')
-                    .style
-                    .display =
-                    'none';
+    const container =
+        document
+            .getElementById(
+                "storico-container"
+            );
 
 
-                openModal(
-                    'modal-spesa'
-                );
+    container.innerHTML = "";
 
-            };
 
+    if (!dati) {
 
-        window.apriModificaSpesaEsistente =
-            function(id) {
+        container.innerHTML =
+            `<div class="empty-state">
+                Nessun ciclo archiviato.
+             </div>`;
 
-                const s =
-                    appData.spese[id];
+        return;
 
+    }
 
-                if (
-                    !s
-                ) {
 
-                    return;
-                }
+    Object
+        .keys(dati)
+        .reverse()
+        .forEach(id => {
 
+            const ciclo =
+                dati[id];
 
-                document
-                    .getElementById('spesa-modal-titolo')
-                    .textContent =
-                    "✏️ Modifica Spesa";
 
+            let totale =
+                0;
 
-                document
-                    .getElementById('spesa-edit-id')
-                    .value =
-                    id;
 
-
-                document
-                    .getElementById('spesa-importo')
-                    .value =
-                    s.importo;
-
-
-                document
-                    .getElementById('spesa-desc')
-                    .value =
-                    s.descrizione;
-
-
-                document
-                    .getElementById('spesa-cassetto')
-                    .value =
-                    s.cassetto;
-
-
-                document
-                    .getElementById('btn-elimina-spesa-diretto')
-                    .style
-                    .display =
-                    'block';
-
-
-                openModal(
-                    'modal-spesa'
-                );
-
-            };
-
-
-        window.salvaSpesa =
-            function() {
-
-                const id =
-                    document
-                        .getElementById('spesa-edit-id')
-                        .value;
-
-
-                const importo =
-                    parseFloat(
-                        document
-                            .getElementById('spesa-importo')
-                            .value
-                    ) || 0;
-
-
-                const descrizione =
-                    document
-                        .getElementById('spesa-desc')
-                        .value
-                        .trim() ||
-                    'Spesa';
-
-
-                const cassetto =
-                    document
-                        .getElementById('spesa-cassetto')
-                        .value;
-
-
-                if (
-                    importo <= 0
-                ) {
-
-                    alert(
-                        "Inserisci un importo valido."
-                    );
-
-                    return;
-                }
-
-
-                if (
-                    id
-                ) {
-
-                    set(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/spese/' +
-                            id
-                        ),
-                        {
-
-                            importo:
-                                importo,
-
-                            descrizione:
-                                descrizione,
-
-                            cassetto:
-                                cassetto,
-
-                            timestamp:
-                                appData.spese[id]
-                                    .timestamp
-                        }
-                    );
-
-                } else {
-
-                    const nuovaSpesaRef =
-                        push(
-                            ref(
-                                db,
-                                'utenti/' +
-                                utenteCorrente.uid +
-                                '/budget_familiare/spese'
-                            )
-                        );
-
-
-                    set(
-                        nuovaSpesaRef,
-                        {
-
-                            importo:
-                                importo,
-
-                            descrizione:
-                                descrizione,
-
-                            cassetto:
-                                cassetto,
-
-                            timestamp:
-                                Date.now()
-                        }
-                    );
-                }
-
-
-                closeModal(
-                    'modal-spesa'
-                );
-
-            };
-
-
-        window.clickEliminaSpesaInModifica =
-            function() {
-
-                const id =
-                    document
-                        .getElementById('spesa-edit-id')
-                        .value;
-
-
-                if (
-                    id &&
-                    confirm(
-                        "Eliminare definitivamente questa spesa?"
-                    )
-                ) {
-
-                    remove(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/spese/' +
-                            id
-                        )
-                    );
-
-
-                    closeModal(
-                        'modal-spesa'
-                    );
-                }
-
-            };
-
-
-        window.aggiungiScadenza =
-            function() {
-
-                const nome =
-                    document
-                        .getElementById('scad-nome')
-                        .value
-                        .trim();
-
-
-                const importo =
-                    parseFloat(
-                        document
-                            .getElementById('scad-importo')
-                            .value
-                    ) || 0;
-
-
-                const cassetto =
-                    document
-                        .getElementById('scad-cassetto')
-                        .value;
-
-
-                if (
-                    !nome ||
-                    importo <= 0
-                ) {
-
-                    alert(
-                        "Compila correttamente i campi."
-                    );
-
-                    return;
-                }
-
-
-                const nuovaScadRef =
-                    push(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/scadenze'
-                        )
-                    );
-
-
-                set(
-                    nuovaScadRef,
-                    {
-
-                        nome:
-                            nome,
-
-                        importo:
-                            importo,
-
-                        cassetto:
-                            cassetto,
-
-                        pagata:
-                            false
-
-                    }
-                );
-
-
-                document
-                    .getElementById('scad-nome')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('scad-importo')
-                    .value =
-                    '';
-
-
-                closeModal(
-                    'modal-scadenza'
-                );
-
-            };
-
-
-        window.apriModalePagamentoScadenza =
-            function(id) {
-
-                const sc =
-                    appData.scadenze[id];
-
-
-                if (
-                    sc.pagata
-                ) {
+            Object
+                .values(
+                    ciclo.spese ||
+                    {}
+                )
+                .forEach(movimento => {
 
                     if (
-                        confirm(
-                            "Questa scadenza risulta pagata. Vuoi contrassegnarla nuovamente come DA PAGARE?"
-                        )
+                        movimento.tipo ===
+                        "versamento_extra"
+                    ) return;
+
+
+                    if (
+                        movimento.tipo ===
+                        "prelievo_salvadanaio"
                     ) {
 
-                        set(
-                            ref(
-                                db,
-                                'utenti/' +
-                                utenteCorrente.uid +
-                                '/budget_familiare/scadenze/' +
-                                id +
-                                '/pagata'
-                            ),
-                            false
-                        );
-                    }
-
-
-                    return;
-                }
-
-
-                document
-                    .getElementById('paga-scad-id')
-                    .value =
-                    id;
-
-
-                document
-                    .getElementById('paga-scad-nome')
-                    .value =
-                    sc.nome;
-
-
-                document
-                    .getElementById('paga-scad-cassetto')
-                    .value =
-                    sc.cassetto;
-
-
-                document
-                    .getElementById('paga-scad-importo-reale')
-                    .value =
-                    sc.importo;
-
-
-                openModal(
-                    'modal-paga-scadenza'
-                );
-
-            };
-
-
-        window.confermaPagamentoScadenzaRealizzato =
-            function() {
-
-                const id =
-                    document
-                        .getElementById('paga-scad-id')
-                        .value;
-
-
-                const cassetto =
-                    document
-                        .getElementById('paga-scad-cassetto')
-                        .value;
-
-
-                const nome =
-                    document
-                        .getElementById('paga-scad-nome')
-                        .value;
-
-
-                const importoReale =
-                    parseFloat(
-                        document
-                            .getElementById('paga-scad-importo-reale')
-                            .value
-                    ) || 0;
-
-
-                if (
-                    importoReale <= 0
-                ) {
-
-                    alert(
-                        "Cifra non valida."
-                    );
-
-                    return;
-                }
-
-
-                const nuovaSpesaRef =
-                    push(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/spese'
-                        )
-                    );
-
-
-                set(
-                    nuovaSpesaRef,
-                    {
-
-                        importo:
-                            importoReale,
-
-                        descrizione:
-                            "Scadenza: " +
-                            nome,
-
-                        cassetto:
-                            cassetto,
-
-                        timestamp:
-                            Date.now()
-
-                    }
-                );
-
-
-                set(
-                    ref(
-                        db,
-                        'utenti/' +
-                        utenteCorrente.uid +
-                        '/budget_familiare/scadenze/' +
-                        id +
-                        '/pagata'
-                    ),
-                    true
-                );
-
-
-                closeModal(
-                    'modal-paga-scadenza'
-                );
-
-            };
-
-
-        window.eliminaScadenza =
-            function(id) {
-
-                if (
-                    confirm(
-                        "Eliminare questa scadenza pianificata?"
-                    )
-                ) {
-
-                    remove(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/scadenze/' +
-                            id
-                        )
-                    );
-                }
-
-            };
-
-
-        window.creaSalvadanaio =
-            function() {
-
-                const nome =
-                    document
-                        .getElementById('salva-nome')
-                        .value
-                        .trim();
-
-
-                const target =
-                    parseFloat(
-                        document
-                            .getElementById('salva-target')
-                            .value
-                    ) || 0;
-
-
-                const dataTarget =
-                    document
-                        .getElementById('salva-data-target')
-                        .value;
-
-
-                if (
-                    !nome ||
-                    target <= 0
-                ) {
-
-                    alert(
-                        "Inserisci dati corretti."
-                    );
-
-                    return;
-                }
-
-
-                const nuovoSalvRef =
-                    push(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/salvadanai'
-                        )
-                    );
-
-
-                set(
-                    nuovoSalvRef,
-                    {
-
-                        nome:
-                            nome,
-
-                        target:
-                            target,
-
-                        dataTarget:
-                            dataTarget,
-
-                        accumulato:
-                            0
-
-                    }
-                );
-
-
-                document
-                    .getElementById('salva-nome')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('salva-target')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('salva-data-target')
-                    .value =
-                    '';
-
-
-                closeModal(
-                    'modal-salvadanaio'
-                );
-
-            };
-
-
-        /*
-        ============================================================
-        MODIFICA PRINCIPALE
-
-        Il versamento extra nel salvadanaio:
-
-        - aumenta l'importo accumulato;
-        - NON viene registrato come spesa;
-        - NON riduce il budget mensile corrente.
-
-        Esempio:
-
-        Budget mensile: 1.760 €
-        Versamento extra: 500 €
-
-        Budget disponibile: 1.760 €
-        Salvadanaio: +500 €
-
-        ============================================================
-        */
-
-        window.versaNelSalvadanaio =
-            function(id) {
-
-                const cifra =
-                    parseFloat(
-                        prompt(
-                            "Quanto vuoi versare in questo piano?\n\n" +
-
-                            "Il versamento verrà aggiunto al salvadanaio senza ridurre il budget del mese corrente."
-                        )
-                    );
-
-
-                if (
-                    isNaN(cifra) ||
-                    cifra <= 0
-                ) {
-
-                    return;
-                }
-
-
-                const salvadanaio =
-                    appData.salvadanai[id];
-
-
-                if (
-                    !salvadanaio
-                ) {
-
-                    alert(
-                        "Piano di risparmio non trovato."
-                    );
-
-                    return;
-                }
-
-
-                const nuovoAccumulo =
-                    (
-                        salvadanaio.accumulato ||
-                        0
-                    ) +
-                    cifra;
-
-
-                set(
-                    ref(
-                        db,
-                        'utenti/' +
-                        utenteCorrente.uid +
-                        '/budget_familiare/salvadanai/' +
-                        id +
-                        '/accumulato'
-                    ),
-                    nuovoAccumulo
-                );
-
-            };
-
-
-        window.prelevaDalSalvadanaio =
-            function(id) {
-
-                const cifra =
-                    parseFloat(
-                        prompt(
-                            "Quanto vuoi prelevare da questo fondo?\n\n" +
-
-                            "(Verranno riaccreditati sul fondo libero)"
-                        )
-                    );
-
-
-                if (
-                    isNaN(cifra) ||
-                    cifra <= 0
-                ) {
-
-                    return;
-                }
-
-
-                if (
-                    cifra >
-                    appData.salvadanai[id]
-                        .accumulato
-                ) {
-
-                    alert(
-                        "Fondi insufficienti nel piano."
-                    );
-
-                    return;
-                }
-
-
-                const nuovoAccumulo =
-                    appData.salvadanai[id]
-                        .accumulato -
-                    cifra;
-
-
-                set(
-                    ref(
-                        db,
-                        'utenti/' +
-                        utenteCorrente.uid +
-                        '/budget_familiare/salvadanai/' +
-                        id +
-                        '/accumulato'
-                    ),
-                    nuovoAccumulo
-                );
-
-
-                const spesaRef =
-                    push(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/spese'
-                        )
-                    );
-
-
-                set(
-                    spesaRef,
-                    {
-
-                        importo:
-                            -cifra,
-
-                        descrizione:
-                            "Prelievo da: " +
-                            appData.salvadanai[id]
-                                .nome,
-
-                        cassetto:
-                            "libero_restante",
-
-                        timestamp:
-                            Date.now()
-
-                    }
-                );
-
-            };
-
-
-        window.eliminaSalvadanaio =
-            function(id) {
-
-                if (
-                    confirm(
-                        "Eliminare questo piano? I fondi accumulati rimarranno tracciati nello storico passato ma il piano sparirà."
-                    )
-                ) {
-
-                    remove(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/salvadanai/' +
-                            id
-                        )
-                    );
-                }
-
-            };
-
-
-        window.chiudiEMeseArchivia =
-            function() {
-
-                const nomeMese =
-                    prompt(
-                        "Inserisci il nome del mese da archiviare (es: Gennaio 2024, Febbraio 2024...):"
-                    );
-
-
-                if (
-                    !nomeMese
-                ) {
-
-                    return;
-                }
-
-
-                if (
-                    confirm(
-                        "Sei sicuro di voler chiudere il mese? Tutte le spese attuali verranno salvate nell'archivio storico e svuotate dalla home per iniziare il mese nuovo."
-                    )
-                ) {
-
-
-                    const datiDaArchiviare = {
-
-                        nomeMese:
-                            nomeMese,
-
-                        entrate:
-                            appData.entrate,
-
-                        cassetti:
-                            appData.cassetti,
-
-                        spese:
-                            appData.spese,
-
-                        timestamp:
-                            Date.now()
-                    };
-
-
-                    push(
-                        storicoRef,
-                        datiDaArchiviare
-                    );
-
-
-                    set(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/spese'
-                        ),
-                        {}
-                    );
-
-
-                    Object
-                        .keys(
-                            appData.scadenze
-                        )
-                        .forEach(k => {
-
-                            set(
-                                ref(
-                                    db,
-                                    'utenti/' +
-                                    utenteCorrente.uid +
-                                    '/budget_familiare/scadenze/' +
-                                    k +
-                                    '/pagata'
-                                ),
-                                false
+                        totale -=
+                            Math.abs(
+                                movimento.importo
                             );
-                        });
 
+                    } else {
 
-                    alert(
-                        "Mese archiviato con successo!"
-                    );
+                        totale +=
+                            Math.abs(
+                                movimento.importo
+                            );
 
-                }
-
-            };
-
-
-        function renderizzaStorico(
-            datiStorici
-        ) {
-
-            const container =
-                document
-                    .getElementById('storico-container');
-
-
-            container.innerHTML =
-                '';
-
-
-            if (
-                !datiStorici
-            ) {
-
-                container.innerHTML =
-                    '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">L\'archivio storico è vuoto.</p>';
-
-                return;
-            }
-
-
-            Object
-                .keys(
-                    datiStorici
-                )
-                .forEach(k => {
-
-                    const mese =
-                        datiStorici[k];
-
-
-                    let tSpeso =
-                        0;
-
-
-                    if (
-                        mese.spese
-                    ) {
-
-                        Object
-                            .keys(
-                                mese.spese
-                            )
-                            .forEach(sk => {
-
-                                tSpeso +=
-                                    mese.spese[sk]
-                                        .importo;
-                            });
                     }
 
-
-                    const risp =
-                        mese.entrate -
-                        tSpeso;
-
-
-                    container.innerHTML += `
-
-                        <div
-                            class="cassetto-row"
-                            style="border-left:4px solid #64748b;">
-
-                            <div
-                                class="cassetto-header">
-
-                                <span
-                                    class="cassetto-name"
-                                    style="font-size:14px; font-weight:700;">
-
-                                    <i
-                                        class="fa-solid fa-calendar-check">
-                                    </i>
-
-                                    ${mese.nomeMese}
-
-                                </span>
-
-
-                                <button
-                                    class="btn-delete"
-                                    onclick="eliminaSingoloMeseStorico('${k}')">
-
-                                    <i
-                                        class="fa-solid fa-trash-can">
-                                    </i>
-
-                                </button>
-
-                            </div>
-
-
-                            <div
-                                style="font-size:12px; color:var(--text-muted); margin-top:4px; display:grid; grid-template-columns:1fr 1fr; gap:4px;">
-
-                                <span>
-
-                                    Budget Iniziale:
-
-                                    <b>
-                                        ${mese.entrate.toFixed(2)} €
-                                    </b>
-
-                                </span>
-
-
-                                <span>
-
-                                    Totale Speso:
-
-                                    <b
-                                        style="color:var(--danger)">
-
-                                        ${tSpeso.toFixed(2)} €
-
-                                    </b>
-
-                                </span>
-
-
-                                <span
-                                    style="grid-column:span 2; font-weight:600; color:${risp >= 0 ? 'var(--success)' : 'var(--danger)'}">
-
-                                    Risparmio/Avanzo:
-                                    ${risp.toFixed(2)} €
-
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    `;
                 });
 
-        }
+
+            const avanzo =
+                ciclo.entrate -
+                totale;
 
 
-        window.eliminaSingoloMeseStorico =
-            function(id) {
+            container.innerHTML += `
 
-                if (
-                    confirm(
-                        "Eliminare definitivamente questo mese dall'archivio?"
-                    )
-                ) {
+                <div
+                    class="cassetto-row">
 
-                    remove(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_storico/' +
-                            id
-                        )
-                    );
-                }
+                    <div
+                        class="cassetto-header">
 
-            };
+                        <span
+                            class="cassetto-name">
 
+                            <i
+                                class="fa-solid fa-calendar-check">
 
-        window.svuotaInteroStorico =
-            function() {
+                            </i>
 
-                if (
-                    confirm(
-                        "ATTENZIONE! Vuoi svuotare permanentemente l'intero archivio storico dei mesi passati? L'operazione non è reversibile."
-                    )
-                ) {
+                            ${formattaData(
+                                ciclo.dataInizio
+                            )}
 
-                    remove(
-                        storicoRef
-                    );
-                }
+                            →
+                            ${formattaData(
+                                ciclo.dataChiusura
+                            )}
 
-            };
+                        </span>
 
+                        <button
+                            class="btn-delete"
+                            onclick="eliminaSingoloMeseStorico('${id}')">
 
-        window.esportaInCSV =
-            function() {
+                            <i
+                                class="fa-solid fa-trash-can">
 
-                let csv =
-                    'Data,Descrizione,Comparto,Importo (€)\r\n';
+                            </i>
 
+                        </button>
 
-                let cont =
-                    0;
+                    </div>
 
+                    <div
+                        style="
+                            font-size:12px;
+                            color:var(--text-muted);
+                            margin-top:6px;
+                        ">
 
-                Object
-                    .keys(
-                        appData.spese
-                    )
-                    .forEach(k => {
+                        Budget:
+                        <b>
+                            ${valuta(
+                                ciclo.entrate
+                            )}
+                        </b>
 
-                        const s =
-                            appData.spese[k];
+                        <br>
 
+                        Uscite:
+                        <b
+                            style="color:var(--danger);">
 
-                        const nomeC =
-                            appData.cassetti[
-                                s.cassetto
-                            ]
-                                ? appData.cassetti[
-                                    s.cassetto
-                                ].nome
-                                : 'Generale';
+                            ${valuta(totale)}
 
+                        </b>
 
-                        const d =
-                            new Date(
-                                s.timestamp
-                            )
-                                .toLocaleDateString(
-                                    'it-IT'
-                                );
+                        <br>
 
+                        Avanzo:
+                        <b
+                            style="
+                                color:${avanzo >= 0
+                                    ? "var(--success)"
+                                    : "var(--danger)"};
+                            ">
 
-                        csv +=
-                            `"${d}","${s.descrizione.replace(/"/g, '""')}","${nomeC}",${s.importo}\r\n`;
+                            ${valuta(avanzo)}
 
+                        </b>
 
-                        cont++;
+                    </div>
 
-                    });
+                </div>
 
+            `;
 
-                if (
-                    cont === 0
-                ) {
+        });
 
-                    alert(
-                        "Nessuna spesa da esportare."
-                    );
-
-                    return;
-                }
+}
 
 
-                const blob =
-                    new Blob(
-                        [csv],
-                        {
-                            type:
-                                'text/csv;charset=utf-8;'
-                        }
-                    );
+window.eliminaSingoloMeseStorico = function(id) {
+
+    if (
+        confirm(
+            "Eliminare definitivamente questo ciclo?"
+        )
+    ) {
+
+        remove(
+            ref(
+                db,
+                "utenti/" +
+                utenteCorrente.uid +
+                "/budget_storico/" +
+                id
+            )
+        );
+
+    }
+
+};
 
 
-                const link =
-                    document.createElement(
-                        "a"
-                    );
+window.svuotaInteroStorico = function() {
+
+    if (
+        confirm(
+            "Eliminare tutto lo storico?"
+        )
+    ) {
+
+        remove(
+            storicoRef
+        );
+
+    }
+
+};
 
 
-                link.href =
-                    URL.createObjectURL(
-                        blob
-                    );
+/* =========================
+   CSV
+========================= */
+
+window.esportaInCSV = function() {
+
+    let csv =
+        "Data,Tipo,Descrizione,Comparto,Importo (€)\r\n";
 
 
-                link.setAttribute(
-                    "download",
-                    "report_spese_budget.csv"
+    let contatore = 0;
+
+
+    Object
+        .values(
+            appData.spese
+        )
+        .forEach(movimento => {
+
+            const data =
+                new Date(
+                    movimento.timestamp
+                )
+                .toLocaleDateString(
+                    "it-IT"
                 );
 
 
-                document
-                    .body
-                    .appendChild(
-                        link
-                    );
+            const tipo =
+                movimento.tipo ||
+                "spesa";
 
 
-                link.click();
+            const comparto =
+                appData
+                    .cassetti
+                    [movimento.cassetto]
+                    ?.nome ||
+                "Generale";
 
 
-                document
-                    .body
-                    .removeChild(
-                        link
-                    );
+            csv +=
 
-            };
+                `"${data}",` +
 
+                `"${tipo}",` +
 
-        window.resetCompleto =
-            function() {
-
-                if (
-                    confirm(
-                        "Sei veramente sicuro? Questo comando cancellerà TUTTI i dati correnti (Spese, Comparti, Budget, Piani e Scadenze) del tuo utente."
-                    )
-                ) {
-
-                    remove(
-                        budgetRef
-                    );
-                }
-
-            };
-
-
-        function renderizzaGraficoQuota(
-            spesoPerCassetto
-        ) {
-
-            const ctx =
-                document
-                    .getElementById(
-                        'budgetChart'
-                    )
-                    .getContext(
-                        '2d'
-                    );
-
-
-            let etichette =
-                [];
-
-
-            let cifreData =
-                [];
-
-
-            let coloriBackground = [
-
-                '#4f46e5',
-
-                '#10b981',
-
-                '#f59e0b',
-
-                '#ef4444',
-
-                '#ec4899',
-
-                '#06b6d4',
-
-                '#8b5cf6',
-
-                '#64748b'
-
-            ];
-
-
-            Object
-                .keys(
-                    appData.cassetti
+                `"${(
+                    movimento.descrizione ||
+                    ""
                 )
-                .forEach(id => {
+                    .replace(
+                        /"/g,
+                        '""'
+                    )}",` +
 
-                    etichette.push(
-                        appData.cassetti[id]
-                            .nome
-                    );
+                `"${comparto}",` +
 
-
-                    cifreData.push(
-                        spesoPerCassetto[id] ||
-                        0
-                    );
-
-                });
+                `${movimento.importo}\r\n`;
 
 
-            if (
-                myChart
-            ) {
+            contatore++;
 
-                myChart.destroy();
+        });
+
+
+    if (!contatore) {
+
+        mostraErrore(
+            "Nessun movimento da esportare."
+        );
+
+        return;
+
+    }
+
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
             }
+        );
 
 
-            myChart =
-                new Chart(
-                    ctx,
-                    {
-
-                        type:
-                            'doughnut',
-
-                        data: {
-
-                            labels:
-                                etichette,
-
-                            datasets: [
-
-                                {
-
-                                    data:
-                                        cifreData,
-
-                                    backgroundColor:
-                                        coloriBackground.slice(
-                                            0,
-                                            etichette.length
-                                        ),
-
-                                    borderWidth:
-                                        2
-
-                                }
-
-                            ]
-
-                        },
+    const link =
+        document
+            .createElement("a");
 
 
-                        options: {
-
-                            responsive:
-                                true,
-
-                            maintainAspectRatio:
-                                false,
+    link.href =
+        URL
+            .createObjectURL(
+                blob
+            );
 
 
-                            plugins: {
-
-                                legend: {
-
-                                    position:
-                                        'bottom',
-
-                                    labels: {
-
-                                        boxWidth:
-                                            10,
-
-                                        font: {
-
-                                            size:
-                                                10
-
-                                        }
-
-                                    }
-
-                                }
-
-                            },
+    link.download =
+        "mio-budget-movimenti.csv";
 
 
-                            onClick: (
-                                evt,
-                                item
-                            ) => {
+    link.click();
 
-                                if (
-                                    item &&
-                                    item.length > 0
-                                ) {
-
-                                    const index =
-                                        item[0]
-                                            .index;
+};
 
 
-                                    const nomeCompSelezionato =
-                                        etichette[index];
+/* =========================
+   GRAFICO
+========================= */
+
+function renderizzaGraficoQuota(
+    spesoPerCassetto
+) {
+
+    const canvas =
+        document
+            .getElementById(
+                "budgetChart"
+            );
 
 
-                                    let trovatoId =
-                                        'tutte';
+    const ctx =
+        canvas
+            .getContext("2d");
 
 
-                                    Object
-                                        .keys(
-                                            appData.cassetti
-                                        )
-                                        .forEach(id => {
+    const labels = [];
 
-                                            if (
-                                                appData.cassetti[id]
-                                                    .nome ===
-                                                nomeCompSelezionato
-                                            ) {
-
-                                                trovatoId =
-                                                    id;
-                                            }
-
-                                        });
+    const dati = [];
 
 
-                                    document
-                                        .getElementById(
-                                            'filtro-categoria'
-                                        )
-                                        .value =
-                                        trovatoId;
+    Object
+        .keys(
+            appData.cassetti
+        )
+        .forEach(id => {
+
+            labels.push(
+                appData
+                    .cassetti
+                    [id]
+                    .nome
+            );
 
 
-                                    calcolaERenderizzaUI();
+            dati.push(
+
+                spesoPerCassetto[id]
+                ||
+                0
+
+            );
+
+        });
+
+
+    if (myChart) {
+
+        myChart.destroy();
+
+    }
+
+
+    myChart =
+        new Chart(
+
+            ctx,
+
+            {
+
+                type:
+                    "doughnut",
+
+                data: {
+
+                    labels,
+
+                    datasets: [
+
+                        {
+
+                            data: dati,
+
+                            backgroundColor: [
+
+                                "#4f46e5",
+
+                                "#10b981",
+
+                                "#f59e0b",
+
+                                "#ef4444",
+
+                                "#ec4899",
+
+                                "#06b6d4",
+
+                                "#8b5cf6",
+
+                                "#64748b"
+
+                            ],
+
+                            borderWidth: 2
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom",
+
+                            labels: {
+
+                                boxWidth:
+                                    10,
+
+                                font: {
+
+                                    size:
+                                        10
 
                                 }
 
@@ -4006,137 +5196,159 @@
                         }
 
                     }
-                );
 
-        }
-
-
-        window.openModal =
-            function(id) {
-
-                document
-                    .getElementById(id)
-                    .classList
-                    .add('active');
-
-            };
-
-
-        window.closeModal =
-            function(id) {
-
-                document
-                    .getElementById(id)
-                    .classList
-                    .remove('active');
-
-            };
-
-
-        window.closeModalOnBackdrop =
-            function(e) {
-
-                if (
-                    e.target
-                        .classList
-                        .contains('modal')
-                ) {
-
-                    e.target
-                        .classList
-                        .remove('active');
                 }
 
-            };
-
-
-        window.switchView =
-            function(
-                viewId,
-                btn
-            ) {
-
-                document
-                    .querySelectorAll('.view')
-                    .forEach(v =>
-                        v.classList
-                            .remove('active')
-                    );
-
-
-                document
-                    .getElementById(
-                        'view-' +
-                        viewId
-                    )
-                    .classList
-                    .add('active');
-
-
-                document
-                    .querySelectorAll('.nav-item')
-                    .forEach(n =>
-                        n.classList
-                            .remove('active')
-                    );
-
-
-                if (
-                    btn
-                ) {
-
-                    btn.classList
-                        .add('active');
-                }
-
-            };
-
-
-        function switchViewWithoutBtn(
-            viewId
-        ) {
-
-            document
-                .querySelectorAll('.view')
-                .forEach(v =>
-                    v.classList
-                        .remove('active')
-                );
-
-
-            document
-                .getElementById(
-                    'view-' +
-                    viewId
-                )
-                .classList
-                .add('active');
-
-
-            document
-                .querySelectorAll('.nav-item')
-                .forEach(n =>
-                    n.classList
-                        .remove('active')
-                );
-
-
-            if (
-                viewId ===
-                'home'
-            ) {
-
-                document
-                    .getElementById(
-                        'nav-btn-home'
-                    )
-                    .classList
-                    .add('active');
             }
 
-        }
+        );
 
-    </script>
+}
+
+
+/* =========================
+   MODALI E NAVIGAZIONE
+========================= */
+
+window.openModal = function(id) {
+
+    document
+        .getElementById(id)
+        .classList
+        .add("active");
+
+};
+
+
+window.closeModal = function(id) {
+
+    document
+        .getElementById(id)
+        .classList
+        .remove("active");
+
+};
+
+
+window.closeModalOnBackdrop = function(event) {
+
+    if (
+        event.target.classList
+            .contains("modal")
+    ) {
+
+        event.target
+            .classList
+            .remove("active");
+
+    }
+
+};
+
+
+window.switchView = function(viewId, btn) {
+
+    document
+        .querySelectorAll(".view")
+        .forEach(view =>
+            view.classList
+                .remove("active")
+        );
+
+
+    document
+        .getElementById(
+            "view-" +
+            viewId
+        )
+        .classList
+        .add("active");
+
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(nav =>
+            nav.classList
+                .remove("active")
+        );
+
+
+    if (btn) {
+
+        btn.classList
+            .add("active");
+
+    }
+
+
+    if (
+        viewId ===
+        "insight"
+    ) {
+
+        renderizzaInsight();
+
+    }
+
+};
+
+
+function switchViewWithoutBtn(viewId) {
+
+    document
+        .querySelectorAll(".view")
+        .forEach(view =>
+            view.classList
+                .remove("active")
+        );
+
+
+    document
+        .getElementById(
+            "view-" +
+            viewId
+        )
+        .classList
+        .add("active");
+
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(nav =>
+            nav.classList
+                .remove("active")
+        );
+
+
+    if (
+        viewId ===
+        "home"
+    ) {
+
+        document
+            .getElementById(
+                "nav-btn-home"
+            )
+            .classList
+            .add("active");
+
+    }
+
+}
+
+
+/* =========================
+   PREPARAZIONE SETUP
+========================= */
+
+document
+    .getElementById(
+        "setup-data-inizio"
+    )
+    .value =
+    oggiISO();
+
+</script>
 
 </body>
 </html>
