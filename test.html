@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mio Budget Pro</title>
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f1f5f9">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -128,9 +130,31 @@
             padding: 16px;
             margin-bottom: 16px;
             border: 1px solid var(--card-border);
+            height: 280px;
+        }
+
+        .chart-controls {
             display: flex;
-            justify-content: center;
-            max-height: 220px;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .chart-tab {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .chart-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
         }
 
         .budget-details {
@@ -441,6 +465,132 @@
             margin-top: 8px;
             font-weight: 500;
         }
+
+        /* INSIGHTS */
+
+        .insight-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .insight-main-status {
+            color: white;
+            border-radius: 22px;
+            padding: 20px;
+            margin-bottom: 14px;
+        }
+
+        .insight-main-status h2 {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .insight-main-status p {
+            font-size: 12px;
+            line-height: 1.5;
+            opacity: 0.95;
+        }
+
+        .insight-status-ok {
+            background: var(--accent-gradient);
+        }
+
+        .insight-status-warn {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        }
+
+        .insight-status-danger {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+        }
+
+        .insight-card-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .insight-stat {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .insight-stat span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .insight-stat strong {
+            font-size: 15px;
+        }
+
+        .insight-message {
+            font-size: 13px;
+            line-height: 1.55;
+            color: var(--text-main);
+        }
+
+        .idea-card {
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 18px;
+            padding: 16px;
+        }
+
+        .idea-card h4 {
+            color: var(--accent);
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .idea-card p {
+            color: #3730a3;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .trend-positive {
+            color: var(--success);
+        }
+
+        .trend-negative {
+            color: var(--danger);
+        }
+
+        .cycle-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .cycle-info strong {
+            color: var(--text-main);
+        }
+
+        .empty-insight {
+            text-align: center;
+            padding: 25px 10px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
     </style>
 </head>
 
@@ -448,6 +598,7 @@
 
     <header>
         <h1 id="header-title">Mio Budget 📊</h1>
+
         <div id="status-label" class="status-banner status-ok">
             🟢 Tutto sotto controllo
         </div>
@@ -460,14 +611,18 @@
 
     <div class="container">
 
-        <!-- SCHERMATA ACCESSO / REGISTRAZIONE -->
+        <!-- ACCESSO / REGISTRAZIONE -->
+
         <div id="auth-screen">
 
-            <h2 id="auth-title">Accedi al tuo Budget</h2>
+            <h2 id="auth-title">
+                Accedi al tuo Budget
+            </h2>
 
             <div class="form-group">
                 <label>Email</label>
-                <input type="email"
+                <input
+                    type="email"
                     id="auth-email"
                     class="form-control"
                     placeholder="esempio@email.com">
@@ -475,19 +630,22 @@
 
             <div class="form-group">
                 <label>Password</label>
-                <input type="password"
+                <input
+                    type="password"
                     id="auth-password"
                     class="form-control"
                     placeholder="Inserisci la tua password">
             </div>
 
-            <button class="btn"
+            <button
+                class="btn"
                 id="btn-auth-primary"
                 onclick="gestisciAutenticazione()">
                 Accedi
             </button>
 
-            <button class="btn btn-secondary"
+            <button
+                class="btn btn-secondary"
                 id="btn-auth-toggle"
                 onclick="toggleModalitaAuth()"
                 style="font-size:12px;">
@@ -495,46 +653,77 @@
             </button>
 
             <p id="auth-error" class="error-msg"></p>
+
         </div>
 
-        <!-- CONFIGURAZIONE -->
+
+        <!-- CONFIGURAZIONE INIZIALE -->
+
         <div id="view-setup" class="view">
 
-            <div class="mini-card" style="padding: 20px;">
+            <div class="mini-card" style="padding:20px;">
 
-                <h3 style="margin-bottom: 12px; text-align:center;">
+                <h3 style="margin-bottom:12px; text-align:center;">
                     Configurazione Iniziale
                 </h3>
 
-                <div class="form-group"
-                    style="margin-bottom: 20px; background: #e0f2fe; padding: 12px; border-radius: 12px; border: 1px solid #bae6fd;">
+                <div
+                    class="form-group"
+                    style="margin-bottom:20px; background:#e0f2fe; padding:12px; border-radius:12px; border:1px solid #bae6fd;">
 
                     <label style="color:#0369a1; font-weight:700;">
-                        1. INSERISCI IL BUDGET MENSILE TOTALE (€)
+                        1. INSERISCI IL BUDGET DEL CICLO (€)
                     </label>
 
-                    <input type="number"
+                    <input
+                        type="number"
                         id="setup-budget-totale-input"
                         class="form-control"
                         placeholder="Es. 1500"
                         inputmode="decimal"
                         style="border-color:#7dd3fc; font-size:16px; font-weight:700;">
+
                 </div>
 
-                <hr style="border: 0; height: 1px; background: var(--card-border); margin: 20px 0;">
+                <div
+                    class="form-group"
+                    style="margin-bottom:20px; background:#eef2ff; padding:12px; border-radius:12px; border:1px solid #c7d2fe;">
 
-                <h4 style="margin-bottom: 10px; font-size:13px; color:var(--text-main);">
-                    2. AGGIUNGI I TUOI COMPARTI (Opzionale)
+                    <label style="color:var(--accent); font-weight:700;">
+                        2. DATA DI INIZIO DEL CICLO
+                    </label>
+
+                    <input
+                        type="date"
+                        id="setup-data-inizio"
+                        class="form-control"
+                        style="border-color:#a5b4fc;">
+
+                    <div
+                        style="font-size:11px; color:#4338ca; margin-top:6px;">
+                        La chiusura del ciclo sarà completamente libera e decisa da te.
+                    </div>
+
+                </div>
+
+                <hr
+                    style="border:0; height:1px; background:var(--card-border); margin:20px 0;">
+
+                <h4
+                    style="margin-bottom:10px; font-size:13px; color:var(--text-main);">
+                    3. AGGIUNGI I TUOI COMPARTI
                 </h4>
 
-                <div style="background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--card-border);">
+                <div
+                    style="background:#f8fafc; padding:12px; border-radius:12px; margin-bottom:16px; border:1px solid var(--card-border);">
 
                     <div class="form-group">
                         <label>
-                            Nome Comparto (es. Auto, Casa, Pizzeria...)
+                            Nome Comparto
                         </label>
 
-                        <input type="text"
+                        <input
+                            type="text"
                             id="add-comp-nome"
                             class="form-control"
                             placeholder="Es. Auto">
@@ -542,50 +731,73 @@
 
                     <div class="form-group">
                         <label>
-                            Somma Assegnata a questo Comparto (€)
+                            Somma Assegnata (€)
                         </label>
 
-                        <input type="number"
+                        <input
+                            type="number"
                             id="add-comp-budget"
                             class="form-control"
                             placeholder="Es. 400"
                             inputmode="decimal">
                     </div>
 
-                    <button class="btn btn-secondary"
+                    <button
+                        class="btn btn-secondary"
                         style="font-size:12px; padding:6px;"
                         onclick="aggiungiCompartoLista()">
+
                         + Aggiungi Comparto
+
                     </button>
+
                 </div>
 
-                <div id="lista-comparti-setup" style="margin-bottom:16px;"></div>
+                <div
+                    id="lista-comparti-setup"
+                    style="margin-bottom:16px;">
+                </div>
 
-                <div style="background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; text-align:center; font-weight:600; margin-bottom:16px;">
+                <div
+                    style="background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; text-align:center; font-weight:600; margin-bottom:16px;">
 
                     Assegnato ai Comparti:
 
-                    <span id="setup-somma-comparti"
-                        style="color:var(--accent)">
+                    <span
+                        id="setup-somma-comparti"
+                        style="color:var(--accent);">
+
                         0,00 €
+
                     </span>
+
                 </div>
 
-                <button class="btn"
+                <button
+                    class="btn"
                     onclick="salvaConfigurazioneComparti()">
+
                     Salva ed Entra
+
                 </button>
 
-                <button class="btn btn-secondary"
+                <button
+                    class="btn btn-secondary"
                     id="btn-annulla-setup"
                     style="display:none;"
                     onclick="chiudiModificaBudget()">
+
                     Annulla
+
                 </button>
+
             </div>
+
         </div>
 
-        <!-- DASHBOARD -->
+
+        <!-- HOME -->
+
         <div id="view-home" class="view">
 
             <div class="main-card">
@@ -598,65 +810,131 @@
                     0,00 €
                 </h2>
 
-                <button class="badge-btn"
+                <div
+                    id="dash-ciclo-info"
+                    style="font-size:11px; opacity:0.9; margin-bottom:6px;">
+                </div>
+
+                <button
+                    class="badge-btn"
                     style="color:white; background:rgba(255,255,255,0.2); margin-top:6px;"
                     onclick="apriModificaBudget()">
 
                     <i class="fa-solid fa-sliders"></i>
                     Gestisci Budget e Comparti
+
                 </button>
+
             </div>
 
+
+            <!-- GRAFICO -->
+
             <div class="chart-box">
+
+                <div class="chart-controls">
+
+                    <button
+                        id="chart-tab-budget"
+                        class="chart-tab active"
+                        onclick="cambiaModalitaGrafico('budget')">
+
+                        Budget
+
+                    </button>
+
+                    <button
+                        id="chart-tab-spese"
+                        class="chart-tab"
+                        onclick="cambiaModalitaGrafico('spese')">
+
+                        Spese
+
+                    </button>
+
+                </div>
+
                 <canvas id="budgetChart"></canvas>
+
             </div>
+
 
             <div class="budget-details">
 
                 <div class="mini-card">
-                    <span>Budget Totale</span>
-                    <p id="dash-entrate" style="color:var(--success);">
+
+                    <span>
+                        Budget Totale
+                    </span>
+
+                    <p
+                        id="dash-entrate"
+                        style="color:var(--success);">
+
                         0 €
+
                     </p>
+
                 </div>
 
                 <div class="mini-card">
-                    <span>Speso Totale</span>
-                    <p id="dash-speso" style="color:var(--danger);">
+
+                    <span>
+                        Speso Totale
+                    </span>
+
+                    <p
+                        id="dash-speso"
+                        style="color:var(--danger);">
+
                         0 €
+
                     </p>
+
                 </div>
 
             </div>
 
+
             <h3 class="section-title">
+
                 📊 I Tuoi Comparti
 
-                <span style="font-size:10px; text-transform:none;">
-                    (Clicca ✏️ per modificare il budget)
+                <span
+                    style="font-size:10px; text-transform:none;">
+
+                    Clicca ✏️ per modificare
+
                 </span>
+
             </h3>
 
             <div id="cassetti-container"></div>
 
+
             <h3 class="section-title">
 
-                📅 Scadenze del Mese
+                📅 Scadenze del Ciclo
 
-                <button class="badge-btn"
+                <button
+                    class="badge-btn"
                     onclick="openModal('modal-scadenza')">
+
                     + Aggiungi
+
                 </button>
 
             </h3>
 
             <div id="scadenze-container"></div>
 
+
             <h3 class="section-title">
 
                 🕒 Ultime Spese
 
-                <select id="filtro-categoria"
+                <select
+                    id="filtro-categoria"
                     class="filter-select"
                     onchange="calcolaERenderizzaUI()">
 
@@ -670,29 +948,239 @@
 
             <div id="spese-container"></div>
 
-            <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
 
-                <button class="btn btn-secondary"
+            <div
+                style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+
+                <button
+                    class="btn btn-secondary"
                     style="color:var(--accent); border-color:var(--accent);"
                     onclick="esportaInCSV()">
 
                     <i class="fa-solid fa-file-csv"></i>
-                    Esporta Mese
+                    Esporta
+
                 </button>
 
-                <button class="btn btn-secondary"
+                <button
+                    class="btn btn-secondary"
                     style="color:var(--accent); border-color:var(--accent);"
                     onclick="chiudiEMeseArchivia()">
 
                     <i class="fa-solid fa-box-archive"></i>
-                    Chiudi Mese
+                    Chiudi Ciclo
+
                 </button>
 
             </div>
 
         </div>
 
+
+        <!-- INSIGHTS -->
+
+        <div id="view-insights" class="view">
+
+            <h3 class="section-title">
+                💡 Insights
+            </h3>
+
+            <div
+                id="insights-cycle-info"
+                class="cycle-info">
+            </div>
+
+            <div
+                id="insight-status-card"
+                class="insight-main-status insight-status-ok">
+
+                <h2 id="insight-status-title">
+                    🟢 Ciclo in equilibrio
+                </h2>
+
+                <p id="insight-status-description">
+                    Il tuo budget sembra sotto controllo.
+                </p>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <div class="insight-card-title">
+                    📊 Il tuo ciclo
+                </div>
+
+                <div class="insight-grid">
+
+                    <div class="insight-stat">
+
+                        <span>
+                            Budget iniziale
+                        </span>
+
+                        <strong id="insight-budget">
+                            0 €
+                        </strong>
+
+                    </div>
+
+                    <div class="insight-stat">
+
+                        <span>
+                            Speso
+                        </span>
+
+                        <strong id="insight-speso">
+                            0 €
+                        </strong>
+
+                    </div>
+
+                    <div class="insight-stat">
+
+                        <span>
+                            Disponibile
+                        </span>
+
+                        <strong
+                            id="insight-disponibile"
+                            class="trend-positive">
+
+                            0 €
+
+                        </strong>
+
+                    </div>
+
+                    <div class="insight-stat">
+
+                        <span>
+                            Media giornaliera
+                        </span>
+
+                        <strong id="insight-media-giornaliera">
+                            0 €
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="insight-attention-card"
+                class="insight-card">
+
+                <div class="insight-card-title">
+                    ⚠️ Da tenere d'occhio
+                </div>
+
+                <div
+                    id="insight-attention-content"
+                    class="insight-message">
+
+                    Nessun comparto richiede particolare attenzione.
+
+                </div>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <div class="insight-card-title">
+                    💡 Il tuo consiglio
+                </div>
+
+                <div
+                    id="insight-advice"
+                    class="insight-message">
+
+                    Inserisci alcune spese per ricevere consigli personalizzati.
+
+                </div>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <div class="insight-card-title">
+                    🎯 I tuoi obiettivi
+                </div>
+
+                <div
+                    id="insight-goals">
+
+                    <div class="empty-insight">
+                        Nessun obiettivo di risparmio attivo.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <div class="insight-card-title">
+                    💡 Idea di risparmio
+                </div>
+
+                <div class="idea-card">
+
+                    <h4 id="idea-titolo">
+                        La regola delle 24 ore
+                    </h4>
+
+                    <p id="idea-testo">
+                        Prima di acquistare qualcosa di non necessario,
+                        aspetta 24 ore. A volte il desiderio di acquisto
+                        diminuisce.
+                    </p>
+
+                </div>
+
+                <button
+                    class="btn btn-secondary"
+                    style="margin-top:10px; color:var(--accent); border-color:var(--accent);"
+                    onclick="mostraAltraIdea()">
+
+                    <i class="fa-solid fa-rotate"></i>
+                    Altra idea
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="insight-trend-card"
+                class="insight-card">
+
+                <div class="insight-card-title">
+                    📈 Le tue tendenze
+                </div>
+
+                <div
+                    id="insight-trend-content"
+                    class="insight-message">
+
+                    Chiudi almeno un ciclo per iniziare a visualizzare
+                    le tue tendenze.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
         <!-- SALVADANAI -->
+
         <div id="view-salvadanai" class="view">
 
             <h3 class="section-title">
@@ -701,31 +1189,37 @@
 
             <div id="salvadanai-container"></div>
 
-            <button class="btn"
+            <button
+                class="btn"
                 onclick="openModal('modal-salvadanaio')"
                 style="margin-top:10px;">
 
                 <i class="fa-solid fa-plus"></i>
                 Nuovo Piano Lungo Termine
+
             </button>
 
         </div>
 
+
         <!-- STORICO -->
+
         <div id="view-storico" class="view">
 
             <div class="section-title">
 
                 <span>
-                    Archivio Mesi Precedenti
+                    Archivio Cicli Precedenti
                 </span>
 
-                <button class="badge-btn"
+                <button
+                    class="badge-btn"
                     style="color:var(--danger); background:#fee2e2;"
                     onclick="svuotaInteroStorico()">
 
                     <i class="fa-solid fa-trash-can"></i>
                     Svuota Archivio
+
                 </button>
 
             </div>
@@ -736,51 +1230,76 @@
 
     </div>
 
+
     <!-- NAVBAR -->
-    <nav class="nav-bar"
+
+    <nav
+        class="nav-bar"
         id="app-nav"
         style="display:none;">
 
-        <button class="nav-item active"
+        <button
+            class="nav-item active"
             id="nav-btn-home"
             onclick="switchView('home', this)">
 
             <i class="fa-solid fa-wallet"></i>
             <span>Home</span>
+
         </button>
 
-        <button class="nav-item"
+        <button
+            class="nav-item"
             onclick="switchView('salvadanai', this)">
 
             <i class="fa-solid fa-piggy-bank"></i>
             <span>Piani</span>
+
         </button>
 
-        <button class="nav-center-btn"
+        <button
+            class="nav-center-btn"
             onclick="apriModalNuovaSpesa()">
 
             <i class="fa-solid fa-plus"></i>
+
         </button>
 
-        <button class="nav-item"
+        <button
+            class="nav-item"
+            onclick="switchView('insights', this)">
+
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Insights</span>
+
+        </button>
+
+        <button
+            class="nav-item"
             onclick="switchView('storico', this)">
 
             <i class="fa-solid fa-clock-rotate-left"></i>
             <span>Storico</span>
+
         </button>
 
-        <button class="nav-item"
+        <button
+            class="nav-item"
             style="color:var(--danger);"
             onclick="eseguiLogout()">
 
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>Esci</span>
+
         </button>
 
     </nav>
 
+
     <!-- MODALE SPESA -->
-    <div id="modal-spesa"
+
+    <div
+        id="modal-spesa"
         class="modal"
         onclick="closeModalOnBackdrop(event)">
 
@@ -790,7 +1309,8 @@
                 💸 Inserisci Spesa
             </h3>
 
-            <input type="hidden"
+            <input
+                type="hidden"
                 id="spesa-edit-id">
 
             <div class="form-group">
@@ -799,11 +1319,13 @@
                     Importo (€)
                 </label>
 
-                <input type="number"
+                <input
+                    type="number"
                     id="spesa-importo"
                     class="form-control"
                     step="0.01"
                     inputmode="decimal">
+
             </div>
 
             <div class="form-group">
@@ -812,10 +1334,12 @@
                     Descrizione
                 </label>
 
-                <input type="text"
+                <input
+                    type="text"
                     id="spesa-desc"
                     class="form-control"
                     placeholder="Es. Spesa Conad, Rifornimento...">
+
             </div>
 
             <div class="form-group">
@@ -824,30 +1348,40 @@
                     Comparto di Riferimento
                 </label>
 
-                <select id="spesa-cassetto"
+                <select
+                    id="spesa-cassetto"
                     class="form-control">
                 </select>
+
             </div>
 
-            <button class="btn"
+            <button
+                class="btn"
                 onclick="salvaSpesa()">
 
                 Conferma Spesa
+
             </button>
 
-            <button class="btn btn-danger"
+            <button
+                class="btn btn-danger"
                 id="btn-elimina-spesa-diretto"
                 style="display:none;"
                 onclick="clickEliminaSpesaInModifica()">
 
                 Elimina Spesa
+
             </button>
 
         </div>
+
     </div>
 
+
     <!-- MODALE SCADENZA -->
-    <div id="modal-scadenza"
+
+    <div
+        id="modal-scadenza"
         class="modal"
         onclick="closeModalOnBackdrop(event)">
 
@@ -863,10 +1397,12 @@
                     Nome Scadenza
                 </label>
 
-                <input type="text"
+                <input
+                    type="text"
                     id="scad-nome"
                     class="form-control"
                     placeholder="Es. Assicurazione, Bolletta...">
+
             </div>
 
             <div class="form-group">
@@ -875,10 +1411,12 @@
                     Importo Stimato (€)
                 </label>
 
-                <input type="number"
+                <input
+                    type="number"
                     id="scad-importo"
                     class="form-control"
                     inputmode="decimal">
+
             </div>
 
             <div class="form-group">
@@ -887,35 +1425,45 @@
                     Associa al Comparto
                 </label>
 
-                <select id="scad-cassetto"
+                <select
+                    id="scad-cassetto"
                     class="form-control">
                 </select>
+
             </div>
 
-            <button class="btn"
+            <button
+                class="btn"
                 onclick="aggiungiScadenza()">
 
                 Imposta Scadenza
+
             </button>
 
         </div>
+
     </div>
 
+
     <!-- MODALE PAGAMENTO SCADENZA -->
-    <div id="modal-paga-scadenza"
+
+    <div
+        id="modal-paga-scadenza"
         class="modal"
         onclick="closeModalOnBackdrop(event)">
 
         <div class="modal-content">
 
             <h3>
-                Regola Importo Effettivo Scadenza
+                Registra Pagamento Scadenza
             </h3>
 
-            <input type="hidden"
+            <input
+                type="hidden"
                 id="paga-scad-id">
 
-            <input type="hidden"
+            <input
+                type="hidden"
                 id="paga-scad-cassetto">
 
             <div class="form-group">
@@ -924,36 +1472,46 @@
                     Nome Scadenza
                 </label>
 
-                <input type="text"
+                <input
+                    type="text"
                     id="paga-scad-nome"
                     class="form-control"
                     readonly>
+
             </div>
 
             <div class="form-group">
 
                 <label>
-                    Importo Finale Effettivo da Scalare (€)
+                    Importo Effettivo (€)
                 </label>
 
-                <input type="number"
+                <input
+                    type="number"
                     id="paga-scad-importo-reale"
                     class="form-control"
                     step="0.01"
                     inputmode="decimal">
+
             </div>
 
-            <button class="btn"
+            <button
+                class="btn"
                 onclick="confermaPagamentoScadenzaRealizzato()">
 
                 Registra Pagamento
+
             </button>
 
         </div>
+
     </div>
 
-    <!-- MODALE NUOVO PIANO -->
-    <div id="modal-salvadanaio"
+
+    <!-- MODALE SALVADANAIO -->
+
+    <div
+        id="modal-salvadanaio"
         class="modal"
         onclick="closeModalOnBackdrop(event)">
 
@@ -969,10 +1527,12 @@
                     Nome Obiettivo
                 </label>
 
-                <input type="text"
+                <input
+                    type="text"
                     id="salva-nome"
                     class="form-control"
-                    placeholder="Es. Saldo T-Cross">
+                    placeholder="Es. Regali di compleanno">
+
             </div>
 
             <div class="form-group">
@@ -981,10 +1541,12 @@
                     Cifra Totale da Raggiungere (€)
                 </label>
 
-                <input type="number"
+                <input
+                    type="number"
                     id="salva-target"
                     class="form-control"
                     inputmode="decimal">
+
             </div>
 
             <div class="form-group">
@@ -993,19 +1555,108 @@
                     Data di Scadenza Obiettivo
                 </label>
 
-                <input type="month"
+                <input
+                    type="month"
                     id="salva-data-target"
                     class="form-control">
+
             </div>
 
-            <button class="btn"
+            <button
+                class="btn"
                 onclick="creaSalvadanaio()">
 
                 Inizia Piano
+
             </button>
 
         </div>
+
     </div>
+
+
+    <!-- MODALE VERSAMENTO SALVADANAIO -->
+
+    <div
+        id="modal-versamento-salvadanaio"
+        class="modal"
+        onclick="closeModalOnBackdrop(event)">
+
+        <div class="modal-content">
+
+            <h3>
+                💰 Versa nel Salvadanaio
+            </h3>
+
+            <input
+                type="hidden"
+                id="versamento-salvadanaio-id">
+
+            <div
+                id="versamento-salvadanaio-nome"
+                style="font-size:13px; color:var(--text-muted); margin:10px 0 16px 0;">
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Importo del versamento (€)
+                </label>
+
+                <input
+                    type="number"
+                    id="versamento-importo"
+                    class="form-control"
+                    step="0.01"
+                    inputmode="decimal">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Come vuoi effettuare il versamento?
+                </label>
+
+                <select
+                    id="versamento-tipo"
+                    class="form-control">
+
+                    <option value="budget">
+                        Dal budget corrente
+                    </option>
+
+                    <option value="extra">
+                        Versamento extra
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div
+                id="versamento-info"
+                class="info-piano">
+
+                Il versamento verrà scalato dal budget corrente.
+
+            </div>
+
+            <button
+                class="btn"
+                style="margin-top:12px;"
+                onclick="confermaVersamentoSalvadanaio()">
+
+                Conferma Versamento
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- FIREBASE -->
 
     <script type="module">
 
@@ -1035,23 +1686,18 @@
 
             apiKey: "AIzaSyA7UCnGi06p1HPhRPgS4LyXcbKx_LhdOsM",
 
-            authDomain:
-                "budget-casa-7eead.firebaseapp.com",
+            authDomain: "budget-casa-7eead.firebaseapp.com",
 
-            databaseURL:
-                "https://budget-casa-7eead-default-rtdb.firebaseio.com/",
+            databaseURL: "https://budget-casa-7eead-default-rtdb.firebaseio.com/",
 
-            projectId:
-                "budget-casa-7eead",
+            projectId: "budget-casa-7eead",
 
-            storageBucket:
-                "budget-casa-7eead.firebasestorage.app",
+            storageBucket: "budget-casa-7eead.firebasestorage.app",
 
-            messagingSenderId:
-                "529644674685",
+            messagingSenderId: "529644674685",
 
-            appId:
-                "1:529644674685:web:93438c7393631bc7d4db14"
+            appId: "1:529644674685:web:93438c7393631bc7d4db14"
+
         };
 
 
@@ -1070,6 +1716,12 @@
 
         let storicoRef = null;
 
+        let myChart = null;
+
+        let modalitaGrafico = 'budget';
+
+        let listaCompartiTemporanea = {};
+
 
         let appData = {
 
@@ -1081,15 +1733,74 @@
 
             salvadanai: {},
 
-            scadenze: {}
+            scadenze: {},
+
+            ciclo: {
+
+                dataInizio: null
+
+            }
 
         };
 
 
-        let listaCompartiTemporanea = {};
+        const ideeRisparmio = [
 
-        let myChart = null;
+            {
 
+                titolo: "La regola delle 24 ore",
+
+                testo: "Prima di acquistare qualcosa di non necessario, aspetta 24 ore. Spesso il desiderio di acquisto diminuisce e puoi capire meglio se ne hai davvero bisogno."
+
+            },
+
+            {
+
+                titolo: "Controlla le spese ricorrenti",
+
+                testo: "Controlla periodicamente abbonamenti e servizi ricorrenti. Anche una piccola spesa mensile, moltiplicata per un anno, può diventare significativa."
+
+            },
+
+            {
+
+                titolo: "Dai un nome ai tuoi obiettivi",
+
+                testo: "Risparmiare per un obiettivo concreto è spesso più semplice che cercare genericamente di spendere meno."
+
+            },
+
+            {
+
+                titolo: "Attenzione alle piccole spese",
+
+                testo: "Le piccole spese quotidiane possono sembrare irrilevanti singolarmente. Osserva però il totale accumulato durante l'intero ciclo."
+
+            },
+
+            {
+
+                titolo: "Crea un fondo per le spese annuali",
+
+                testo: "Assicurazioni, manutenzioni e regali non sono vere sorprese se sai che arriveranno. Un salvadanaio dedicato può aiutarti a prepararti in anticipo."
+
+            },
+
+            {
+
+                titolo: "Non confondere disponibilità e risparmio",
+
+                testo: "Il denaro che non hai ancora speso è disponibile, ma non è automaticamente risparmiato. Se hai un obiettivo, assegnagli una destinazione concreta."
+
+            }
+
+        ];
+
+
+        let indiceIdeaCorrente = 0;
+
+
+        // AUTENTICAZIONE
 
         window.gestisciAutenticazione = async () => {
 
@@ -1111,6 +1822,7 @@
                     "Inserisci sia l'email che la password.";
 
                 return;
+
             }
 
 
@@ -1131,6 +1843,7 @@
                         email,
                         password
                     );
+
                 }
 
             } catch (error) {
@@ -1138,6 +1851,7 @@
                 errorEl.textContent =
                     "Errore: " +
                     traduciErroreFirebase(error.code);
+
             }
 
         };
@@ -1147,20 +1861,24 @@
 
             isLoginMode = !isLoginMode;
 
+
             document.getElementById('auth-title').textContent =
                 isLoginMode
                     ? "Accedi al tuo Budget"
                     : "Crea un nuovo account";
+
 
             document.getElementById('btn-auth-primary').textContent =
                 isLoginMode
                     ? "Accedi"
                     : "Registrati";
 
+
             document.getElementById('btn-auth-toggle').textContent =
                 isLoginMode
                     ? "Non hai un account? Registrati"
                     : "Hai già un account? Accedi";
+
         };
 
 
@@ -1180,22 +1898,31 @@
             switch (code) {
 
                 case 'auth/invalid-credential':
+
                     return 'Credenziali non valide o errate.';
 
                 case 'auth/weak-password':
+
                     return 'La password deve avere almeno 6 caratteri.';
 
                 case 'auth/email-already-in-use':
+
                     return 'Questa email è già associata ad un account.';
 
                 case 'auth/invalid-email':
+
                     return 'Formato dell\'email non valido.';
 
                 default:
+
                     return 'Impossibile completare l\'operazione.';
+
             }
+
         }
 
+
+        // STATO UTENTE
 
         onAuthStateChanged(auth, (user) => {
 
@@ -1208,15 +1935,18 @@
                     .classList
                     .add('hidden');
 
+
                 document
                     .getElementById('app-nav')
                     .style
                     .display = 'flex';
 
+
                 document
                     .getElementById('user-header-info')
                     .classList
                     .remove('hidden');
+
 
                 document
                     .getElementById('user-header-info')
@@ -1253,17 +1983,21 @@
                     .classList
                     .remove('hidden');
 
+
                 document
                     .getElementById('app-nav')
                     .style
                     .display = 'none';
+
 
                 document
                     .getElementById('user-header-info')
                     .classList
                     .add('hidden');
 
+
                 disattivaViste();
+
             }
 
         });
@@ -1273,87 +2007,130 @@
 
             document
                 .querySelectorAll('.view')
-                .forEach(v => v.classList.remove('active'));
+                .forEach(v =>
+                    v.classList.remove('active')
+                );
+
         }
 
+
+        // LETTURA DATI
 
         function avviaAscoltoDati() {
 
-            onValue(budgetRef, (snapshot) => {
+            onValue(
 
-                const data = snapshot.val();
+                budgetRef,
 
+                (snapshot) => {
 
-                if (!data) {
-
-                    switchViewWithoutBtn('setup');
-
-                    document
-                        .getElementById('btn-annulla-setup')
-                        .style
-                        .display = 'none';
+                    const data = snapshot.val();
 
 
-                    appData = {
+                    if (!data) {
 
-                        entrate: 0,
+                        switchViewWithoutBtn('setup');
 
-                        cassetti: {},
-
-                        spese: {},
-
-                        salvadanai: {},
-
-                        scadenze: {}
-                    };
-
-                } else {
-
-                    appData = {
-
-                        entrate: data.entrate || 0,
-
-                        cassetti: data.cassetti || {},
-
-                        spese: data.spese || {},
-
-                        salvadanai: data.salvadanai || {},
-
-                        scadenze: data.scadenze || {}
-                    };
-
-
-                    if (
                         document
-                            .getElementById('view-setup')
-                            .classList
-                            .contains('active')
-                    ) {
+                            .getElementById('btn-annulla-setup')
+                            .style
+                            .display = 'none';
 
-                        switchViewWithoutBtn('home');
 
-                    } else if (
-                        !document.querySelector('.view.active')
-                    ) {
+                        appData = {
 
-                        switchViewWithoutBtn('home');
+                            entrate: 0,
+
+                            cassetti: {},
+
+                            spese: {},
+
+                            salvadanai: {},
+
+                            scadenze: {},
+
+                            ciclo: {
+
+                                dataInizio: null
+
+                            }
+
+                        };
+
+
+                    } else {
+
+
+                        appData = {
+
+                            entrate: data.entrate || 0,
+
+                            cassetti: data.cassetti || {},
+
+                            spese: data.spese || {},
+
+                            salvadanai: data.salvadanai || {},
+
+                            scadenze: data.scadenze || {},
+
+                            ciclo: data.ciclo || {
+
+                                dataInizio: null
+
+                            }
+
+                        };
+
+
+                        if (
+
+                            document
+                                .getElementById('view-setup')
+                                .classList
+                                .contains('active')
+
+                        ) {
+
+                            switchViewWithoutBtn('home');
+
+                        } else if (
+
+                            !document.querySelector('.view.active')
+
+                        ) {
+
+                            switchViewWithoutBtn('home');
+
+                        }
+
+
+                        calcolaERenderizzaUI();
+
                     }
 
-
-                    calcolaERenderizzaUI();
                 }
 
-            });
+            );
 
 
-            onValue(storicoRef, (snapshot) => {
+            onValue(
 
-                renderizzaStorico(snapshot.val());
+                storicoRef,
 
-            });
+                (snapshot) => {
+
+                    renderizzaStorico(snapshot.val());
+
+                    renderizzaInsights();
+
+                }
+
+            );
 
         }
 
+
+        // COMPARTI
 
         window.aggiungiCompartoLista = function() {
 
@@ -1393,12 +2170,14 @@
                     .getElementById('add-comp-nome')
                     .value = '';
 
+
                 document
                     .getElementById('add-comp-budget')
                     .value = '';
 
 
                 aggiornaAnteprimaListaSetup();
+
             }
 
         };
@@ -1416,11 +2195,13 @@
         function aggiornaAnteprimaListaSetup() {
 
             const container =
-                document
-                    .getElementById('lista-comparti-setup');
+                document.getElementById(
+                    'lista-comparti-setup'
+                );
 
 
             container.innerHTML = '';
+
 
             let somma = 0;
 
@@ -1432,6 +2213,7 @@
                     const c =
                         listaCompartiTemporanea[id];
 
+
                     somma += c.budget;
 
 
@@ -1440,12 +2222,17 @@
                         <div class="setup-comparto-item">
 
                             <span>
+
                                 <b>${c.nome}</b>:
+
                                 ${c.budget.toFixed(2)} €
+
                             </span>
 
                             <button
+
                                 class="btn-delete"
+
                                 onclick="rimuoviCompartoListaTemporanea('${id}')">
 
                                 <i class="fa-solid fa-trash-can"></i>
@@ -1455,6 +2242,7 @@
                         </div>
 
                     `;
+
                 });
 
 
@@ -1462,6 +2250,7 @@
                 .getElementById('setup-somma-comparti')
                 .textContent =
                 somma.toFixed(2) + " €";
+
         }
 
 
@@ -1470,18 +2259,40 @@
             const budgetTotale =
                 parseFloat(
                     document
-                        .getElementById('setup-budget-totale-input')
+                        .getElementById(
+                            'setup-budget-totale-input'
+                        )
                         .value
                 ) || 0;
+
+
+            const dataInizio =
+                document
+                    .getElementById(
+                        'setup-data-inizio'
+                    )
+                    .value;
 
 
             if (budgetTotale <= 0) {
 
                 alert(
-                    "Inserisci un budget mensile totale valido."
+                    "Inserisci un budget valido."
                 );
 
                 return;
+
+            }
+
+
+            if (!dataInizio) {
+
+                alert(
+                    "Inserisci la data di inizio del ciclo."
+                );
+
+                return;
+
             }
 
 
@@ -1494,20 +2305,20 @@
 
                     sommaComp +=
                         listaCompartiTemporanea[k].budget;
+
                 });
 
 
             if (sommaComp > budgetTotale) {
 
                 alert(
-                    "La somma dei comparti (" +
-                    sommaComp.toFixed(2) +
-                    "€) supera il budget totale impostato (" +
-                    budgetTotale.toFixed(2) +
-                    "€)."
+
+                    "La somma dei comparti supera il budget totale."
+
                 );
 
                 return;
+
             }
 
 
@@ -1517,34 +2328,77 @@
 
             if (rimasuglioFondoOpzionale > 0) {
 
-                listaCompartiTemporanea['libero_restante'] = {
+                listaCompartiTemporanea[
+                    'libero_restante'
+                ] = {
 
                     nome: 'Fondo Libero',
 
                     budget: rimasuglioFondoOpzionale
+
                 };
+
             }
 
 
             set(
+
                 ref(
+
                     db,
+
                     'utenti/' +
+
                     utenteCorrente.uid +
+
                     '/budget_familiare/entrate'
+
                 ),
+
                 budgetTotale
+
             );
 
 
             set(
+
                 ref(
+
                     db,
+
                     'utenti/' +
+
                     utenteCorrente.uid +
+
                     '/budget_familiare/cassetti'
+
                 ),
+
                 listaCompartiTemporanea
+
+            );
+
+
+            set(
+
+                ref(
+
+                    db,
+
+                    'utenti/' +
+
+                    utenteCorrente.uid +
+
+                    '/budget_familiare/ciclo'
+
+                ),
+
+                {
+
+                    dataInizio: dataInizio
+
+                }
+
             );
 
 
@@ -1556,9 +2410,19 @@
         window.apriModificaBudget = function() {
 
             document
-                .getElementById('setup-budget-totale-input')
+                .getElementById(
+                    'setup-budget-totale-input'
+                )
                 .value =
                 appData.entrate;
+
+
+            document
+                .getElementById(
+                    'setup-data-inizio'
+                )
+                .value =
+                appData.ciclo?.dataInizio || '';
 
 
             listaCompartiTemporanea =
@@ -1570,10 +2434,15 @@
 
 
             if (
-                listaCompartiTemporanea['libero_restante']
+                listaCompartiTemporanea[
+                    'libero_restante'
+                ]
             ) {
 
-                delete listaCompartiTemporanea['libero_restante'];
+                delete listaCompartiTemporanea[
+                    'libero_restante'
+                ];
+
             }
 
 
@@ -1581,7 +2450,9 @@
 
 
             document
-                .getElementById('btn-annulla-setup')
+                .getElementById(
+                    'btn-annulla-setup'
+                )
                 .style
                 .display = 'block';
 
@@ -1597,6 +2468,8 @@
 
         };
 
+
+        // CALCOLO PRINCIPALE
 
         window.calcolaERenderizzaUI = function() {
 
@@ -1621,29 +2494,25 @@
                     const s =
                         appData.spese[k];
 
-                    totaleSpeso += s.importo;
+
+                    totaleSpeso +=
+                        s.importo;
 
 
                     if (
-                        spesoPerCassetto[s.cassetto] !== undefined
+
+                        spesoPerCassetto[
+                            s.cassetto
+                        ] !== undefined
+
                     ) {
 
-                        spesoPerCassetto[s.cassetto] +=
-                            s.importo;
+                        spesoPerCassetto[
+                            s.cassetto
+                        ] += s.importo;
 
-                    } else {
-
-                        if (
-                            !appData.cassetti[s.cassetto]
-                        ) {
-
-                            spesoPerCassetto['libero_restante'] =
-                                (
-                                    spesoPerCassetto['libero_restante'] ||
-                                    0
-                                ) + s.importo;
-                        }
                     }
+
                 });
 
 
@@ -1653,29 +2522,40 @@
 
 
             document
-                .getElementById('dash-entrate')
+                .getElementById(
+                    'dash-entrate'
+                )
                 .textContent =
                 appData.entrate.toFixed(2) +
                 " €";
 
 
             document
-                .getElementById('dash-speso')
+                .getElementById(
+                    'dash-speso'
+                )
                 .textContent =
                 totaleSpeso.toFixed(2) +
                 " €";
 
 
             document
-                .getElementById('dash-disponibile')
+                .getElementById(
+                    'dash-disponibile'
+                )
                 .textContent =
                 totaleDisponibile.toFixed(2) +
                 " €";
 
 
+            aggiornaInfoCiclo();
+
+
             const lbl =
                 document
-                    .getElementById('status-label');
+                    .getElementById(
+                        'status-label'
+                    );
 
 
             if (
@@ -1689,12 +2569,12 @@
                     "🔴 Budget in Negativo!"
                 );
 
+
             } else if (
+
                 totaleDisponibile <
-                (
-                    appData.entrate *
-                    0.15
-                )
+                (appData.entrate * 0.15)
+
             ) {
 
                 lbl.className =
@@ -1704,6 +2584,7 @@
                     "🟡 Attenzione, fondi quasi esauriti"
                 );
 
+
             } else {
 
                 lbl.className =
@@ -1712,6 +2593,7 @@
                 labelText(
                     "🟢 Tutto sotto controllo"
                 );
+
             }
 
 
@@ -1719,19 +2601,27 @@
                 spesoPerCassetto
             );
 
+
             renderizzaSezioneScadenze();
+
 
             renderizzaSezioneSpese(
                 spesoPerCassetto
             );
 
+
             renderizzaSezioneSalvadanai();
 
+
             aggiornaSelectMenuModali();
+
 
             renderizzaGraficoQuota(
                 spesoPerCassetto
             );
+
+
+            renderizzaInsights();
 
         };
 
@@ -1739,10 +2629,118 @@
         function labelText(t) {
 
             document
-                .getElementById('status-label')
+                .getElementById(
+                    'status-label'
+                )
                 .textContent = t;
+
         }
 
+
+        function aggiornaInfoCiclo() {
+
+            const dataInizio =
+                appData.ciclo?.dataInizio;
+
+
+            const elemento =
+                document
+                    .getElementById(
+                        'dash-ciclo-info'
+                    );
+
+
+            if (!dataInizio) {
+
+                elemento.textContent =
+                    "Ciclo non configurato";
+
+                return;
+
+            }
+
+
+            elemento.textContent =
+                "Ciclo iniziato il " +
+                formattaData(dataInizio);
+
+        }
+
+
+        function formattaData(data) {
+
+            if (!data) return '-';
+
+
+            const parti =
+                data.split('-');
+
+
+            if (parti.length !== 3) {
+
+                return data;
+
+            }
+
+
+            return (
+
+                parti[2] +
+                '/' +
+                parti[1] +
+                '/' +
+                parti[0]
+
+            );
+
+        }
+
+
+        function getGiorniTrascorsi() {
+
+            const dataInizio =
+                appData.ciclo?.dataInizio;
+
+
+            if (!dataInizio) {
+
+                return 1;
+
+            }
+
+
+            const inizio =
+                new Date(
+                    dataInizio +
+                    'T00:00:00'
+                );
+
+
+            const oggi =
+                new Date();
+
+
+            const differenza =
+                oggi.getTime() -
+                inizio.getTime();
+
+
+            const giorni =
+                Math.floor(
+                    differenza /
+                    (1000 * 60 * 60 * 24)
+                ) + 1;
+
+
+            return Math.max(
+                1,
+                giorni
+            );
+
+        }
+
+
+        // COMPARTI
 
         function renderizzaSezioneCassetti(
             spesoPerCassetto
@@ -1750,7 +2748,9 @@
 
             const container =
                 document
-                    .getElementById('cassetti-container');
+                    .getElementById(
+                        'cassetti-container'
+                    );
 
 
             container.innerHTML = '';
@@ -1776,18 +2776,19 @@
 
                     let percent =
                         cas.budget > 0
+
                             ? (
                                 speso /
                                 cas.budget
                             ) * 100
+
                             : 0;
 
 
-                    if (
-                        percent > 100
-                    ) {
+                    if (percent > 100) {
 
                         percent = 100;
+
                     }
 
 
@@ -1795,19 +2796,17 @@
                         "var(--success)";
 
 
-                    if (
-                        percent > 85
-                    ) {
+                    if (percent > 85) {
 
                         color =
                             "var(--danger)";
 
-                    } else if (
-                        percent > 60
-                    ) {
+
+                    } else if (percent > 60) {
 
                         color =
                             "var(--warning)";
+
                     }
 
 
@@ -1820,8 +2819,11 @@
                                 <span class="cassetto-name">
 
                                     <i
+
                                         class="fa-solid fa-folder-open"
+
                                         style="color:var(--accent)">
+
                                     </i>
 
                                     ${cas.nome}
@@ -1830,25 +2832,34 @@
 
 
                                 <span
+
                                     class="cassetto-dispo"
-                                    style="color:${rimasto < 0
-                                        ? 'var(--danger)'
-                                        : 'var(--text-main)'}">
+
+                                    style="color:${
+                                        rimasto < 0
+                                            ? 'var(--danger)'
+                                            : 'var(--text-main)'
+                                    }">
 
                                     ${rimasto.toFixed(2)} €
 
                                     <span
+
                                         style="font-size:10px; font-weight:normal; color:var(--text-muted);">
 
                                         rimasti di
-                                        ${cas.budget}€
+
+                                        ${cas.budget.toFixed(2)} €
 
                                     </span>
 
 
                                     <button
+
                                         class="badge-btn"
+
                                         style="padding:2px 6px; font-size:10px;"
+
                                         onclick="event.stopPropagation(); avviaRicalibrazioneVeloceCassetto('${id}', ${cas.budget})">
 
                                         ✏️
@@ -1863,8 +2874,11 @@
                             <div class="cassetto-progress">
 
                                 <div
+
                                     class="cassetto-progress-bar"
-                                    style="width: ${percent}%; background: ${color};">
+
+                                    style="width:${percent}%; background:${color};">
+
                                 </div>
 
                             </div>
@@ -1872,146 +2886,198 @@
                         </div>
 
                     `;
+
                 });
 
         }
 
 
-        window.avviaRicalibrazioneVeloceCassetto =
-            function(id, budgetAttuale) {
+        window.avviaRicalibrazioneVeloceCassetto = function(
+
+            id,
+
+            budgetAttuale
+
+        ) {
+
+            if (
+
+                id ===
+                'libero_restante'
+
+            ) {
+
+                alert(
+
+                    "Il Fondo Libero si ricalcola automaticamente."
+
+                );
+
+                return;
+
+            }
+
+
+            const nuovoB =
+                parseFloat(
+
+                    prompt(
+
+                        "Modifica budget per questo comparto (€):",
+
+                        budgetAttuale
+
+                    )
+
+                );
+
+
+            if (
+
+                !isNaN(nuovoB) &&
+                nuovoB >= 0
+
+            ) {
+
+                let sommaAltri = 0;
+
+
+                Object
+                    .keys(appData.cassetti)
+                    .forEach(k => {
+
+                        if (
+
+                            k !== id &&
+                            k !== 'libero_restante'
+
+                        ) {
+
+                            sommaAltri +=
+                                appData.cassetti[k]
+                                    .budget;
+
+                        }
+
+                    });
+
 
                 if (
-                    id === 'libero_restante'
+
+                    sommaAltri +
+                    nuovoB >
+                    appData.entrate
+
                 ) {
 
                     alert(
-                        "Il Fondo Libero si ricalcola da solo in base alle modifiche degli altri comparti o del budget totale."
+
+                        "Impossibile. La somma supererebbe il budget totale."
+
                     );
 
                     return;
+
                 }
 
 
-                const nuovoB =
-                    parseFloat(
-                        prompt(
-                            "Modifica budget per questo comparto (€):",
-                            budgetAttuale
+                let copiaCassetti =
+                    JSON.parse(
+
+                        JSON.stringify(
+
+                            appData.cassetti
+
                         )
+
                     );
+
+
+                copiaCassetti[id].budget =
+                    nuovoB;
 
 
                 if (
-                    !isNaN(nuovoB) &&
-                    nuovoB >= 0
+
+                    copiaCassetti[
+                        'libero_restante'
+                    ]
+
                 ) {
 
-                    let sommaAltri = 0;
+                    delete copiaCassetti[
+                        'libero_restante'
+                    ];
 
-
-                    Object
-                        .keys(appData.cassetti)
-                        .forEach(k => {
-
-                            if (
-                                k !== id &&
-                                k !== 'libero_restante'
-                            ) {
-
-                                sommaAltri +=
-                                    appData.cassetti[k].budget;
-                            }
-                        });
-
-
-                    if (
-                        (
-                            sommaAltri +
-                            nuovoB
-                        ) > appData.entrate
-                    ) {
-
-                        alert(
-                            "Impossibile. La somma supererebbe il budget mensile totale impostato."
-                        );
-
-                        return;
-                    }
-
-
-                    let copiaCassetti =
-                        JSON.parse(
-                            JSON.stringify(
-                                appData.cassetti
-                            )
-                        );
-
-
-                    copiaCassetti[id].budget =
-                        nuovoB;
-
-
-                    if (
-                        copiaCassetti['libero_restante']
-                    ) {
-
-                        delete copiaCassetti[
-                            'libero_restante'
-                        ];
-                    }
-
-
-                    let nuovaSomma = 0;
-
-
-                    Object
-                        .keys(copiaCassetti)
-                        .forEach(k => {
-
-                            nuovaSomma +=
-                                copiaCassetti[k].budget;
-                        });
-
-
-                    const avanzo =
-                        appData.entrate -
-                        nuovaSomma;
-
-
-                    if (
-                        avanzo > 0
-                    ) {
-
-                        copiaCassetti[
-                            'libero_restante'
-                        ] = {
-
-                            nome: 'Fondo Libero',
-
-                            budget: avanzo
-                        };
-                    }
-
-
-                    set(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/cassetti'
-                        ),
-                        copiaCassetti
-                    );
                 }
 
-            };
 
+                let nuovaSomma = 0;
+
+
+                Object
+                    .keys(copiaCassetti)
+                    .forEach(k => {
+
+                        nuovaSomma +=
+                            copiaCassetti[k]
+                                .budget;
+
+                    });
+
+
+                const avanzo =
+                    appData.entrate -
+                    nuovaSomma;
+
+
+                if (avanzo > 0) {
+
+                    copiaCassetti[
+                        'libero_restante'
+                    ] = {
+
+                        nome:
+                            'Fondo Libero',
+
+                        budget:
+                            avanzo
+
+                    };
+
+                }
+
+
+                set(
+
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+                        utenteCorrente.uid +
+                        '/budget_familiare/cassetti'
+
+                    ),
+
+                    copiaCassetti
+
+                );
+
+            }
+
+        };
+
+
+        // SCADENZE
 
         function renderizzaSezioneScadenze() {
 
             const container =
                 document
-                    .getElementById('scadenze-container');
+                    .getElementById(
+                        'scadenze-container'
+                    );
 
 
             container.innerHTML = '';
@@ -2025,13 +3091,26 @@
 
 
             if (
+
                 chiavi.length === 0
+
             ) {
 
-                container.innerHTML =
-                    '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Nessuna uscita programmata impostata.</p>';
+                container.innerHTML = `
+
+                    <p
+
+                        style="font-size:12px; color:var(--text-muted); text-align:center;">
+
+                        Nessuna uscita programmata impostata.
+
+                    </p>
+
+                `;
+
 
                 return;
+
             }
 
 
@@ -2045,24 +3124,33 @@
                     appData.cassetti[
                         sc.cassetto
                     ]
+
                         ? appData.cassetti[
                             sc.cassetto
                         ].nome
+
                         : 'Generale';
 
 
                 container.innerHTML += `
 
                     <div
+
                         class="spesa-item"
-                        style="border-left: 4px solid ${sc.pagata
-                            ? 'var(--success)'
-                            : 'var(--warning)'};"
+
+                        style="border-left:4px solid ${
+                            sc.pagata
+                                ? 'var(--success)'
+                                : 'var(--warning)'
+                        };"
+
                         onclick="apriModalePagamentoScadenza('${k}')">
+
 
                         <div class="spesa-info">
 
                             <h4>
+
                                 ${sc.nome}
 
                                 ${sc.pagata
@@ -2071,13 +3159,17 @@
 
                             </h4>
 
+
                             <span>
 
                                 Assegnata a:
+
                                 ${nomeComparto}
 
                                 |
+
                                 Previsti:
+
                                 ${sc.importo.toFixed(2)} €
 
                             </span>
@@ -2086,9 +3178,11 @@
 
 
                         <div
+
                             style="display:flex; align-items:center; gap:10px;">
 
                             <span
+
                                 style="font-weight:700; font-size:13px;">
 
                                 ${sc.importo.toFixed(2)} €
@@ -2097,11 +3191,15 @@
 
 
                             <button
+
                                 class="btn-delete"
+
                                 onclick="event.stopPropagation(); eliminaScadenza('${k}')">
 
                                 <i
+
                                     class="fa-solid fa-trash-can">
+
                                 </i>
 
                             </button>
@@ -2111,18 +3209,25 @@
                     </div>
 
                 `;
+
             });
 
         }
 
 
+        // SPESE
+
         function renderizzaSezioneSpese(
+
             spesoPerCassetto
+
         ) {
 
             const container =
                 document
-                    .getElementById('spese-container');
+                    .getElementById(
+                        'spese-container'
+                    );
 
 
             container.innerHTML = '';
@@ -2130,7 +3235,9 @@
 
             const filtroCat =
                 document
-                    .getElementById('filtro-categoria')
+                    .getElementById(
+                        'filtro-categoria'
+                    )
                     .value;
 
 
@@ -2148,37 +3255,58 @@
                         ...appData.spese[k]
 
                     });
+
                 });
 
 
             speseArray.sort(
+
                 (a, b) =>
                     b.timestamp -
                     a.timestamp
+
             );
 
 
             if (
+
                 filtroCat !== 'tutte'
+
             ) {
 
                 speseArray =
                     speseArray.filter(
+
                         s =>
                             s.cassetto ===
                             filtroCat
+
                     );
+
             }
 
 
             if (
+
                 speseArray.length === 0
+
             ) {
 
-                container.innerHTML =
-                    '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Nessuna spesa trovata.</p>';
+                container.innerHTML = `
+
+                    <p
+
+                        style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">
+
+                        Nessuna spesa trovata.
+
+                    </p>
+
+                `;
+
 
                 return;
+
             }
 
 
@@ -2188,9 +3316,11 @@
                     appData.cassetti[
                         s.cassetto
                     ]
+
                         ? appData.cassetti[
                             s.cassetto
                         ].nome
+
                         : 'Generale';
 
 
@@ -2198,27 +3328,41 @@
                     new Date(
                         s.timestamp
                     ).toLocaleDateString(
+
                         'it-IT',
+
                         {
+
                             day: '2-digit',
+
                             month: '2-digit',
+
                             hour: '2-digit',
+
                             minute: '2-digit'
+
                         }
+
                     );
 
 
                 container.innerHTML += `
 
                     <div
+
                         class="spesa-item"
+
                         onclick="apriModificaSpesaEsistente('${s.id}')">
+
 
                         <div class="spesa-info">
 
                             <h4>
+
                                 ${s.descrizione}
+
                             </h4>
+
 
                             <span>
 
@@ -2227,9 +3371,8 @@
                                 •
 
                                 Comparto:
-                                <b>
-                                    ${nomeCas}
-                                </b>
+
+                                <b>${nomeCas}</b>
 
                             </span>
 
@@ -2237,7 +3380,12 @@
 
 
                         <span
-                            style="font-weight:700; color:var(--danger);">
+
+                            style="font-weight:700; color:${
+                                s.importo < 0
+                                    ? 'var(--success)'
+                                    : 'var(--danger)'
+                            };">
 
                             ${s.importo.toFixed(2)} €
 
@@ -2246,19 +3394,24 @@
                     </div>
 
                 `;
+
             });
 
         }
 
 
+        // SALVADANAI
+
         function renderizzaSezioneSalvadanai() {
 
-            const targetDiv =
+            const container =
                 document
-                    .getElementById('salvadanai-container');
+                    .getElementById(
+                        'salvadanai-container'
+                    );
 
 
-            targetDiv.innerHTML = '';
+            container.innerHTML = '';
 
 
             const chiavi =
@@ -2269,13 +3422,26 @@
 
 
             if (
+
                 chiavi.length === 0
+
             ) {
 
-                targetDiv.innerHTML =
-                    '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">Nessun obiettivo di risparmio attivo.</p>';
+                container.innerHTML = `
+
+                    <p
+
+                        style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">
+
+                        Nessun obiettivo di risparmio attivo.
+
+                    </p>
+
+                `;
+
 
                 return;
+
             }
 
 
@@ -2312,8 +3478,10 @@
 
 
                 if (
+
                     manca > 0 &&
                     sal.dataTarget
+
                 ) {
 
                     const parti =
@@ -2335,17 +3503,25 @@
 
                     const mesiMancanti =
                         (
+
                             tAnno -
                             annoCorrente
-                        ) * 12 +
+
+                        ) *
+                        12 +
+
                         (
+
                             tMese -
                             meseCorrente
+
                         );
 
 
                     if (
+
                         mesiMancanti > 0
+
                     ) {
 
                         const quotaMese =
@@ -2358,37 +3534,50 @@
                             <div class="info-piano">
 
                                 Mancano
+
                                 ${mesiMancanti}
+
                                 mesi:
 
                                 metti da parte
+
                                 <b>
+
                                     ${quotaMese.toFixed(2)}
+
                                     € / mese
+
                                 </b>
 
                             </div>
 
                         `;
+
 
                     } else {
 
                         infoPianoRata = `
 
                             <div
+
                                 class="info-piano"
+
                                 style="background:#fee2e2; color:var(--danger)">
 
                                 Scadenza questo mese!
 
                                 Rimanente:
+
                                 <b>
+
                                     ${manca.toFixed(2)} €
+
                                 </b>
 
                             </div>
 
                         `;
+
                     }
 
                 }
@@ -2396,37 +3585,48 @@
 
                 let per =
                     sal.target > 0
+
                         ? (
+
                             accumulato /
                             sal.target
-                        ) * 100
+
+                        ) *
+                        100
+
                         : 0;
 
 
-                if (
-                    per > 100
-                ) {
+                if (per > 100) {
 
                     per = 100;
+
                 }
 
 
-                targetDiv.innerHTML += `
+                container.innerHTML += `
 
                     <div
+
                         class="cassetto-row"
+
                         style="border-left:5px solid var(--accent);">
 
-                        <div
-                            class="cassetto-header">
+
+                        <div class="cassetto-header">
 
                             <span
+
                                 class="cassetto-name"
+
                                 style="font-size:15px;">
 
                                 <i
+
                                     class="fa-solid fa-piggy-bank"
+
                                     style="color:#ec4899">
+
                                 </i>
 
                                 ${sal.nome}
@@ -2435,11 +3635,15 @@
 
 
                             <button
+
                                 class="btn-delete"
+
                                 onclick="eliminaSalvadanaio('${k}')">
 
                                 <i
+
                                     class="fa-solid fa-trash-can">
+
                                 </i>
 
                             </button>
@@ -2448,6 +3652,7 @@
 
 
                         <div
+
                             style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
 
                             <span>
@@ -2455,16 +3660,20 @@
                                 Accumulato:
 
                                 <b>
+
                                     ${accumulato.toFixed(2)} €
+
                                 </b>
 
                                 di
+
                                 ${sal.target.toFixed(2)} €
 
                             </span>
 
 
                             <span
+
                                 style="font-weight:700; color:var(--accent);">
 
                                 ${per.toFixed(0)}%
@@ -2475,12 +3684,16 @@
 
 
                         <div
+
                             class="cassetto-progress"
+
                             style="margin-bottom:8px;">
 
                             <div
+
                                 class="cassetto-progress-bar"
-                                style="width: ${per}%; background:var(--accent);">
+
+                                style="width:${per}%; background:var(--accent);">
 
                             </div>
 
@@ -2488,12 +3701,16 @@
 
 
                         <div
+
                             style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
 
                             <button
+
                                 class="badge-btn"
+
                                 style="background:#dcfce7; color:#15803d;"
-                                onclick="versaNelSalvadanaio('${k}')">
+
+                                onclick="apriVersamentoSalvadanaio('${k}')">
 
                                 + Versa fondi
 
@@ -2501,8 +3718,11 @@
 
 
                             <button
+
                                 class="badge-btn"
+
                                 style="background:#fee2e2; color:var(--danger);"
+
                                 onclick="prelevaDalSalvadanaio('${k}')">
 
                                 ➖ Preleva
@@ -2517,46 +3737,70 @@
                     </div>
 
                 `;
+
             });
 
         }
 
 
+        // SELECT
+
         function aggiornaSelectMenuModali() {
 
             const menuFiltro =
                 document
-                    .getElementById('filtro-categoria');
+                    .getElementById(
+                        'filtro-categoria'
+                    );
 
 
             const vecchioFiltroVal =
                 menuFiltro.value;
 
 
-            menuFiltro.innerHTML =
-                '<option value="tutte">Tutti i Comparti</option>';
+            menuFiltro.innerHTML = `
+
+                <option value="tutte">
+
+                    Tutti i Comparti
+
+                </option>
+
+            `;
 
 
             const selectSpesa =
                 document
-                    .getElementById('spesa-cassetto');
+                    .getElementById(
+                        'spesa-cassetto'
+                    );
 
 
-            selectSpesa.innerHTML =
-                '';
+            selectSpesa.innerHTML = '';
 
 
             const selectScadenza =
                 document
-                    .getElementById('scad-cassetto');
+                    .getElementById(
+                        'scad-cassetto'
+                    );
 
 
-            selectScadenza.innerHTML =
-                '<option value="generale">Generale (Nessuno)</option>';
+            selectScadenza.innerHTML = `
+
+                <option value="generale">
+
+                    Generale (Nessuno)
+
+                </option>
+
+            `;
 
 
             Object
-                .keys(appData.cassetti)
+                .keys(
+                    appData.cassetti
+                )
                 .forEach(id => {
 
                     const c =
@@ -2566,7 +3810,9 @@
                     menuFiltro.innerHTML += `
 
                         <option value="${id}">
+
                             ${c.nome}
+
                         </option>
 
                     `;
@@ -2575,7 +3821,9 @@
                     selectSpesa.innerHTML += `
 
                         <option value="${id}">
+
                             ${c.nome}
+
                         </option>
 
                     `;
@@ -2584,10 +3832,13 @@
                     selectScadenza.innerHTML += `
 
                         <option value="${id}">
+
                             ${c.nome}
+
                         </option>
 
                     `;
+
                 });
 
 
@@ -2595,479 +3846,254 @@
                 vecchioFiltroVal;
 
 
-            if (
-                !menuFiltro.value
-            ) {
+            if (!menuFiltro.value) {
 
                 menuFiltro.value =
                     'tutte';
+
             }
 
         }
 
 
-        window.apriModalNuovaSpesa =
-            function() {
+        // NUOVA SPESA
 
+        window.apriModalNuovaSpesa = function() {
+
+            document
+                .getElementById(
+                    'spesa-modal-titolo'
+                )
+                .textContent =
+                "💸 Inserisci Spesa";
+
+
+            document
+                .getElementById(
+                    'spesa-edit-id'
+                )
+                .value = '';
+
+
+            document
+                .getElementById(
+                    'spesa-importo'
+                )
+                .value = '';
+
+
+            document
+                .getElementById(
+                    'spesa-desc'
+                )
+                .value = '';
+
+
+            document
+                .getElementById(
+                    'btn-elimina-spesa-diretto'
+                )
+                .style
+                .display = 'none';
+
+
+            openModal(
+                'modal-spesa'
+            );
+
+        };
+
+
+        window.apriModificaSpesaEsistente = function(id) {
+
+            const s =
+                appData.spese[id];
+
+
+            if (!s) return;
+
+
+            document
+                .getElementById(
+                    'spesa-modal-titolo'
+                )
+                .textContent =
+                "✏️ Modifica Spesa";
+
+
+            document
+                .getElementById(
+                    'spesa-edit-id'
+                )
+                .value =
+                id;
+
+
+            document
+                .getElementById(
+                    'spesa-importo'
+                )
+                .value =
+                s.importo;
+
+
+            document
+                .getElementById(
+                    'spesa-desc'
+                )
+                .value =
+                s.descrizione;
+
+
+            document
+                .getElementById(
+                    'spesa-cassetto'
+                )
+                .value =
+                s.cassetto;
+
+
+            document
+                .getElementById(
+                    'btn-elimina-spesa-diretto'
+                )
+                .style
+                .display =
+                'block';
+
+
+            openModal(
+                'modal-spesa'
+            );
+
+        };
+
+
+        window.salvaSpesa = function() {
+
+            const id =
                 document
-                    .getElementById('spesa-modal-titolo')
-                    .textContent =
-                    "💸 Inserisci Spesa";
-
-
-                document
-                    .getElementById('spesa-edit-id')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('spesa-importo')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('spesa-desc')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('btn-elimina-spesa-diretto')
-                    .style
-                    .display =
-                    'none';
-
-
-                openModal(
-                    'modal-spesa'
-                );
-
-            };
-
-
-        window.apriModificaSpesaEsistente =
-            function(id) {
-
-                const s =
-                    appData.spese[id];
-
-
-                if (
-                    !s
-                ) {
-
-                    return;
-                }
-
-
-                document
-                    .getElementById('spesa-modal-titolo')
-                    .textContent =
-                    "✏️ Modifica Spesa";
-
-
-                document
-                    .getElementById('spesa-edit-id')
-                    .value =
-                    id;
-
-
-                document
-                    .getElementById('spesa-importo')
-                    .value =
-                    s.importo;
-
-
-                document
-                    .getElementById('spesa-desc')
-                    .value =
-                    s.descrizione;
-
-
-                document
-                    .getElementById('spesa-cassetto')
-                    .value =
-                    s.cassetto;
-
-
-                document
-                    .getElementById('btn-elimina-spesa-diretto')
-                    .style
-                    .display =
-                    'block';
-
-
-                openModal(
-                    'modal-spesa'
-                );
-
-            };
-
-
-        window.salvaSpesa =
-            function() {
-
-                const id =
-                    document
-                        .getElementById('spesa-edit-id')
-                        .value;
-
-
-                const importo =
-                    parseFloat(
-                        document
-                            .getElementById('spesa-importo')
-                            .value
-                    ) || 0;
-
-
-                const descrizione =
-                    document
-                        .getElementById('spesa-desc')
-                        .value
-                        .trim() ||
-                    'Spesa';
-
-
-                const cassetto =
-                    document
-                        .getElementById('spesa-cassetto')
-                        .value;
-
-
-                if (
-                    importo <= 0
-                ) {
-
-                    alert(
-                        "Inserisci un importo valido."
-                    );
-
-                    return;
-                }
-
-
-                if (
-                    id
-                ) {
-
-                    set(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/spese/' +
-                            id
-                        ),
-                        {
-
-                            importo:
-                                importo,
-
-                            descrizione:
-                                descrizione,
-
-                            cassetto:
-                                cassetto,
-
-                            timestamp:
-                                appData.spese[id]
-                                    .timestamp
-                        }
-                    );
-
-                } else {
-
-                    const nuovaSpesaRef =
-                        push(
-                            ref(
-                                db,
-                                'utenti/' +
-                                utenteCorrente.uid +
-                                '/budget_familiare/spese'
-                            )
-                        );
-
-
-                    set(
-                        nuovaSpesaRef,
-                        {
-
-                            importo:
-                                importo,
-
-                            descrizione:
-                                descrizione,
-
-                            cassetto:
-                                cassetto,
-
-                            timestamp:
-                                Date.now()
-                        }
-                    );
-                }
-
-
-                closeModal(
-                    'modal-spesa'
-                );
-
-            };
-
-
-        window.clickEliminaSpesaInModifica =
-            function() {
-
-                const id =
-                    document
-                        .getElementById('spesa-edit-id')
-                        .value;
-
-
-                if (
-                    id &&
-                    confirm(
-                        "Eliminare definitivamente questa spesa?"
+                    .getElementById(
+                        'spesa-edit-id'
                     )
-                ) {
-
-                    remove(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/spese/' +
-                            id
-                        )
-                    );
+                    .value;
 
 
-                    closeModal(
-                        'modal-spesa'
-                    );
-                }
+            const importo =
+                parseFloat(
 
-            };
-
-
-        window.aggiungiScadenza =
-            function() {
-
-                const nome =
                     document
-                        .getElementById('scad-nome')
+                        .getElementById(
+                            'spesa-importo'
+                        )
                         .value
-                        .trim();
+
+                ) || 0;
 
 
-                const importo =
-                    parseFloat(
-                        document
-                            .getElementById('scad-importo')
-                            .value
-                    ) || 0;
+            const descrizione =
+                document
+                    .getElementById(
+                        'spesa-desc'
+                    )
+                    .value
+                    .trim() ||
+                'Spesa';
 
 
-                const cassetto =
-                    document
-                        .getElementById('scad-cassetto')
-                        .value;
+            const cassetto =
+                document
+                    .getElementById(
+                        'spesa-cassetto'
+                    )
+                    .value;
 
 
-                if (
-                    !nome ||
-                    importo <= 0
-                ) {
+            if (
 
-                    alert(
-                        "Compila correttamente i campi."
-                    );
+                importo <= 0
 
-                    return;
-                }
+            ) {
+
+                alert(
+                    "Inserisci un importo valido."
+                );
+
+                return;
+
+            }
 
 
-                const nuovaScadRef =
-                    push(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/scadenze'
-                        )
-                    );
-
+            if (id) {
 
                 set(
-                    nuovaScadRef,
-                    {
 
-                        nome:
-                            nome,
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+
+                        utenteCorrente.uid +
+
+                        '/budget_familiare/spese/' +
+
+                        id
+
+                    ),
+
+                    {
 
                         importo:
                             importo,
 
+                        descrizione:
+                            descrizione,
+
                         cassetto:
                             cassetto,
 
-                        pagata:
-                            false
+                        timestamp:
+                            appData
+                                .spese[id]
+                                .timestamp
 
                     }
+
                 );
 
 
-                document
-                    .getElementById('scad-nome')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('scad-importo')
-                    .value =
-                    '';
-
-
-                closeModal(
-                    'modal-scadenza'
-                );
-
-            };
-
-
-        window.apriModalePagamentoScadenza =
-            function(id) {
-
-                const sc =
-                    appData.scadenze[id];
-
-
-                if (
-                    sc.pagata
-                ) {
-
-                    if (
-                        confirm(
-                            "Questa scadenza risulta pagata. Vuoi contrassegnarla nuovamente come DA PAGARE?"
-                        )
-                    ) {
-
-                        set(
-                            ref(
-                                db,
-                                'utenti/' +
-                                utenteCorrente.uid +
-                                '/budget_familiare/scadenze/' +
-                                id +
-                                '/pagata'
-                            ),
-                            false
-                        );
-                    }
-
-
-                    return;
-                }
-
-
-                document
-                    .getElementById('paga-scad-id')
-                    .value =
-                    id;
-
-
-                document
-                    .getElementById('paga-scad-nome')
-                    .value =
-                    sc.nome;
-
-
-                document
-                    .getElementById('paga-scad-cassetto')
-                    .value =
-                    sc.cassetto;
-
-
-                document
-                    .getElementById('paga-scad-importo-reale')
-                    .value =
-                    sc.importo;
-
-
-                openModal(
-                    'modal-paga-scadenza'
-                );
-
-            };
-
-
-        window.confermaPagamentoScadenzaRealizzato =
-            function() {
-
-                const id =
-                    document
-                        .getElementById('paga-scad-id')
-                        .value;
-
-
-                const cassetto =
-                    document
-                        .getElementById('paga-scad-cassetto')
-                        .value;
-
-
-                const nome =
-                    document
-                        .getElementById('paga-scad-nome')
-                        .value;
-
-
-                const importoReale =
-                    parseFloat(
-                        document
-                            .getElementById('paga-scad-importo-reale')
-                            .value
-                    ) || 0;
-
-
-                if (
-                    importoReale <= 0
-                ) {
-
-                    alert(
-                        "Cifra non valida."
-                    );
-
-                    return;
-                }
-
+            } else {
 
                 const nuovaSpesaRef =
                     push(
+
                         ref(
+
                             db,
+
                             'utenti/' +
+
                             utenteCorrente.uid +
+
                             '/budget_familiare/spese'
+
                         )
+
                     );
 
 
                 set(
+
                     nuovaSpesaRef,
+
                     {
 
                         importo:
-                            importoReale,
+                            importo,
 
                         descrizione:
-                            "Scadenza: " +
-                            nome,
+                            descrizione,
 
                         cassetto:
                             cassetto,
@@ -3076,303 +4102,763 @@
                             Date.now()
 
                     }
+
                 );
 
-
-                set(
-                    ref(
-                        db,
-                        'utenti/' +
-                        utenteCorrente.uid +
-                        '/budget_familiare/scadenze/' +
-                        id +
-                        '/pagata'
-                    ),
-                    true
-                );
+            }
 
 
-                closeModal(
-                    'modal-paga-scadenza'
-                );
+            closeModal(
+                'modal-spesa'
+            );
 
-            };
+        };
 
 
-        window.eliminaScadenza =
-            function(id) {
+        window.clickEliminaSpesaInModifica = function() {
 
-                if (
-                    confirm(
-                        "Eliminare questa scadenza pianificata?"
+            const id =
+                document
+                    .getElementById(
+                        'spesa-edit-id'
                     )
-                ) {
-
-                    remove(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/scadenze/' +
-                            id
-                        )
-                    );
-                }
-
-            };
+                    .value;
 
 
-        window.creaSalvadanaio =
-            function() {
+            if (
 
-                const nome =
-                    document
-                        .getElementById('salva-nome')
-                        .value
-                        .trim();
+                id &&
+                confirm(
+                    "Eliminare definitivamente questa spesa?"
+                )
 
+            ) {
 
-                const target =
-                    parseFloat(
-                        document
-                            .getElementById('salva-target')
-                            .value
-                    ) || 0;
+                remove(
 
+                    ref(
 
-                const dataTarget =
-                    document
-                        .getElementById('salva-data-target')
-                        .value;
+                        db,
 
+                        'utenti/' +
 
-                if (
-                    !nome ||
-                    target <= 0
-                ) {
+                        utenteCorrente.uid +
 
-                    alert(
-                        "Inserisci dati corretti."
-                    );
+                        '/budget_familiare/spese/' +
 
-                    return;
-                }
+                        id
 
+                    )
 
-                const nuovoSalvRef =
-                    push(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/salvadanai'
-                        )
-                    );
-
-
-                set(
-                    nuovoSalvRef,
-                    {
-
-                        nome:
-                            nome,
-
-                        target:
-                            target,
-
-                        dataTarget:
-                            dataTarget,
-
-                        accumulato:
-                            0
-
-                    }
                 );
-
-
-                document
-                    .getElementById('salva-nome')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('salva-target')
-                    .value =
-                    '';
-
-
-                document
-                    .getElementById('salva-data-target')
-                    .value =
-                    '';
 
 
                 closeModal(
-                    'modal-salvadanaio'
+                    'modal-spesa'
                 );
 
-            };
+            }
+
+        };
 
 
-        /*
-        ============================================================
-        MODIFICA PRINCIPALE
+        // SCADENZE
 
-        Il versamento extra nel salvadanaio:
+        window.aggiungiScadenza = function() {
 
-        - aumenta l'importo accumulato;
-        - NON viene registrato come spesa;
-        - NON riduce il budget mensile corrente.
+            const nome =
+                document
+                    .getElementById(
+                        'scad-nome'
+                    )
+                    .value
+                    .trim();
 
-        Esempio:
 
-        Budget mensile: 1.760 €
-        Versamento extra: 500 €
+            const importo =
+                parseFloat(
 
-        Budget disponibile: 1.760 €
-        Salvadanaio: +500 €
-
-        ============================================================
-        */
-
-        window.versaNelSalvadanaio =
-            function(id) {
-
-                const cifra =
-                    parseFloat(
-                        prompt(
-                            "Quanto vuoi versare in questo piano?\n\n" +
-
-                            "Il versamento verrà aggiunto al salvadanaio senza ridurre il budget del mese corrente."
+                    document
+                        .getElementById(
+                            'scad-importo'
                         )
-                    );
+                        .value
 
+                ) || 0;
+
+
+            const cassetto =
+                document
+                    .getElementById(
+                        'scad-cassetto'
+                    )
+                    .value;
+
+
+            if (
+
+                !nome ||
+                importo <= 0
+
+            ) {
+
+                alert(
+                    "Compila correttamente i campi."
+                );
+
+                return;
+
+            }
+
+
+            const nuovaScadRef =
+                push(
+
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+
+                        utenteCorrente.uid +
+
+                        '/budget_familiare/scadenze'
+
+                    )
+
+                );
+
+
+            set(
+
+                nuovaScadRef,
+
+                {
+
+                    nome:
+                        nome,
+
+                    importo:
+                        importo,
+
+                    cassetto:
+                        cassetto,
+
+                    pagata:
+                        false
+
+                }
+
+            );
+
+
+            document
+                .getElementById(
+                    'scad-nome'
+                )
+                .value = '';
+
+
+            document
+                .getElementById(
+                    'scad-importo'
+                )
+                .value = '';
+
+
+            closeModal(
+                'modal-scadenza'
+            );
+
+        };
+
+
+        window.apriModalePagamentoScadenza = function(id) {
+
+            const sc =
+                appData.scadenze[id];
+
+
+            if (sc.pagata) {
 
                 if (
-                    isNaN(cifra) ||
-                    cifra <= 0
+
+                    confirm(
+
+                        "Questa scadenza risulta pagata. Vuoi contrassegnarla nuovamente come DA PAGARE?"
+
+                    )
+
                 ) {
 
-                    return;
+                    set(
+
+                        ref(
+
+                            db,
+
+                            'utenti/' +
+
+                            utenteCorrente.uid +
+
+                            '/budget_familiare/scadenze/' +
+
+                            id +
+
+                            '/pagata'
+
+                        ),
+
+                        false
+
+                    );
+
                 }
 
 
-                const salvadanaio =
-                    appData.salvadanai[id];
+                return;
+
+            }
 
 
-                if (
-                    !salvadanaio
-                ) {
+            document
+                .getElementById(
+                    'paga-scad-id'
+                )
+                .value =
+                id;
 
-                    alert(
-                        "Piano di risparmio non trovato."
-                    );
 
-                    return;
+            document
+                .getElementById(
+                    'paga-scad-nome'
+                )
+                .value =
+                sc.nome;
+
+
+            document
+                .getElementById(
+                    'paga-scad-cassetto'
+                )
+                .value =
+                sc.cassetto;
+
+
+            document
+                .getElementById(
+                    'paga-scad-importo-reale'
+                )
+                .value =
+                sc.importo;
+
+
+            openModal(
+                'modal-paga-scadenza'
+            );
+
+        };
+
+
+        window.confermaPagamentoScadenzaRealizzato = function() {
+
+            const id =
+                document
+                    .getElementById(
+                        'paga-scad-id'
+                    )
+                    .value;
+
+
+            const cassetto =
+                document
+                    .getElementById(
+                        'paga-scad-cassetto'
+                    )
+                    .value;
+
+
+            const nome =
+                document
+                    .getElementById(
+                        'paga-scad-nome'
+                    )
+                    .value;
+
+
+            const importoReale =
+                parseFloat(
+
+                    document
+                        .getElementById(
+                            'paga-scad-importo-reale'
+                        )
+                        .value
+
+                ) || 0;
+
+
+            if (
+
+                importoReale <= 0
+
+            ) {
+
+                alert(
+                    "Cifra non valida."
+                );
+
+                return;
+
+            }
+
+
+            const nuovaSpesaRef =
+                push(
+
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+
+                        utenteCorrente.uid +
+
+                        '/budget_familiare/spese'
+
+                    )
+
+                );
+
+
+            set(
+
+                nuovaSpesaRef,
+
+                {
+
+                    importo:
+                        importoReale,
+
+                    descrizione:
+                        "Scadenza: " +
+                        nome,
+
+                    cassetto:
+                        cassetto,
+
+                    timestamp:
+                        Date.now()
+
                 }
 
+            );
 
-                const nuovoAccumulo =
-                    (
-                        salvadanaio.accumulato ||
+
+            set(
+
+                ref(
+
+                    db,
+
+                    'utenti/' +
+
+                    utenteCorrente.uid +
+
+                    '/budget_familiare/scadenze/' +
+
+                    id +
+
+                    '/pagata'
+
+                ),
+
+                true
+
+            );
+
+
+            closeModal(
+                'modal-paga-scadenza'
+            );
+
+        };
+
+
+        window.eliminaScadenza = function(id) {
+
+            if (
+
+                confirm(
+                    "Eliminare questa scadenza pianificata?"
+                )
+
+            ) {
+
+                remove(
+
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+
+                        utenteCorrente.uid +
+
+                        '/budget_familiare/scadenze/' +
+
+                        id
+
+                    )
+
+                );
+
+            }
+
+        };
+
+
+        // CREAZIONE SALVADANAIO
+
+        window.creaSalvadanaio = function() {
+
+            const nome =
+                document
+                    .getElementById(
+                        'salva-nome'
+                    )
+                    .value
+                    .trim();
+
+
+            const target =
+                parseFloat(
+
+                    document
+                        .getElementById(
+                            'salva-target'
+                        )
+                        .value
+
+                ) || 0;
+
+
+            const dataTarget =
+                document
+                    .getElementById(
+                        'salva-data-target'
+                    )
+                    .value;
+
+
+            if (
+
+                !nome ||
+                target <= 0
+
+            ) {
+
+                alert(
+                    "Inserisci dati corretti."
+                );
+
+                return;
+
+            }
+
+
+            const nuovoSalvRef =
+                push(
+
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+
+                        utenteCorrente.uid +
+
+                        '/budget_familiare/salvadanai'
+
+                    )
+
+                );
+
+
+            set(
+
+                nuovoSalvRef,
+
+                {
+
+                    nome:
+                        nome,
+
+                    target:
+                        target,
+
+                    dataTarget:
+                        dataTarget,
+
+                    accumulato:
                         0
-                    ) +
-                    cifra;
+
+                }
+
+            );
 
 
-                set(
-                    ref(
-                        db,
-                        'utenti/' +
-                        utenteCorrente.uid +
-                        '/budget_familiare/salvadanai/' +
-                        id +
-                        '/accumulato'
-                    ),
-                    nuovoAccumulo
-                );
-
-            };
+            document
+                .getElementById(
+                    'salva-nome'
+                )
+                .value = '';
 
 
-        window.prelevaDalSalvadanaio =
-            function(id) {
+            document
+                .getElementById(
+                    'salva-target'
+                )
+                .value = '';
 
-                const cifra =
-                    parseFloat(
-                        prompt(
-                            "Quanto vuoi prelevare da questo fondo?\n\n" +
 
-                            "(Verranno riaccreditati sul fondo libero)"
+            document
+                .getElementById(
+                    'salva-data-target'
+                )
+                .value = '';
+
+
+            closeModal(
+                'modal-salvadanaio'
+            );
+
+        };
+
+
+        // VERSAMENTO SALVADANAIO
+
+        window.apriVersamentoSalvadanaio = function(id) {
+
+            const sal =
+                appData.salvadanai[id];
+
+
+            if (!sal) return;
+
+
+            document
+                .getElementById(
+                    'versamento-salvadanaio-id'
+                )
+                .value =
+                id;
+
+
+            document
+                .getElementById(
+                    'versamento-salvadanaio-nome'
+                )
+                .textContent =
+                "Obiettivo: " +
+                sal.nome;
+
+
+            document
+                .getElementById(
+                    'versamento-importo'
+                )
+                .value = '';
+
+
+            document
+                .getElementById(
+                    'versamento-tipo'
+                )
+                .value =
+                'budget';
+
+
+            aggiornaInfoVersamento();
+
+
+            openModal(
+                'modal-versamento-salvadanaio'
+            );
+
+        };
+
+
+        document
+            .getElementById(
+                'versamento-tipo'
+            )
+            .addEventListener(
+
+                'change',
+
+                aggiornaInfoVersamento
+
+            );
+
+
+        function aggiornaInfoVersamento() {
+
+            const tipo =
+                document
+                    .getElementById(
+                        'versamento-tipo'
+                    )
+                    .value;
+
+
+            const info =
+                document
+                    .getElementById(
+                        'versamento-info'
+                    );
+
+
+            if (
+
+                tipo ===
+                'extra'
+
+            ) {
+
+                info.textContent =
+                    "Il versamento extra aumenterà il salvadanaio senza ridurre il budget corrente.";
+
+
+            } else {
+
+                info.textContent =
+                    "Il versamento verrà scalato dal budget corrente.";
+
+            }
+
+        }
+
+
+        window.confermaVersamentoSalvadanaio = function() {
+
+            const id =
+                document
+                    .getElementById(
+                        'versamento-salvadanaio-id'
+                    )
+                    .value;
+
+
+            const cifra =
+                parseFloat(
+
+                    document
+                        .getElementById(
+                            'versamento-importo'
                         )
-                    );
+                        .value
+
+                ) || 0;
 
 
-                if (
-                    isNaN(cifra) ||
-                    cifra <= 0
-                ) {
-
-                    return;
-                }
-
-
-                if (
-                    cifra >
-                    appData.salvadanai[id]
-                        .accumulato
-                ) {
-
-                    alert(
-                        "Fondi insufficienti nel piano."
-                    );
-
-                    return;
-                }
+            const tipo =
+                document
+                    .getElementById(
+                        'versamento-tipo'
+                    )
+                    .value;
 
 
-                const nuovoAccumulo =
-                    appData.salvadanai[id]
-                        .accumulato -
-                    cifra;
+            if (
 
+                cifra <= 0
 
-                set(
-                    ref(
-                        db,
-                        'utenti/' +
-                        utenteCorrente.uid +
-                        '/budget_familiare/salvadanai/' +
-                        id +
-                        '/accumulato'
-                    ),
-                    nuovoAccumulo
+            ) {
+
+                alert(
+                    "Inserisci un importo valido."
                 );
 
+                return;
+
+            }
+
+
+            const nuovoAccumulo =
+                (
+
+                    appData
+                        .salvadanai[id]
+                        .accumulato ||
+
+                    0
+
+                ) + cifra;
+
+
+            set(
+
+                ref(
+
+                    db,
+
+                    'utenti/' +
+
+                    utenteCorrente.uid +
+
+                    '/budget_familiare/salvadanai/' +
+
+                    id +
+
+                    '/accumulato'
+
+                ),
+
+                nuovoAccumulo
+
+            );
+
+
+            if (
+
+                tipo ===
+                'budget'
+
+            ) {
 
                 const spesaRef =
                     push(
+
                         ref(
+
                             db,
+
                             'utenti/' +
+
                             utenteCorrente.uid +
+
                             '/budget_familiare/spese'
+
                         )
+
                     );
 
 
                 set(
+
                     spesaRef,
+
                     {
 
                         importo:
-                            -cifra,
+                            cifra,
 
                         descrizione:
-                            "Prelievo da: " +
-                            appData.salvadanai[id]
+                            "Accantonamento: " +
+
+                            appData
+                                .salvadanai[id]
                                 .nome,
 
                         cassetto:
@@ -3382,144 +4868,374 @@
                             Date.now()
 
                     }
+
                 );
 
-            };
+            }
 
 
-        window.eliminaSalvadanaio =
-            function(id) {
+            closeModal(
+                'modal-versamento-salvadanaio'
+            );
 
-                if (
-                    confirm(
-                        "Eliminare questo piano? I fondi accumulati rimarranno tracciati nello storico passato ma il piano sparirà."
-                    )
-                ) {
-
-                    remove(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/salvadanai/' +
-                            id
-                        )
-                    );
-                }
-
-            };
+        };
 
 
-        window.chiudiEMeseArchivia =
-            function() {
+        window.prelevaDalSalvadanaio = function(id) {
 
-                const nomeMese =
+            const sal =
+                appData.salvadanai[id];
+
+
+            const cifra =
+                parseFloat(
+
                     prompt(
-                        "Inserisci il nome del mese da archiviare (es: Gennaio 2024, Febbraio 2024...):"
-                    );
 
+                        "Quanto vuoi prelevare da questo fondo?"
 
-                if (
-                    !nomeMese
-                ) {
-
-                    return;
-                }
-
-
-                if (
-                    confirm(
-                        "Sei sicuro di voler chiudere il mese? Tutte le spese attuali verranno salvate nell'archivio storico e svuotate dalla home per iniziare il mese nuovo."
                     )
-                ) {
 
-
-                    const datiDaArchiviare = {
-
-                        nomeMese:
-                            nomeMese,
-
-                        entrate:
-                            appData.entrate,
-
-                        cassetti:
-                            appData.cassetti,
-
-                        spese:
-                            appData.spese,
-
-                        timestamp:
-                            Date.now()
-                    };
-
-
-                    push(
-                        storicoRef,
-                        datiDaArchiviare
-                    );
-
-
-                    set(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_familiare/spese'
-                        ),
-                        {}
-                    );
-
-
-                    Object
-                        .keys(
-                            appData.scadenze
-                        )
-                        .forEach(k => {
-
-                            set(
-                                ref(
-                                    db,
-                                    'utenti/' +
-                                    utenteCorrente.uid +
-                                    '/budget_familiare/scadenze/' +
-                                    k +
-                                    '/pagata'
-                                ),
-                                false
-                            );
-                        });
-
-
-                    alert(
-                        "Mese archiviato con successo!"
-                    );
-
-                }
-
-            };
-
-
-        function renderizzaStorico(
-            datiStorici
-        ) {
-
-            const container =
-                document
-                    .getElementById('storico-container');
-
-
-            container.innerHTML =
-                '';
+                );
 
 
             if (
-                !datiStorici
+
+                isNaN(cifra) ||
+                cifra <= 0
+
             ) {
 
-                container.innerHTML =
-                    '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">L\'archivio storico è vuoto.</p>';
+                return;
+
+            }
+
+
+            if (
+
+                cifra >
+                sal.accumulato
+
+            ) {
+
+                alert(
+                    "Fondi insufficienti nel piano."
+                );
 
                 return;
+
+            }
+
+
+            const nuovoAccumulo =
+                sal.accumulato -
+                cifra;
+
+
+            set(
+
+                ref(
+
+                    db,
+
+                    'utenti/' +
+
+                    utenteCorrente.uid +
+
+                    '/budget_familiare/salvadanai/' +
+
+                    id +
+
+                    '/accumulato'
+
+                ),
+
+                nuovoAccumulo
+
+            );
+
+
+            const spesaRef =
+                push(
+
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+
+                        utenteCorrente.uid +
+
+                        '/budget_familiare/spese'
+
+                    )
+
+                );
+
+
+            set(
+
+                spesaRef,
+
+                {
+
+                    importo:
+                        -cifra,
+
+                    descrizione:
+                        "Prelievo da: " +
+
+                        sal.nome,
+
+                    cassetto:
+                        "libero_restante",
+
+                    timestamp:
+                        Date.now()
+
+                }
+
+            );
+
+        };
+
+
+        window.eliminaSalvadanaio = function(id) {
+
+            if (
+
+                confirm(
+
+                    "Eliminare questo piano? I fondi accumulati rimarranno tracciati nello storico passato ma il piano sparirà."
+
+                )
+
+            ) {
+
+                remove(
+
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+
+                        utenteCorrente.uid +
+
+                        '/budget_familiare/salvadanai/' +
+
+                        id
+
+                    )
+
+                );
+
+            }
+
+        };
+
+
+        // CHIUSURA CICLO
+
+        window.chiudiEMeseArchivia = function() {
+
+            if (
+
+                !appData.ciclo ||
+                !appData.ciclo.dataInizio
+
+            ) {
+
+                alert(
+                    "Il ciclo non ha una data di inizio configurata."
+                );
+
+                return;
+
+            }
+
+
+            const dataInizio =
+                appData.ciclo.dataInizio;
+
+
+            const oggi =
+                new Date();
+
+
+            const dataFine =
+                oggi
+                    .toISOString()
+                    .split('T')[0];
+
+
+            const nomeMese =
+                formattaData(dataInizio) +
+                " → " +
+                formattaData(dataFine);
+
+
+            if (
+
+                !confirm(
+
+                    "Sei sicuro di voler chiudere il ciclo iniziato il " +
+
+                    formattaData(dataInizio) +
+
+                    "?"
+
+                )
+
+            ) {
+
+                return;
+
+            }
+
+
+            const datiDaArchiviare = {
+
+                nomeMese:
+                    nomeMese,
+
+                dataInizio:
+                    dataInizio,
+
+                dataFine:
+                    dataFine,
+
+                entrate:
+                    appData.entrate,
+
+                cassetti:
+                    appData.cassetti,
+
+                spese:
+                    appData.spese,
+
+                timestamp:
+                    Date.now()
+
+            };
+
+
+            push(
+
+                storicoRef,
+
+                datiDaArchiviare
+
+            );
+
+
+            set(
+
+                ref(
+
+                    db,
+
+                    'utenti/' +
+
+                    utenteCorrente.uid +
+
+                    '/budget_familiare/spese'
+
+                ),
+
+                {}
+
+            );
+
+
+            set(
+
+                ref(
+
+                    db,
+
+                    'utenti/' +
+
+                    utenteCorrente.uid +
+
+                    '/budget_familiare/ciclo/dataInizio'
+
+                ),
+
+                dataFine
+
+            );
+
+
+            Object
+                .keys(
+                    appData.scadenze
+                )
+                .forEach(k => {
+
+                    set(
+
+                        ref(
+
+                            db,
+
+                            'utenti/' +
+
+                            utenteCorrente.uid +
+
+                            '/budget_familiare/scadenze/' +
+
+                            k +
+
+                            '/pagata'
+
+                        ),
+
+                        false
+
+                    );
+
+                });
+
+
+            alert(
+                "Ciclo archiviato con successo!"
+            );
+
+        };
+
+
+        // STORICO
+
+        function renderizzaStorico(datiStorici) {
+
+            const container =
+                document
+                    .getElementById(
+                        'storico-container'
+                    );
+
+
+            container.innerHTML = '';
+
+
+            if (!datiStorici) {
+
+                container.innerHTML = `
+
+                    <p
+
+                        style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">
+
+                        L'archivio storico è vuoto.
+
+                    </p>
+
+                `;
+
+
+                return;
+
             }
 
 
@@ -3527,18 +5243,20 @@
                 .keys(
                     datiStorici
                 )
+                .reverse()
                 .forEach(k => {
 
                     const mese =
                         datiStorici[k];
 
 
-                    let tSpeso =
-                        0;
+                    let tSpeso = 0;
 
 
                     if (
+
                         mese.spese
+
                     ) {
 
                         Object
@@ -3550,7 +5268,9 @@
                                 tSpeso +=
                                     mese.spese[sk]
                                         .importo;
+
                             });
+
                     }
 
 
@@ -3562,18 +5282,25 @@
                     container.innerHTML += `
 
                         <div
+
                             class="cassetto-row"
+
                             style="border-left:4px solid #64748b;">
 
                             <div
+
                                 class="cassetto-header">
 
                                 <span
+
                                     class="cassetto-name"
+
                                     style="font-size:14px; font-weight:700;">
 
                                     <i
+
                                         class="fa-solid fa-calendar-check">
+
                                     </i>
 
                                     ${mese.nomeMese}
@@ -3582,11 +5309,15 @@
 
 
                                 <button
+
                                     class="btn-delete"
+
                                     onclick="eliminaSingoloMeseStorico('${k}')">
 
                                     <i
+
                                         class="fa-solid fa-trash-can">
+
                                     </i>
 
                                 </button>
@@ -3595,14 +5326,17 @@
 
 
                             <div
+
                                 style="font-size:12px; color:var(--text-muted); margin-top:4px; display:grid; grid-template-columns:1fr 1fr; gap:4px;">
 
                                 <span>
 
-                                    Budget Iniziale:
+                                    Budget:
 
                                     <b>
+
                                         ${mese.entrate.toFixed(2)} €
+
                                     </b>
 
                                 </span>
@@ -3610,9 +5344,10 @@
 
                                 <span>
 
-                                    Totale Speso:
+                                    Speso:
 
                                     <b
+
                                         style="color:var(--danger)">
 
                                         ${tSpeso.toFixed(2)} €
@@ -3623,9 +5358,15 @@
 
 
                                 <span
-                                    style="grid-column:span 2; font-weight:600; color:${risp >= 0 ? 'var(--success)' : 'var(--danger)'}">
 
-                                    Risparmio/Avanzo:
+                                    style="grid-column:span 2; font-weight:600; color:${
+                                        risp >= 0
+                                            ? 'var(--success)'
+                                            : 'var(--danger)'
+                                    }">
+
+                                    Avanzo:
+
                                     ${risp.toFixed(2)} €
 
                                 </span>
@@ -3635,178 +5376,238 @@
                         </div>
 
                     `;
+
                 });
 
         }
 
 
-        window.eliminaSingoloMeseStorico =
-            function(id) {
+        window.eliminaSingoloMeseStorico = function(id) {
 
-                if (
-                    confirm(
-                        "Eliminare definitivamente questo mese dall'archivio?"
+            if (
+
+                confirm(
+
+                    "Eliminare definitivamente questo ciclo dall'archivio?"
+
+                )
+
+            ) {
+
+                remove(
+
+                    ref(
+
+                        db,
+
+                        'utenti/' +
+
+                        utenteCorrente.uid +
+
+                        '/budget_storico/' +
+
+                        id
+
                     )
-                ) {
 
-                    remove(
-                        ref(
-                            db,
-                            'utenti/' +
-                            utenteCorrente.uid +
-                            '/budget_storico/' +
-                            id
-                        )
-                    );
-                }
+                );
 
-            };
+            }
+
+        };
 
 
-        window.svuotaInteroStorico =
-            function() {
+        window.svuotaInteroStorico = function() {
 
-                if (
-                    confirm(
-                        "ATTENZIONE! Vuoi svuotare permanentemente l'intero archivio storico dei mesi passati? L'operazione non è reversibile."
-                    )
-                ) {
+            if (
 
-                    remove(
-                        storicoRef
-                    );
-                }
+                confirm(
 
-            };
+                    "ATTENZIONE! Vuoi svuotare permanentemente l'intero archivio storico?"
 
+                )
 
-        window.esportaInCSV =
-            function() {
+            ) {
 
-                let csv =
-                    'Data,Descrizione,Comparto,Importo (€)\r\n';
+                remove(
+                    storicoRef
+                );
+
+            }
+
+        };
 
 
-                let cont =
-                    0;
+        // CSV
+
+        window.esportaInCSV = function() {
+
+            let csv =
+                'Data,Descrizione,Comparto,Importo (€)\r\n';
 
 
-                Object
-                    .keys(
-                        appData.spese
-                    )
-                    .forEach(k => {
-
-                        const s =
-                            appData.spese[k];
+            let cont = 0;
 
 
-                        const nomeC =
-                            appData.cassetti[
+            Object
+                .keys(
+                    appData.spese
+                )
+                .forEach(k => {
+
+                    const s =
+                        appData.spese[k];
+
+
+                    const nomeC =
+                        appData.cassetti[
+                            s.cassetto
+                        ]
+
+                            ? appData.cassetti[
                                 s.cassetto
-                            ]
-                                ? appData.cassetti[
-                                    s.cassetto
-                                ].nome
-                                : 'Generale';
+                            ].nome
+
+                            : 'Generale';
 
 
-                        const d =
-                            new Date(
-                                s.timestamp
-                            )
-                                .toLocaleDateString(
-                                    'it-IT'
-                                );
+                    const d =
+                        new Date(
+                            s.timestamp
+                        )
+                            .toLocaleDateString(
+                                'it-IT'
+                            );
 
 
-                        csv +=
-                            `"${d}","${s.descrizione.replace(/"/g, '""')}","${nomeC}",${s.importo}\r\n`;
+                    csv +=
+
+                        `"${d}","${s.descrizione.replace(/"/g, '""')}","${nomeC}",${s.importo}\r\n`;
 
 
-                        cont++;
+                    cont++;
 
-                    });
-
-
-                if (
-                    cont === 0
-                ) {
-
-                    alert(
-                        "Nessuna spesa da esportare."
-                    );
-
-                    return;
-                }
+                });
 
 
-                const blob =
-                    new Blob(
-                        [csv],
-                        {
-                            type:
-                                'text/csv;charset=utf-8;'
-                        }
-                    );
+            if (
+
+                cont === 0
+
+            ) {
+
+                alert(
+                    "Nessuna spesa da esportare."
+                );
+
+                return;
+
+            }
 
 
-                const link =
-                    document.createElement(
+            const blob =
+                new Blob(
+
+                    [csv],
+
+                    {
+
+                        type:
+                            'text/csv;charset=utf-8;'
+
+                    }
+
+                );
+
+
+            const link =
+                document
+                    .createElement(
                         "a"
                     );
 
 
-                link.href =
-                    URL.createObjectURL(
-                        blob
-                    );
-
-
-                link.setAttribute(
-                    "download",
-                    "report_spese_budget.csv"
+            link.href =
+                URL.createObjectURL(
+                    blob
                 );
 
 
-                document
-                    .body
-                    .appendChild(
-                        link
-                    );
+            link.setAttribute(
+
+                "download",
+
+                "report_spese_budget.csv"
+
+            );
 
 
-                link.click();
+            document
+                .body
+                .appendChild(
+                    link
+                );
 
 
-                document
-                    .body
-                    .removeChild(
-                        link
-                    );
-
-            };
+            link.click();
 
 
-        window.resetCompleto =
-            function() {
+            document
+                .body
+                .removeChild(
+                    link
+                );
 
-                if (
-                    confirm(
-                        "Sei veramente sicuro? Questo comando cancellerà TUTTI i dati correnti (Spese, Comparti, Budget, Piani e Scadenze) del tuo utente."
-                    )
-                ) {
+        };
 
-                    remove(
-                        budgetRef
-                    );
-                }
 
-            };
+        // GRAFICO
+
+        window.cambiaModalitaGrafico = function(modalita) {
+
+            modalitaGrafico =
+                modalita;
+
+
+            document
+                .getElementById(
+                    'chart-tab-budget'
+                )
+                .classList
+                .toggle(
+
+                    'active',
+
+                    modalita ===
+                    'budget'
+
+                );
+
+
+            document
+                .getElementById(
+                    'chart-tab-spese'
+                )
+                .classList
+                .toggle(
+
+                    'active',
+
+                    modalita ===
+                    'spese'
+
+                );
+
+
+            calcolaERenderizzaUI();
+
+        };
 
 
         function renderizzaGraficoQuota(
+
             spesoPerCassetto
+
         ) {
 
             const ctx =
@@ -3819,33 +5620,9 @@
                     );
 
 
-            let etichette =
-                [];
+            let etichette = [];
 
-
-            let cifreData =
-                [];
-
-
-            let coloriBackground = [
-
-                '#4f46e5',
-
-                '#10b981',
-
-                '#f59e0b',
-
-                '#ef4444',
-
-                '#ec4899',
-
-                '#06b6d4',
-
-                '#8b5cf6',
-
-                '#64748b'
-
-            ];
+            let cifreData = [];
 
 
             Object
@@ -3854,53 +5631,120 @@
                 )
                 .forEach(id => {
 
-                    etichette.push(
-                        appData.cassetti[id]
-                            .nome
-                    );
+                    const comparto =
+                        appData.cassetti[id];
 
 
-                    cifreData.push(
+                    const speso =
                         spesoPerCassetto[id] ||
-                        0
-                    );
+                        0;
+
+
+                    const rimasto =
+                        Math.max(
+
+                            0,
+
+                            comparto.budget -
+                            speso
+
+                        );
+
+
+                    if (
+
+                        modalitaGrafico ===
+                        'budget'
+
+                    ) {
+
+                        etichette.push(
+                            comparto.nome
+                        );
+
+
+                        cifreData.push(
+                            comparto.budget
+                        );
+
+
+                    } else {
+
+                        etichette.push(
+                            comparto.nome
+                        );
+
+
+                        cifreData.push(
+                            Math.max(
+                                0,
+                                speso
+                            )
+                        );
+
+                    }
 
                 });
 
 
-            if (
-                myChart
-            ) {
+            if (myChart) {
 
                 myChart.destroy();
+
             }
 
 
             myChart =
                 new Chart(
+
                     ctx,
+
                     {
 
                         type:
                             'doughnut',
 
-                        data: {
+
+                        data:
+
+                        {
 
                             labels:
                                 etichette,
 
-                            datasets: [
+
+                            datasets:
+
+                            [
 
                                 {
 
                                     data:
                                         cifreData,
 
+
                                     backgroundColor:
-                                        coloriBackground.slice(
-                                            0,
-                                            etichette.length
-                                        ),
+
+                                    [
+
+                                        '#4f46e5',
+
+                                        '#10b981',
+
+                                        '#f59e0b',
+
+                                        '#ef4444',
+
+                                        '#ec4899',
+
+                                        '#06b6d4',
+
+                                        '#8b5cf6',
+
+                                        '#64748b'
+
+                                    ],
+
 
                                     borderWidth:
                                         2
@@ -3912,28 +5756,41 @@
                         },
 
 
-                        options: {
+                        options:
+
+                        {
 
                             responsive:
                                 true,
+
 
                             maintainAspectRatio:
                                 false,
 
 
-                            plugins: {
+                            plugins:
 
-                                legend: {
+                            {
+
+                                legend:
+
+                                {
 
                                     position:
                                         'bottom',
 
-                                    labels: {
+
+                                    labels:
+
+                                    {
 
                                         boxWidth:
                                             10,
 
-                                        font: {
+
+                                        font:
+
+                                        {
 
                                             size:
                                                 10
@@ -3947,14 +5804,15 @@
                             },
 
 
-                            onClick: (
-                                evt,
-                                item
-                            ) => {
+                            onClick:
+
+                            (evt, item) => {
 
                                 if (
+
                                     item &&
                                     item.length > 0
+
                                 ) {
 
                                     const index =
@@ -3963,7 +5821,9 @@
 
 
                                     const nomeCompSelezionato =
-                                        etichette[index];
+                                        etichette[
+                                            index
+                                        ];
 
 
                                     let trovatoId =
@@ -3977,13 +5837,17 @@
                                         .forEach(id => {
 
                                             if (
-                                                appData.cassetti[id]
+
+                                                appData
+                                                    .cassetti[id]
                                                     .nome ===
                                                 nomeCompSelezionato
+
                                             ) {
 
                                                 trovatoId =
                                                     id;
+
                                             }
 
                                         });
@@ -4006,101 +5870,1007 @@
                         }
 
                     }
+
                 );
 
         }
 
 
-        window.openModal =
-            function(id) {
+        // INSIGHTS
 
-                document
-                    .getElementById(id)
-                    .classList
-                    .add('active');
+        function renderizzaInsights() {
 
-            };
+            if (
 
+                !appData ||
+                !appData.entrate
 
-        window.closeModal =
-            function(id) {
-
-                document
-                    .getElementById(id)
-                    .classList
-                    .remove('active');
-
-            };
-
-
-        window.closeModalOnBackdrop =
-            function(e) {
-
-                if (
-                    e.target
-                        .classList
-                        .contains('modal')
-                ) {
-
-                    e.target
-                        .classList
-                        .remove('active');
-                }
-
-            };
-
-
-        window.switchView =
-            function(
-                viewId,
-                btn
             ) {
 
-                document
-                    .querySelectorAll('.view')
-                    .forEach(v =>
-                        v.classList
-                            .remove('active')
-                    );
+                return;
+
+            }
 
 
+            let totaleSpeso = 0;
+
+            let spesoPerCassetto = {};
+
+
+            Object
+                .keys(
+                    appData.cassetti
+                )
+                .forEach(id => {
+
+                    spesoPerCassetto[id] =
+                        0;
+
+                });
+
+
+            Object
+                .keys(
+                    appData.spese
+                )
+                .forEach(id => {
+
+                    const s =
+                        appData.spese[id];
+
+
+                    totaleSpeso +=
+                        s.importo;
+
+
+                    if (
+
+                        spesoPerCassetto[
+                            s.cassetto
+                        ] !== undefined
+
+                    ) {
+
+                        spesoPerCassetto[
+                            s.cassetto
+                        ] +=
+                            s.importo;
+
+                    }
+
+                });
+
+
+            const disponibile =
+                appData.entrate -
+                totaleSpeso;
+
+
+            const giorni =
+                getGiorniTrascorsi();
+
+
+            const mediaGiornaliera =
+                totaleSpeso /
+                giorni;
+
+
+            document
+                .getElementById(
+                    'insights-cycle-info'
+                )
+                .innerHTML =
+
+                appData.ciclo?.dataInizio
+
+                    ? `Ciclo iniziato il <strong>${formattaData(appData.ciclo.dataInizio)}</strong> • ${giorni} giorno/i trascorso/i`
+
+                    : "Data di inizio ciclo non configurata";
+
+
+            document
+                .getElementById(
+                    'insight-budget'
+                )
+                .textContent =
+                appData.entrate.toFixed(2) +
+                " €";
+
+
+            document
+                .getElementById(
+                    'insight-speso'
+                )
+                .textContent =
+                totaleSpeso.toFixed(2) +
+                " €";
+
+
+            const disponibileEl =
                 document
                     .getElementById(
-                        'view-' +
-                        viewId
-                    )
-                    .classList
-                    .add('active');
-
-
-                document
-                    .querySelectorAll('.nav-item')
-                    .forEach(n =>
-                        n.classList
-                            .remove('active')
+                        'insight-disponibile'
                     );
 
 
-                if (
-                    btn
-                ) {
+            disponibileEl.textContent =
+                disponibile.toFixed(2) +
+                " €";
 
-                    btn.classList
-                        .add('active');
+
+            disponibileEl.className =
+                disponibile >= 0
+
+                    ? "trend-positive"
+
+                    : "trend-negative";
+
+
+            document
+                .getElementById(
+                    'insight-media-giornaliera'
+                )
+                .textContent =
+                mediaGiornaliera.toFixed(2) +
+                " €";
+
+
+            aggiornaStatoInsight(
+
+                disponibile,
+
+                totaleSpeso,
+
+                mediaGiornaliera,
+
+                spesoPerCassetto
+
+            );
+
+
+            aggiornaAttenzioneComparti(
+
+                spesoPerCassetto
+
+            );
+
+
+            aggiornaConsiglio(
+
+                disponibile,
+
+                totaleSpeso,
+
+                mediaGiornaliera,
+
+                spesoPerCassetto
+
+            );
+
+
+            aggiornaObiettiviInsight();
+
+
+            aggiornaTendenzeInsight();
+
+        }
+
+
+        function aggiornaStatoInsight(
+
+            disponibile,
+
+            totaleSpeso,
+
+            mediaGiornaliera,
+
+            spesoPerCassetto
+
+        ) {
+
+            const card =
+                document
+                    .getElementById(
+                        'insight-status-card'
+                    );
+
+
+            const title =
+                document
+                    .getElementById(
+                        'insight-status-title'
+                    );
+
+
+            const description =
+                document
+                    .getElementById(
+                        'insight-status-description'
+                    );
+
+
+            const percentualeSpesa =
+                appData.entrate > 0
+
+                    ? (
+
+                        totaleSpeso /
+                        appData.entrate
+
+                    ) *
+                    100
+
+                    : 0;
+
+
+            const compartiCritici =
+                Object
+                    .keys(
+                        appData.cassetti
+                    )
+                    .filter(id => {
+
+                        const budget =
+                            appData.cassetti[
+                                id
+                            ].budget;
+
+
+                        const speso =
+                            spesoPerCassetto[
+                                id
+                            ] ||
+                            0;
+
+
+                        return (
+
+                            budget > 0 &&
+                            speso /
+                            budget >=
+                            0.85
+
+                        );
+
+                    });
+
+
+            card.className =
+                "insight-main-status";
+
+
+            if (
+
+                disponibile < 0
+
+            ) {
+
+                card.classList.add(
+                    'insight-status-danger'
+                );
+
+
+                title.textContent =
+                    "🔴 Budget in difficoltà";
+
+
+                description.textContent =
+                    "Le spese hanno superato il budget disponibile. Prima di aggiungere altre spese, valuta quali uscite possono essere ridotte o rinviate.";
+
+
+            } else if (
+
+                compartiCritici.length >= 2 ||
+                percentualeSpesa >= 85
+
+            ) {
+
+                card.classList.add(
+                    'insight-status-warn'
+                );
+
+
+                title.textContent =
+                    "🟡 Ciclo da monitorare";
+
+
+                description.textContent =
+                    "Una parte significativa del budget è già stata utilizzata. Il ritmo di spesa merita attenzione.";
+
+
+            } else {
+
+                card.classList.add(
+                    'insight-status-ok'
+                );
+
+
+                title.textContent =
+                    "🟢 Ciclo in equilibrio";
+
+
+                description.textContent =
+                    "Il tuo budget sembra sotto controllo rispetto alle spese registrate finora.";
+
+            }
+
+        }
+
+
+        function aggiornaAttenzioneComparti(
+
+            spesoPerCassetto
+
+        ) {
+
+            const container =
+                document
+                    .getElementById(
+                        'insight-attention-content'
+                    );
+
+
+            const comparti =
+                Object
+                    .keys(
+                        appData.cassetti
+                    )
+                    .map(id => {
+
+                        const c =
+                            appData.cassetti[id];
+
+
+                        const speso =
+                            spesoPerCassetto[id] ||
+                            0;
+
+
+                        const percentuale =
+                            c.budget > 0
+
+                                ? (
+
+                                    speso /
+                                    c.budget
+
+                                ) *
+                                100
+
+                                : 0;
+
+
+                        return {
+
+                            nome:
+                                c.nome,
+
+                            percentuale:
+                                percentuale,
+
+                            rimasto:
+                                c.budget -
+                                speso
+
+                        };
+
+                    });
+
+
+            comparti.sort(
+
+                (a, b) =>
+                    b.percentuale -
+                    a.percentuale
+
+            );
+
+
+            const critico =
+                comparti.find(
+
+                    c =>
+                        c.percentuale >=
+                        70
+
+                );
+
+
+            if (!critico) {
+
+                container.innerHTML =
+
+                    "Nessun comparto richiede particolare attenzione. Continua a monitorare le spese senza perdere di vista il budget assegnato.";
+
+                return;
+
+            }
+
+
+            const colore =
+                critico.percentuale >=
+                85
+
+                    ? "var(--danger)"
+
+                    : "var(--warning)";
+
+
+            container.innerHTML = `
+
+                Il comparto
+
+                <strong>${critico.nome}</strong>
+
+                ha utilizzato il
+
+                <strong style="color:${colore}">
+
+                    ${Math.min(100, critico.percentuale).toFixed(0)}%
+
+                </strong>
+
+                del budget assegnato.
+
+                Rimangono
+
+                <strong>
+
+                    ${critico.rimasto.toFixed(2)} €
+
+                </strong>
+
+                disponibili.
+
+            `;
+
+        }
+
+
+        function aggiornaConsiglio(
+
+            disponibile,
+
+            totaleSpeso,
+
+            mediaGiornaliera,
+
+            spesoPerCassetto
+
+        ) {
+
+            const elemento =
+                document
+                    .getElementById(
+                        'insight-advice'
+                    );
+
+
+            if (
+
+                disponibile < 0
+
+            ) {
+
+                elemento.innerHTML =
+
+                    "Il budget disponibile è negativo. Prima di effettuare nuove spese, cerca di capire quali categorie hanno contribuito maggiormente al superamento del budget.";
+
+                return;
+
+            }
+
+
+            if (
+
+                totaleSpeso === 0
+
+            ) {
+
+                elemento.innerHTML =
+
+                    "Non hai ancora registrato spese in questo ciclo. Inserendo le uscite potrai ottenere analisi più precise sul tuo andamento.";
+
+                return;
+
+            }
+
+
+            const comparti =
+                Object
+                    .keys(
+                        appData.cassetti
+                    )
+                    .map(id => {
+
+                        const c =
+                            appData.cassetti[id];
+
+
+                        const speso =
+                            spesoPerCassetto[id] ||
+                            0;
+
+
+                        return {
+
+                            nome:
+                                c.nome,
+
+                            percentuale:
+                                c.budget > 0
+
+                                    ? (
+
+                                        speso /
+                                        c.budget
+
+                                    ) *
+                                    100
+
+                                    : 0
+
+                        };
+
+                    });
+
+
+            comparti.sort(
+
+                (a, b) =>
+                    b.percentuale -
+                    a.percentuale
+
+            );
+
+
+            const principale =
+                comparti[0];
+
+
+            if (
+
+                principale &&
+                principale.percentuale >=
+                80
+
+            ) {
+
+                elemento.innerHTML =
+
+                    `Il comparto <strong>${principale.nome}</strong> ha già utilizzato una parte significativa del budget. Prima di aumentare le spese in questa categoria, valuta se puoi ridurre o rinviare qualche uscita non essenziale.`;
+
+                return;
+
+            }
+
+
+            if (
+
+                disponibile >
+                appData.entrate *
+                0.5
+
+            ) {
+
+                elemento.innerHTML =
+
+                    "Hai ancora una parte significativa del budget disponibile. Se prevedi un avanzo alla chiusura del ciclo, potresti destinare una parte di quel denaro a un obiettivo concreto.";
+
+                return;
+
+            }
+
+
+            elemento.innerHTML =
+
+                `La tua spesa media attuale è di <strong>${mediaGiornaliera.toFixed(2)} € al giorno</strong>. Monitorare questa cifra può aiutarti a capire meglio il tuo ritmo di spesa durante il ciclo.`;
+
+        }
+
+
+        function aggiornaObiettiviInsight() {
+
+            const container =
+                document
+                    .getElementById(
+                        'insight-goals'
+                    );
+
+
+            const chiavi =
+                Object
+                    .keys(
+                        appData.salvadanai
+                    );
+
+
+            if (
+
+                chiavi.length === 0
+
+            ) {
+
+                container.innerHTML = `
+
+                    <div class="empty-insight">
+
+                        Nessun obiettivo di risparmio attivo.
+
+                    </div>
+
+                `;
+
+
+                return;
+
+            }
+
+
+            container.innerHTML = '';
+
+
+            chiavi
+                .slice(0, 3)
+                .forEach(id => {
+
+                    const sal =
+                        appData.salvadanai[id];
+
+
+                    const accumulato =
+                        sal.accumulato ||
+                        0;
+
+
+                    const percentuale =
+                        sal.target > 0
+
+                            ? (
+
+                                accumulato /
+                                sal.target
+
+                            ) *
+                            100
+
+                            : 0;
+
+
+                    container.innerHTML += `
+
+                        <div
+
+                            style="margin-bottom:12px;">
+
+                            <div
+
+                                style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+
+                                <strong>
+
+                                    ${sal.nome}
+
+                                </strong>
+
+
+                                <span
+
+                                    style="color:var(--accent); font-weight:700;">
+
+                                    ${Math.min(100, percentuale).toFixed(0)}%
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="cassetto-progress">
+
+                                <div
+
+                                    class="cassetto-progress-bar"
+
+                                    style="width:${Math.min(100, percentuale)}%; background:var(--accent);">
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+
+                                style="font-size:10px; color:var(--text-muted); margin-top:4px;">
+
+                                ${accumulato.toFixed(2)} €
+
+                                di
+
+                                ${sal.target.toFixed(2)} €
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                });
+
+        }
+
+
+        function aggiornaTendenzeInsight() {
+
+            const container =
+                document
+                    .getElementById(
+                        'insight-trend-content'
+                    );
+
+
+            if (
+
+                !storicoRef
+
+            ) {
+
+                return;
+
+            }
+
+
+            onValue(
+
+                storicoRef,
+
+                snapshot => {
+
+                    const dati =
+                        snapshot.val();
+
+
+                    if (!dati) {
+
+                        container.innerHTML =
+
+                            "Chiudi almeno un ciclo per iniziare a visualizzare le tue tendenze.";
+
+                        return;
+
+                    }
+
+
+                    const cicli =
+                        Object
+                            .values(
+                                dati
+                            );
+
+
+                    if (
+
+                        cicli.length === 0
+
+                    ) {
+
+                        container.innerHTML =
+
+                            "Chiudi almeno un ciclo per iniziare a visualizzare le tue tendenze.";
+
+                        return;
+
+                    }
+
+
+                    let totaleAvanzi =
+                        0;
+
+
+                    let migliorAvanzo =
+                        null;
+
+
+                    cicli.forEach(ciclo => {
+
+                        let speso =
+                            0;
+
+
+                        if (
+
+                            ciclo.spese
+
+                        ) {
+
+                            Object
+                                .values(
+                                    ciclo.spese
+                                )
+                                .forEach(s => {
+
+                                    speso +=
+                                        s.importo;
+
+                                });
+
+                        }
+
+
+                        const avanzo =
+                            ciclo.entrate -
+                            speso;
+
+
+                        totaleAvanzi +=
+                            avanzo;
+
+
+                        if (
+
+                            migliorAvanzo ===
+                            null ||
+
+                            avanzo >
+                            migliorAvanzo.valore
+
+                        ) {
+
+                            migliorAvanzo = {
+
+                                valore:
+                                    avanzo,
+
+                                nome:
+                                    ciclo.nomeMese
+
+                            };
+
+                        }
+
+                    });
+
+
+                    const mediaAvanzo =
+                        totaleAvanzi /
+                        cicli.length;
+
+
+                    container.innerHTML = `
+
+                        Media avanzo per ciclo:
+
+                        <strong class="trend-positive">
+
+                            ${mediaAvanzo.toFixed(2)} €
+
+                        </strong>
+
+                        <br><br>
+
+                        Miglior risultato:
+
+                        <strong>
+
+                            ${migliorAvanzo.nome}
+
+                        </strong>
+
+                        con un avanzo di
+
+                        <strong class="trend-positive">
+
+                            ${migliorAvanzo.valore.toFixed(2)} €
+
+                        </strong>
+
+                    `;
+
                 }
 
-            };
+            );
+
+        }
 
 
-        function switchViewWithoutBtn(
-            viewId
+        window.mostraAltraIdea = function() {
+
+            indiceIdeaCorrente =
+
+                (
+
+                    indiceIdeaCorrente +
+                    1
+
+                ) %
+
+                ideeRisparmio.length;
+
+
+            const idea =
+                ideeRisparmio[
+                    indiceIdeaCorrente
+                ];
+
+
+            document
+                .getElementById(
+                    'idea-titolo'
+                )
+                .textContent =
+                idea.titolo;
+
+
+            document
+                .getElementById(
+                    'idea-testo'
+                )
+                .textContent =
+                idea.testo;
+
+        };
+
+
+        // MODALI
+
+        window.openModal = function(id) {
+
+            document
+                .getElementById(id)
+                .classList
+                .add('active');
+
+        };
+
+
+        window.closeModal = function(id) {
+
+            document
+                .getElementById(id)
+                .classList
+                .remove('active');
+
+        };
+
+
+        window.closeModalOnBackdrop = function(e) {
+
+            if (
+
+                e.target.classList.contains(
+                    'modal'
+                )
+
+            ) {
+
+                e.target.classList.remove(
+                    'active'
+                );
+
+            }
+
+        };
+
+
+        // NAVIGAZIONE
+
+        window.switchView = function(
+
+            viewId,
+
+            btn
+
         ) {
 
             document
-                .querySelectorAll('.view')
+                .querySelectorAll(
+                    '.view'
+                )
                 .forEach(v =>
-                    v.classList
-                        .remove('active')
+
+                    v.classList.remove(
+                        'active'
+                    )
+
                 );
 
 
@@ -4114,16 +6884,87 @@
 
 
             document
-                .querySelectorAll('.nav-item')
+                .querySelectorAll(
+                    '.nav-item'
+                )
                 .forEach(n =>
-                    n.classList
-                        .remove('active')
+
+                    n.classList.remove(
+                        'active'
+                    )
+
+                );
+
+
+            if (btn) {
+
+                btn.classList.add(
+                    'active'
+                );
+
+            }
+
+
+            if (
+
+                viewId ===
+                'insights'
+
+            ) {
+
+                renderizzaInsights();
+
+            }
+
+        };
+
+
+        function switchViewWithoutBtn(
+
+            viewId
+
+        ) {
+
+            document
+                .querySelectorAll(
+                    '.view'
+                )
+                .forEach(v =>
+
+                    v.classList.remove(
+                        'active'
+                    )
+
+                );
+
+
+            document
+                .getElementById(
+                    'view-' +
+                    viewId
+                )
+                .classList
+                .add('active');
+
+
+            document
+                .querySelectorAll(
+                    '.nav-item'
+                )
+                .forEach(n =>
+
+                    n.classList.remove(
+                        'active'
+                    )
+
                 );
 
 
             if (
+
                 viewId ===
                 'home'
+
             ) {
 
                 document
@@ -4132,6 +6973,7 @@
                     )
                     .classList
                     .add('active');
+
             }
 
         }
@@ -4139,4 +6981,5 @@
     </script>
 
 </body>
+
 </html>
