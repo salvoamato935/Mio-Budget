@@ -1,1 +1,571 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mio Budget Pro</title>
+    <!-- Tailwind CSS per la grafica -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .active-tab { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
 
+    <!-- SCHERMATA LOGIN / REGISTRAZIONE -->
+    <div id="auth-screen" class="max-w-md mx-auto mt-12 p-6 bg-white rounded-xl shadow-md">
+        <h2 id="auth-title" class="text-2xl font-bold text-center text-blue-600 mb-6">Accedi a Mio Budget Pro</h2>
+        
+        <form id="auth-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="auth-email" required class="w-full mt-1 p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="auth-password" required class="w-full mt-1 p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <p id="auth-error" class="text-red-500 text-sm hidden"></p>
+
+            <button type="submit" id="auth-submit-btn" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+                Accedi
+            </button>
+        </form>
+
+        <div class="mt-4 text-center">
+            <button id="toggle-auth-btn" class="text-sm text-blue-600 hover:underline">
+                Non hai un account? Registrati
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER (Nascosto di default) -->
+    <div id="app-screen" class="hidden max-w-4xl mx-auto p-4 sm:p-6">
+        
+        <!-- HEADER -->
+        <header class="flex justify-between items-center mb-6 bg-white p-4 rounded-xl shadow">
+            <div>
+                <h1 class="text-xl font-bold text-blue-600">Mio Budget Pro</h1>
+                <p id="user-display-email" class="text-xs text-gray-500"></p>
+            </div>
+            <button onclick="logout()" class="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-md hover:bg-red-200">
+                Esci
+            </button>
+        </header>
+
+        <!-- DASHBOARD RIEPILOGO -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-500">
+                <span class="text-xs text-gray-500 uppercase font-semibold">Entrate Mese</span>
+                <p id="dash-entrate" class="text-2xl font-bold text-blue-600">€ 0,00</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow border-l-4 border-red-500">
+                <span class="text-xs text-gray-500 uppercase font-semibold">Uscite Mese</span>
+                <p id="dash-uscite" class="text-2xl font-bold text-red-600">€ 0,00</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500">
+                <span class="text-xs text-gray-500 uppercase font-semibold">Disponibile Totale</span>
+                <p id="dash-disponibile" class="text-2xl font-bold text-green-600">€ 0,00</p>
+            </div>
+        </div>
+
+        <!-- NAVIGAZIONE TAB -->
+        <nav class="flex border-b border-gray-200 mb-6 bg-white rounded-t-xl overflow-x-auto">
+            <button onclick="switchTab('spese')" id="tab-spese" class="px-4 py-3 active-tab whitespace-nowrap">Spese & Registri</button>
+            <button onclick="switchTab('comparti')" id="tab-comparti" class="px-4 py-3 text-gray-500 whitespace-nowrap">Comparti Budget</button>
+            <button onclick="switchTab('scadenze')" id="tab-scadenze" class="px-4 py-3 text-gray-500 whitespace-nowrap">Scadenze</button>
+            <button onclick="switchTab('salvadanai')" id="tab-salvadanai" class="px-4 py-3 text-gray-500 whitespace-nowrap">Salvadanai</button>
+        </nav>
+
+        <!-- CONTENUTO TAB 1: SPESE -->
+        <div id="content-spese" class="space-y-6">
+            <div class="bg-white p-4 rounded-xl shadow">
+                <h3 class="font-bold text-lg mb-4">Nuova Operazione</h3>
+                <form id="form-transazione" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <select id="trans-tipo" class="p-2 border rounded-md">
+                        <option value="spesa">Spesa (Uscita)</option>
+                        <option value="entrata">Entrata</option>
+                    </select>
+                    <input type="number" step="0.01" id="trans-importo" placeholder="Importo (€)" required class="p-2 border rounded-md">
+                    <input type="text" id="trans-desc" placeholder="Descrizione" required class="p-2 border rounded-md">
+                    <select id="trans-cassetto" class="p-2 border rounded-md">
+                        <!-- Popolato dinamicamente -->
+                    </select>
+                    <button type="submit" class="sm:col-span-2 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">Registra</button>
+                </form>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">Storico Movimenti</h3>
+                    <button onclick="chiudiEMeseArchivia()" class="text-xs bg-amber-500 text-white px-3 py-1.5 rounded hover:bg-amber-600">
+                        Archivia Mese
+                    </button>
+                </div>
+                <ul id="lista-spese" class="divide-y divide-gray-100"></ul>
+            </div>
+        </div>
+
+        <!-- CONTENUTO TAB 2: COMPARTI -->
+        <div id="content-comparti" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow">
+                <h3 class="font-bold text-lg mb-2">Distribuzione Budget</h3>
+                <div id="lista-comparti" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- CONTENUTO TAB 3: SCADENZE -->
+        <div id="content-scadenze" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow">
+                <h3 class="font-bold text-lg mb-4">Aggiungi Scadenza / Ricorrenza</h3>
+                <form id="form-scadenza" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" id="scad-nome" placeholder="Es. Bolletta Luce" required class="p-2 border rounded-md">
+                    <input type="number" step="0.01" id="scad-importo" placeholder="Importo previsto" required class="p-2 border rounded-md">
+                    <button type="submit" class="bg-green-600 text-white p-2 rounded-md hover:bg-green-700">Salva</button>
+                </form>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow">
+                <h3 class="font-bold text-lg mb-4">Utenze e Spese Fisse</h3>
+                <ul id="lista-scadenze" class="divide-y divide-gray-100"></ul>
+            </div>
+        </div>
+
+        <!-- CONTENUTO TAB 4: SALVADANAI -->
+        <div id="content-salvadanai" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow">
+                <h3 class="font-bold text-lg mb-4">Nuovo Obiettivo di Risparmio</h3>
+                <form id="form-salvadanaio" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" id="salv-nome" placeholder="Es. Fondo Emergenza" required class="p-2 border rounded-md">
+                    <input type="number" step="0.01" id="salv-target" placeholder="Obiettivo Finale (€)" required class="p-2 border rounded-md">
+                    <button type="submit" class="bg-purple-600 text-white p-2 rounded-md hover:bg-purple-700">Crea</button>
+                </form>
+            </div>
+            <div id="lista-salvadanai" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+        </div>
+
+    </div>
+
+    <!-- FIREBASE SDK (Modular v10) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { 
+            getDatabase, 
+            ref, 
+            set, 
+            push, 
+            onValue, 
+            remove, 
+            update 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Inizializzazione Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // Stato Globale Applicazione
+        let utenteCorrente = null;
+        let isModeLogin = true;
+        let appData = {
+            comparti: {},
+            spese: {},
+            scadenze: {},
+            salvadanai: {}
+        };
+
+        // --- AUTENTICAZIONE ---
+        const authForm = document.getElementById('auth-form');
+        const toggleBtn = document.getElementById('toggle-auth-btn');
+        const authTitle = document.getElementById('auth-title');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authError = document.getElementById('auth-error');
+
+        toggleBtn.addEventListener('click', () => {
+            isModeLogin = !isModeLogin;
+            authTitle.innerText = isModeLogin ? "Accedi a Mio Budget Pro" : "Registra Account";
+            authSubmitBtn.innerText = isModeLogin ? "Accedi" : "Registrati";
+            toggleBtn.innerText = isModeLogin ? "Non hai un account? Registrati" : "Hai già un account? Accedi";
+            authError.classList.add('hidden');
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            authError.classList.add('hidden');
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+
+            try {
+                if (isModeLogin) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                authError.innerText = error.message || error.code;
+                authError.classList.remove('hidden');
+            }
+        });
+
+        window.logout = function() {
+            signOut(auth);
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            utenteCorrente = user;
+            if (user) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                document.getElementById('user-display-email').innerText = user.email;
+                inizializzaSincronizzazione(user.uid);
+            } else {
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+            }
+        });
+
+        // --- SINCRONIZZAZIONE DATI ---
+        function inizializzaSincronizzazione(uid) {
+            const userRef = ref(db, 'utenti/' + uid + '/budget_familiare');
+            onValue(userRef, (snapshot) => {
+                const data = snapshot.val() || {};
+                appData.comparti = data.comparti || {};
+                appData.spese = data.spese || {};
+                appData.scadenze = data.scadenze || {};
+                appData.salvadanai = data.salvadanai || {};
+
+                // Se non esistono comparti, crea configurazione di default
+                if (Object.keys(appData.comparti).length === 0) {
+                    inizializzaCompartiDefault(uid);
+                } else {
+                    renderAll();
+                }
+            });
+        }
+
+        function inizializzaCompartiDefault(uid) {
+            const compartiDefault = {
+                "libero_restante": { nome: "Fondo Libero / Spese Variabili", budget: 0 },
+                "spesa_cibo": { nome: "Spesa & Alimentari", budget: 400 },
+                "trasporti": { nome: "Carburante & Trasporti", budget: 150 },
+                "svago": { nome: "Svago e Tempo Libero", budget: 150 }
+            };
+            set(ref(db, 'utenti/' + uid + '/budget_familiare/comparti'), compartiDefault);
+        }
+
+        // --- INTERFACCIA UTENTE & RENDER ---
+        function renderAll() {
+            renderDashboard();
+            renderComparti();
+            renderSpese();
+            renderScadenze();
+            renderSalvadanai();
+        }
+
+        function renderDashboard() {
+            let totEntrate = 0;
+            let totUscite = 0;
+
+            Object.values(appData.spese).forEach(item => {
+                const val = parseFloat(item.importo) || 0;
+                if (item.tipo === 'entrata') {
+                    totEntrate += val;
+                } else {
+                    totUscite += val;
+                }
+            });
+
+            const disponibile = totEntrate - totUscite;
+
+            document.getElementById('dash-entrate').innerText = `€ ${totEntrate.toFixed(2)}`;
+            document.getElementById('dash-uscite').innerText = `€ ${totUscite.toFixed(2)}`;
+            document.getElementById('dash-disponibile').innerText = `€ ${disponibile.toFixed(2)}`;
+        }
+
+        function renderComparti() {
+            const container = document.getElementById('lista-comparti');
+            const selectCassetto = document.getElementById('trans-cassetto');
+            container.innerHTML = '';
+            selectCassetto.innerHTML = '';
+
+            Object.entries(appData.comparti).forEach(([id, comp]) => {
+                // Popola il menu a tendina delle spese
+                const option = document.createElement('option');
+                option.value = id;
+                option.innerText = comp.nome;
+                selectCassetto.appendChild(option);
+
+                // Calcola le uscite abbinate a questo comparto
+                let spesoComp = 0;
+                Object.values(appData.spese).forEach(s => {
+                    if (s.cassetto === id && s.tipo !== 'entrata') {
+                        spesoComp += parseFloat(s.importo) || 0;
+                    }
+                });
+
+                const rimanente = (comp.budget || 0) - spesoComp;
+                const perc = comp.budget > 0 ? Math.min(100, Math.max(0, (spesoComp / comp.budget) * 100)) : 0;
+
+                const card = document.createElement('div');
+                card.className = "p-3 bg-gray-50 rounded-lg border flex flex-col gap-2";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-sm">${comp.nome}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500">Budget: €${(comp.budget || 0).toFixed(2)}</span>
+                            <button onclick="modificaBudgetComparto('${id}')" class="text-xs">✏️</button>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${perc}%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-600">
+                        <span>Speso: €${spesoComp.toFixed(2)}</span>
+                        <span class="${rimanente < 0 ? 'text-red-500 font-bold' : 'text-green-600'}">
+                            Rimanente: €${rimanente.toFixed(2)}
+                        </span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderSpese() {
+            const container = document.getElementById('lista-spese');
+            container.innerHTML = '';
+
+            const speseOrdinates = Object.entries(appData.spese).sort((a,b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+
+            speseOrdinates.forEach(([id, item]) => {
+                const li = document.createElement('li');
+                li.className = "py-2 flex justify-between items-center text-sm";
+                const isEntrata = item.tipo === 'entrata';
+                const cassettoNome = appData.comparti[item.cassetto]?.nome || "Generale";
+
+                li.innerHTML = `
+                    <div>
+                        <p class="font-medium">${item.descrizione}</p>
+                        <p class="text-xs text-gray-400">${cassettoNome}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="${isEntrata ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}">
+                            ${isEntrata ? '+' : '-'} €${parseFloat(item.importo).toFixed(2)}
+                        </span>
+                        <button onclick="eliminaMovimento('${id}')" class="text-gray-400 hover:text-red-500 text-xs">🗑️</button>
+                    </div>
+                `;
+                container.appendChild(li);
+            });
+        }
+
+        function renderScadenze() {
+            const container = document.getElementById('lista-scadenze');
+            container.innerHTML = '';
+
+            Object.entries(appData.scadenze).forEach(([id, item]) => {
+                const li = document.createElement('li');
+                li.className = "py-2 flex justify-between items-center text-sm";
+                li.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" ${item.pagata ? 'checked' : ''} onchange="toggleScadenza('${id}', this.checked)" class="rounded">
+                        <span class="${item.pagata ? 'line-through text-gray-400' : 'font-medium'}">${item.nome}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-gray-700">€${parseFloat(item.importo).toFixed(2)}</span>
+                        <button onclick="eliminaScadenza('${id}')" class="text-gray-400 hover:text-red-500 text-xs">🗑️</button>
+                    </div>
+                `;
+                container.appendChild(li);
+            });
+        }
+
+        function renderSalvadanai() {
+            const container = document.getElementById('lista-salvadanai');
+            container.innerHTML = '';
+
+            Object.entries(appData.salvadanai).forEach(([id, item]) => {
+                const accumulato = item.accumulato || 0;
+                const target = item.target || 1;
+                const perc = Math.min(100, Math.round((accumulato / target) * 100));
+
+                const div = document.createElement('div');
+                div.className = "p-4 bg-white rounded-xl shadow border space-y-3";
+                div.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-gray-800">${item.nome}</h4>
+                        <button onclick="eliminaSalvadanaio('${id}')" class="text-xs text-gray-400 hover:text-red-500">🗑️</button>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-purple-600 h-3 rounded-full" style="width: ${perc}%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-600">
+                        <span>Accumulato: €${accumulato.toFixed(2)}</span>
+                        <span>Target: €${target.toFixed(2)} (${perc}%)</span>
+                    </div>
+                    <button onclick="versaNelSalvadanaio('${id}')" class="w-full bg-purple-50 text-purple-700 font-semibold py-1.5 rounded text-xs hover:bg-purple-100 border border-purple-200">
+                        + Versa Quota
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- AZIONI FORM & EVENTI ---
+
+        // 1. Registra Spesa / Entrata
+        document.getElementById('form-transazione').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const tipo = document.getElementById('trans-tipo').value;
+            const importo = parseFloat(document.getElementById('trans-importo').value);
+            const descrizione = document.getElementById('trans-desc').value;
+            const cassetto = document.getElementById('trans-cassetto').value;
+
+            const nuovaSpesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
+            set(nuovaSpesaRef, {
+                tipo,
+                importo,
+                descrizione,
+                cassetto,
+                timestamp: Date.now()
+            });
+
+            document.getElementById('trans-importo').value = '';
+            document.getElementById('trans-desc').value = '';
+        });
+
+        // 2. Modifica Budget Comparto
+        window.modificaBudgetComparto = function(id) {
+            const attuale = appData.comparti[id]?.budget || 0;
+            const nuovo = prompt("Nuovo budget per questo comparto (€):", attuale);
+            if (nuovo !== null && !isNaN(parseFloat(nuovo))) {
+                set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/comparti/' + id + '/budget'), parseFloat(nuovo));
+            }
+        };
+
+        // 3. Elimina Movimento
+        window.eliminaMovimento = function(id) {
+            if (confirm("Vuoi eliminare questa operazione?")) {
+                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese/' + id));
+            }
+        };
+
+        // 4. Scadenze
+        document.getElementById('form-scadenza').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('scad-nome').value;
+            const importo = parseFloat(document.getElementById('scad-importo').value);
+
+            const refScad = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze'));
+            set(refScad, { nome, importo, pagata: false });
+
+            document.getElementById('scad-nome').value = '';
+            document.getElementById('scad-importo').value = '';
+        });
+
+        window.toggleScadenza = function(id, stato) {
+            update(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id), { pagata: stato });
+        };
+
+        window.eliminaScadenza = function(id) {
+            remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id));
+        };
+
+        // 5. Salvadanai (Logica Unificata)
+        document.getElementById('form-salvadanaio').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('salv-nome').value;
+            const target = parseFloat(document.getElementById('salv-target').value);
+
+            const refSalv = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai'));
+            set(refSalv, { nome, target, accumulato: 0 });
+
+            document.getElementById('salv-nome').value = '';
+            document.getElementById('salv-target').value = '';
+        });
+
+        window.versaNelSalvadanaio = function(id) {
+            const sal = appData.salvadanai[id];
+            if (!sal) return;
+
+            const cifraStr = prompt(`Quanto vuoi versare in "${sal.nome}"?`);
+            if (!cifraStr) return;
+            
+            const cifra = parseFloat(cifraStr);
+            if (isNaN(cifra) || cifra <= 0) {
+                alert("Inserisci un importo valido.");
+                return;
+            }
+
+            const scalaDalBudget = confirm(
+                "Vuoi scalare questa cifra dal budget del mese corrente?\n\n" +
+                "• OK = Detrai dal Budget (registra una spesa)\n" +
+                "• Annulla = Versamento Extra (aggiorna solo l'obiettivo)"
+            );
+
+            const nuovoAccumulo = (sal.accumulato || 0) + cifra;
+            set(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai/' + id + '/accumulato'), nuovoAccumulo);
+
+            if (scalaDalBudget) {
+                const spesaRef = push(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
+                set(spesaRef, {
+                    tipo: "spesa",
+                    importo: cifra,
+                    descrizione: "Accantonamento: " + sal.nome,
+                    cassetto: "libero_restante",
+                    timestamp: Date.now()
+                });
+            }
+        };
+
+        window.eliminaSalvadanaio = function(id) {
+            if (confirm("Vuoi eliminare questo salvadanaio?")) {
+                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/salvadanai/' + id));
+            }
+        };
+
+        // 6. Archiviazione Mese
+        window.chiudiEMeseArchivia = function() {
+            if (confirm("Sei sicuro di voler archiviare il mese? Le spese attuali verranno azzerate e le scadenze riportate a non pagate per il nuovo mese.")) {
+                // Rimuovi spese
+                remove(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/spese'));
+                
+                // Resetta stato pagato scadenze
+                Object.keys(appData.scadenze).forEach(id => {
+                    update(ref(db, 'utenti/' + utenteCorrente.uid + '/budget_familiare/scadenze/' + id), { pagata: false });
+                });
+            }
+        };
+
+        // UI TAB NAVIGAZIONE
+        window.switchTab = function(tabName) {
+            ['spese', 'comparti', 'scadenze', 'salvadanai'].forEach(t => {
+                document.getElementById('content-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).classList.remove('active-tab');
+                document.getElementById('tab-' + t).classList.add('text-gray-500');
+            });
+
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).classList.add('active-tab');
+            document.getElementById('tab-' + tabName).classList.remove('text-gray-500');
+        };
+    </script>
+</body>
+</html>
